@@ -30,7 +30,7 @@
                             </span>
                             <span class="fw-600">
                                 {{ $comment->order->invoice_no }}
-                            </span>
+                            </span> 
                         </div>
                         <div class="row d-flex align-items-center">
                             <div class="col-md-12">
