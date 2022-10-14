@@ -16,8 +16,8 @@
     </div>
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1 mt-sm-0 mt-5">
         <h1 class="h2">
-            Komentar Saya.
-        </h1>
+            Komentar Saya . 
+        </h1> 
     </div>
     @foreach ($productComments as $comment)
         @if (count($comment->children) <= 0)
