@@ -38,7 +38,7 @@ class HomeController extends Controller
         // dd(Order::where('order_status', '=', 'selesai')->whereIn('id', function ($query) {
         //     $query->select('order_id')->from(with(new OrderItem)->getTable())->where('is_review', '=', '1');
         // })->get());
-
+        
         return view('admin.home', [
             'title' => 'Admin Dashboard',
             'active' => 'dashboard',
