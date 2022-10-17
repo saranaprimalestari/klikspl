@@ -4,19 +4,25 @@ namespace App\Http\Controllers;
 
 use DateTime;
 use Carbon\Carbon;
+use App\Models\City;
 use App\Models\Order;
 use App\Models\Promo;
 use App\Models\Product;
 use App\Models\CartItem;
+use App\Models\Province;
 use App\Models\OrderItem;
 use App\Models\UserAddress;
 use App\Models\OrderAddress;
 use App\Models\OrderProduct;
 use Illuminate\Http\Request;
+use App\Models\ProductOrigin;
+use App\Models\SenderAddress;
+use App\Models\ProductComment;
 use App\Models\ProductVariant;
 use App\Models\UserNotification;
 use App\Models\OrderProductImage;
 use App\Models\OrderStatusDetail;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
@@ -87,7 +93,7 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        
+
         $request->session()->put(['courier' => $request->courier]);
         $request->session()->put(['courier_package_type' => $request->courier_package_type]);
         $request->session()->put(['estimation' => $request->estimation]);
@@ -1115,5 +1121,46 @@ class OrderController extends Controller
         }
         // dd($request);
 
+    }
+
+    public function orderProductDetail($id, OrderItem $orderItem)
+    {
+        // dd($orderItem);
+        $orderProduct = $orderItem->orderProduct;
+        // dd($orderProduct);
+        $id = Crypt::decrypt($id);
+        // dd($id);
+        // $orderProduct = Crypt::decrypt($orderProduct);
+        $order = Order::find($id);
+        // dd($order);
+        // dd($orderProduct);
+        $city_origin = '36';
+        $Key = 'product-' . $orderProduct->id;
+        // if (!Session::has($Key)) {
+
+        //     DB::table('products')
+        //         ->where('id', $orderProduct->id)
+        //         ->increment('view', 1);
+        //     Session::put($Key, 1);
+        // }
+        // print_r(Session::all());
+        $stock = 0;
+
+        $stock = $orderProduct->stock;
+        
+        $product = $orderItem->product;
+        // $orderProduct = Product::find($orderProduct->id);
+        // $origin =  ProductOrigin::where('product_id', '=', $orderProduct->id)->with('city')->groupBy('sender_address_id')->get();
+        // $orderProduct->productorigin->with('senderAddress')->unique('sender_address_id');
+        $senderAddress = SenderAddress::where('is_active', '=', 1)->with('city')->get();
+        // dd($senderAddress);
+        return view('order.orderProduct', [
+            'title' => $orderProduct->name,
+            // "product" => $orderProduct,
+            'active' => 'products',
+            "orderProduct" => $orderProduct,
+            "product" => $product,
+            "stock" => $stock,
+        ]);
     }
 }

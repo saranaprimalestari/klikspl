@@ -292,6 +292,7 @@
                                     <div class="row d-flex align-items-center justify-content-center text-center ">
                                         <div class="col-md-8">
                                             @foreach ($order->orderitem as $item)
+                                            <a href="{{ route('order.detail.product', ['id' =>Crypt::encrypt($order->id), 'orderItem'=> ($item->id)]) }}" class="text-decoration-none text-dark">
                                                 <div class="row my-3 align-items-center">
                                                     <div class="col-md-2 col-4 text-end">
                                                         @if (!is_null($item->orderproduct->orderproductimage->first()))
@@ -321,6 +322,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </a>
                                             @endforeach
                                         </div>
                                         <div class="col-md-4 text-end order-item-total-payment py-2">

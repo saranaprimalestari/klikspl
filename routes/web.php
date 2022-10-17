@@ -185,6 +185,7 @@ Route::name('order.detail.proof.of.payment')->post('/order/detail/proof-pf-payme
 // detail order
 Route::name('order.detail')->get('/order/detail', [OrderController::class, 'orderDetail'])->middleware('auth');
 Route::name('order.detail.bind')->get('/order/detail/{id}', [OrderController::class, 'orderDetailBind'])->middleware('auth');
+Route::name('order.detail.product')->get('/order/detail/{id}/product/{orderItem:id}', [OrderController::class, 'orderProductDetail'])->middleware('auth');
 // payment completed
 Route::name('payment.completed')->post('/order/payment-completed', [OrderController::class, 'paymentCompleted'])->middleware('auth');
 // reupload payment
