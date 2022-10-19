@@ -27,7 +27,8 @@
                     <div class="product-main-img mb-3">
                         @if (count($orderProduct->orderProductimage) > 0)
                             @if (Storage::exists($orderProduct->orderProductimage[0]->name))
-                                <img id="main-image" src="{{ asset('/storage/' . $orderProduct->orderProductimage[0]->name) }}"
+                                <img id="main-image"
+                                    src="{{ asset('/storage/' . $orderProduct->orderProductimage[0]->name) }}"
                                     class="product-detail-img" alt="Foto Produk" width="100%">
                             @else
                                 <img id="main-image" src="https://source.unsplash.com/400x400?product-1"
@@ -140,7 +141,7 @@
                     </div>
                 </div>
 
-                <div class="product-price my-4">
+                <div class="product-price my-md-4 my-lg-4">
                     <h4 class="product-price-text">
                         Rp
                         <span class="price-span" id="price-span">
@@ -149,20 +150,17 @@
                     </h4>
                 </div>
                 <div class="variant mt-3">
-                    <p class="fw-bold m-0 mb-2">Varian</p>
-                    <p>{{ $orderProduct->variant_name }}</p>
-                    @error('product_variant_id')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
-                    <div class="product_variant_ids_error"></div>
+                    @if (!is_null($orderProduct->variant_name))
+                        <p class="fw-bold m-0 ">Varian</p>
+                        <p class="m-0">{{ $orderProduct->variant_name }}</p>
+                        <div class="product_variant_ids_error"></div>
+                    @endif
                 </div>
                 <input type="hidden" name="subtotal" value="">
 
 
             </div>
-            <div class="col-md-12 mt-5">
+            <div class="col-md-12 mt-md-5 mt-lg-5 mt-4">
                 <h5 class="mb-2">Spesifikasi Produk</h5>
                 <div class="product-spec">
                     <ul class="m-0">
@@ -188,7 +186,7 @@
                 </div>
             </div>
 
-            <div class="col-md-12 mt-5">
+            <div class="col-md-12 mt-md-5 mt-lg-5 mt-4">
                 <h5 class="mb-2">Deskripsi Produk</h5>
                 <div class="product-description">
                     {!! $orderProduct->description !!}
