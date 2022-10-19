@@ -1152,6 +1152,7 @@ input[type=number]::-webkit-outer-spin-button {
 
 .checkout-payment-weight-text,
 .checkout-payment-courier-text,
+.discount-used-text,
 .total-weight-checkout-text {
     font-size: 12px;
     color: #6b6b6b;
@@ -1159,6 +1160,10 @@ input[type=number]::-webkit-outer-spin-button {
 
 .payment-form {
     display: contents !important;
+}
+
+.discount-used-cancel-btn {
+    cursor: pointer;
 }
 
 

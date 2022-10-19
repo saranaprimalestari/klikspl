@@ -5196,3 +5196,113 @@ echo "</br>";
                 </div> --}}
                 </div>
             </td>
+
+            {{-- checkout --}}
+            <form class="checkout-bill-form d-none" action="{{ route('checkout.payment') }}"
+                                onsubmit="return validateCheckout()" method="POST">
+                                @csrf
+                                @foreach ($items as $item)
+                                    <input type="hidden" name="product-id[]" value="{{ $item->id }}">
+                                    {{-- <input type="hidden" name="product-qty[]" value="{{ $item->quantity }}">
+                                    <input type="hidden" name="product-subtotal[]" value="{{ $item->subtotal }}"> --}}
+                                @endforeach
+
+                                @foreach ($weight as $weightItem)
+                                    <input type="hidden" name="product-weight[]" value="{{ $weightItem }}">
+                                @endforeach
+
+                                <input type="hidden" name="user-id" value="{{ auth()->user()->id }}">
+
+                                <div class="input-data-shipment">
+
+                                    @foreach ($userAddress as $address)
+                                        @if ($address->is_active == 1)
+                                            <input class="address-id" type="hidden" name="addressId"
+                                                value="{{ $address->id }}">
+                                            <input class="city-origin" type="hidden" name="cityOrigin" value="36">
+                                            <input class="city-destination" type="hidden" name="cityDestination"
+                                                value="{{ $address->city->city_id }}">
+                                        @endif
+                                    @endforeach
+
+                                    <input type="hidden" class="courier-name-choosen" name="courier-name-choosen"
+                                        value="">
+                                    <input type="hidden" class="courier-service-choosen" name="courier-service-choosen"
+                                        value="">
+                                    <input type="hidden" class="courier-etd-choosen" name="courier-etd-choosen"
+                                        value="">
+                                    <input type="hidden" class="courier-price-choosen" name="courier-price-choosen"
+                                        value="">
+                                </div>
+
+                                <div class="input-data-item-detail">
+                                    <input class="csrf-token" type="hidden" name="csrf_token"
+                                        value="{{ csrf_token() }}">
+                                    <input class="total-weight" type="hidden" name="total_weight"
+                                        value="{{ array_sum($weight) }}">
+                                    <input class="total-subtotal" type="hidden" name="total_subtotal"
+                                        value="{{ is_null($items[0]->id) ? $items[0]->subtotal : $items->sum('subtotal') }}">
+                                    <input class="courier" type="hidden" name="courier" value="all">
+                                </div>
+
+                                <h5 class="cart-items-checkout-header cart-items-checkout-header mt-1 mb-4">Ringkasan
+                                    Pesanan</h5>
+                                <div class="row">
+                                    <div class="col-7 checkout-items-total-text cart-items-total-text pe-0">
+                                        Total Harga ({{ count($items) }}) Produk
+                                    </div>
+                                    <div class="col-5 cart-items-total-val text-end">
+                                        Rp{{ price_format_rupiah(is_null($items[0]->id) ? $items[0]->subtotal : $items->sum('subtotal')) }}
+                                        {{-- Rp{{ price_format_rupiah($items['subtotal']) }} --}}
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div
+                                        class="col-7 checkout-items-text cart-items-total-text pe-0 total-weight-checkout">
+                                        Berat total: <span class="total-weight-checkout"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-7 checkout-shipment-total-text cart-items-total-text pe-0">
+                                    </div>
+                                    <div class="col-5 checkout-shipment-total-val fs-14 m-0 text-end">
+                                    </div>
+                                </div>
+                                {{-- <div class="row mb-2 mt-3">
+                                    <div class="col-12">
+                                        <a class="w-100 btn btn-light border-radius-05rem fs-14 py-2 px-3"
+                                            data-bs-toggle="modal" data-bs-target="#promoModal">
+                                            <div class="d-flex">
+                                                <div class="">
+                                                    <i class="bi bi-percent"></i> Masukkan/Gunakan Kode Promo
+                                                </div>
+                                                <div class="ms-auto">
+                                                    <i class="bi bi-chevron-right"></i>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div> --}}
+                                <div class="my-4 border border-1 border-bottom cart-items-checkout-divider">
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="checkout-total-all-text cart-items-checkout-total-all-text mt-1 mb-4">
+                                            Total harga</p>
+                                    </div>
+                                    <div class="col-6 checkout-total-all-val cart-items-total-all-val text-end fw-bold">
+                                    </div>
+                                    <input type="hidden" name="checkout_total_price" value="">
+                                </div>
+                                <div class="d-grid">
+                                    {{-- <button type="button"
+                                        class="btn btn-block checkout-button show-payment-modal-button shadow-none">
+                                        Pilih Metode Pembayaran
+                                    </button> --}}
+                                    <button type="button"
+                                        class="btn btn-block checkout-button show-payment-modal-button shadow-none"
+                                        data-bs-toggle="modal" data-bs-target="#paymentModal">
+                                        Pilih Metode Pembayaran
+                                    </button>
+                                </div>
+                            </form>

@@ -671,19 +671,19 @@
                                                 </div>
                                             </div>
 
-                                            <div class="row">
+                                            <div class="row discount-used-row d-none">
                                                 <div class="col-7 discount-text cart-items-total-text pe-0">
-                                                    Promo yang digunakan
+                                                    Diskon Promo
                                                 </div>
                                                 <div class="col-5 discount-val fs-14 m-0 text-end">
-                                                    Rp.1000
+                                                    
                                                 </div>
                                             </div>
-                                            <div class="row mb-2">
+                                            <div class="row mb-2 discount-used-row d-none">
                                                 <div class="col-7 fs-12 discount-used-text">
                                                 </div>
-                                                <div class="col-5 discount-val fs-12 m-0 text-end">
-                                                    <div class="text-danger fw-600">Batalkan</div>
+                                                <div class="col-5 fs-12 m-0 text-end">
+                                                    <div class="text-red-klikspl fw-600 discount-used-cancel-btn">Batalkan</div>
                                                 </div>
                                             </div>
 
@@ -703,7 +703,6 @@
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="promo-modal-notification">
-
                                                     </div>
                                                 </div>
                                             </div>
@@ -827,7 +826,23 @@
                                     <div class="col-7 checkout-payment-courier-text">
                                     </div>
                                 </div>
-                                
+
+                                <div class="row discount-used-row d-none">
+                                    <div class="col-7 discount-text cart-items-total-text pe-0">
+                                        Diskon Promo
+                                    </div>
+                                    <div class="col-5 discount-val fs-14 m-0 text-end">
+                                        
+                                    </div>
+                                </div>
+                                <div class="row mb-2 discount-used-row d-none">
+                                    <div class="col-7 fs-12 discount-used-text">
+                                    </div>
+                                    <div class="col-5 fs-12 m-0 text-end">
+                                        <div class="text-red-klikspl fw-600 discount-used-cancel-btn">Batalkan</div>
+                                    </div>
+                                </div>
+
                                 {{-- <div class="row mb-2">
                                     <div class="col-12">
                                         <a class="w-100 btn btn-light border-radius-05rem fs-14 py-2 px-3"
@@ -878,9 +893,9 @@
                                 role="button" data-bs-toggle="button" aria-pressed="true">
                                 Detail <i class="bi bi-chevron-up mx-2 expand-checkout-bill-chevron"></i>
                             </a>
-                            <form class="checkout-bill-form d-none" action="{{ route('checkout.payment') }}"
-                                onsubmit="return validateCheckout()" method="POST">
+                            <form class="checkout-bill-form d-none" action="" onsubmit="return validateCheckout()" method="POST">
                                 @csrf
+
                                 @foreach ($items as $item)
                                     <input type="hidden" name="product-id[]" value="{{ $item->id }}">
                                     {{-- <input type="hidden" name="product-qty[]" value="{{ $item->quantity }}">
@@ -913,6 +928,8 @@
                                         value="">
                                     <input type="hidden" class="courier-price-choosen" name="courier-price-choosen"
                                         value="">
+                                    <input type="hidden" class="sender-address-id" name="sender_address_id"
+                                        value="">
                                 </div>
 
                                 <div class="input-data-item-detail">
@@ -938,17 +955,38 @@
                                 </div>
                                 <div class="row mb-2">
                                     <div
-                                        class="col-7 checkout-items-text cart-items-total-text pe-0 total-weight-checkout">
+                                        class="col-7 checkout-items-text cart-items-total-text pe-0 total-weight-checkout-text">
                                         Berat total: <span class="total-weight-checkout"></span>
                                     </div>
                                 </div>
-                                <div class="row mb-2">
+                                <div class="row">
                                     <div class="col-7 checkout-shipment-total-text cart-items-total-text pe-0">
                                     </div>
                                     <div class="col-5 checkout-shipment-total-val fs-14 m-0 text-end">
                                     </div>
                                 </div>
-                                {{-- <div class="row mb-2 mt-3">
+                                <div class="row mb-2">
+                                    <div class="col-7 checkout-payment-courier-text">
+                                    </div>
+                                </div>
+
+                                <div class="row discount-used-row d-none">
+                                    <div class="col-7 discount-text cart-items-total-text pe-0">
+                                        Diskon Promo
+                                    </div>
+                                    <div class="col-5 discount-val fs-14 m-0 text-end">
+                                        
+                                    </div>
+                                </div>
+                                <div class="row mb-2 discount-used-row d-none">
+                                    <div class="col-7 fs-12 discount-used-text">
+                                    </div>
+                                    <div class="col-5 fs-12 m-0 text-end">
+                                        <div class="text-red-klikspl fw-600 discount-used-cancel-btn">Batalkan</div>
+                                    </div>
+                                </div>
+
+                                {{-- <div class="row mb-2">
                                     <div class="col-12">
                                         <a class="w-100 btn btn-light border-radius-05rem fs-14 py-2 px-3"
                                             data-bs-toggle="modal" data-bs-target="#promoModal">
@@ -963,12 +1001,12 @@
                                         </a>
                                     </div>
                                 </div> --}}
-                                <div class="my-4 border border-1 border-bottom cart-items-checkout-divider">
+                                <div class="my-3 border border-1 border-bottom cart-items-checkout-divider">
                                 </div>
-                                <div class="row">
+                                <div class="row mb-4">
                                     <div class="col-6">
-                                        <p class="checkout-total-all-text cart-items-checkout-total-all-text mt-1 mb-4">
-                                            Total harga</p>
+                                        <p class="checkout-total-all-text cart-items-checkout-total-all-text m-0">
+                                            Total Harga</p>
                                     </div>
                                     <div class="col-6 checkout-total-all-val cart-items-total-all-val text-end fw-bold">
                                     </div>
@@ -1211,14 +1249,19 @@
                             console.log(productPromos[keys][0]['promo']);
                             console.log(value);
                             $('input[name="promo_use_id"]').val(promo_id);
-                            var productPromo = productPromos[keys][0]['promo'];
-                            var promoTypeId = (productPromo['promo_type_id']);
-                            var promoProductId = (value['product_id']);
+                            window.productPromo = productPromos[keys][0]['promo'];
+                            window.promoTypeId = (productPromo['promo_type_id']);
+                            window.promoProductId = (value['product_id']);
+                            window.discount = 0;
+                            window.discountName = '';
+                            discount = productPromo['discount'];    
+                            discountName = productPromo['name'];    
+                            $('.discount-used-row').hasClass('d-none') ? $('.discount-used-row').removeClass('d-none') : '';
                             $.each(items, function(idItem, item){
                                 $('.subtotal-cart-items-'+item['id']).text(formatRupiah((item['subtotal']),'Rp'));
                                 
                                 $('.subtotal-cart-items-'+item['id']).hasClass('text-decoration-line-through') ? $('.subtotal-cart-items-'+item['id']).removeClass('text-decoration-line-through') : '' ; 
-
+                            
                                 if ($('.subtotal-cart-items-'+item['id']).hasClass('text-secondary')) {
                                     $('.subtotal-cart-items-'+item['id']).removeClass('text-secondary');
                                     $('.subtotal-cart-items-'+item['id']).addClass('text-danger');
@@ -1228,6 +1271,7 @@
                                 if (promoTypeId == 1 || promoTypeId == 2) {
                                     if (promoTypeId == 1) {
                                         if (promoProductId == item['product_id']) {
+                                            discount = (item['subtotal']*productPromo['discount']/100);
                                             discountedPrice = item['subtotal'] - (item['subtotal']*productPromo['discount']/100);
                                             console.log('subtotal : '+ discountedPrice); 
                                             $('.subtotal-cart-items-'+item['id']).removeClass('text-danger');
@@ -1255,33 +1299,47 @@
                                         }
                                         console.log('subtotal with discount : '+subtotalWithDiscount);
                                     }
-                                } else if (promoTypeId == 3 || promoTypeId == 4) {
+                                } else {
+                                    if(key == 0 ){
+                                        subtotalWithDiscount +=item['subtotal'];
+                                    }
+                                    console.log('subtotal : '+ subtotalWithDiscount);
+                                    console.log('item subtotal : '+ item['subtotal']);
+                                    discountName = productPromo['name'];
+                                }
+                                
+                            });
+                            console.log('product promo key : '+ key);
+                            if(key == 0){
+                                if (promoTypeId == 3 || promoTypeId == 4) {
+                                    console.log('promo type : ' + promoTypeId);
                                     if (promoTypeId == 3) {
-                                        if (promoProductId == item['product_id']) {
-                                            console.log('subtotal : '+ (item['subtotal'] - (item['subtotal']*productPromo['discount']/100))); 
-                                            $('.subtotal-cart-items-'+item['id']).text(formatRupiah((item['subtotal'] - (item['subtotal']*productPromo['discount']/100)), "Rp"));
-                                        }   
+                                        discount = subtotalWithDiscount*productPromo['discount']/100;
+                                        subtotalWithDiscount -= discount;
+                                        console.log('discount : '+ discount);
+                                        console.log('subtotal with discount  : '+ subtotalWithDiscount);
+                                        // $('.discount-val').text(discount + '%');
                                     } else if (promoTypeId == 4) {
-                                        if (promoProductId == item['product_id']) {
-                                            console.log('subtotal : '+ (item['subtotal'] - productPromo['discount'])); 
-                                            $('.subtotal-cart-items-'+item['id']).text(formatRupiah((item['subtotal'] - productPromo['discount']), "Rp"));
-                                        }   
+                                        subtotalWithDiscount -= discount;
+                                        // $('.discount-val').text(formatRupiah(discount,"Rp"));
                                     }
                                 }
-                            });
+                                return false;
+                            }
                             console.log(productPromo['promo_type_id']);
                         });
+                        $('.discount-val').text(formatRupiah(discount,"Rp"));
+                        $('.discount-used-text').text(discountName);
                     }
                     console.log('discounted price : ' + subtotalWithDiscount);
                     console.log('shipment price : ' + price);
                     
                     // $('input[name="checkout_total_price"]').val(subtotalWithDiscount + parseInt(price));
 
-                    $('.cart-items-total-val').text(formatRupiah(subtotalWithDiscount, "Rp"));
-                    $('.checkout-payment-total-price-val').text(formatRupiah(subtotalWithDiscount, "Rp"));
+                    // $('.cart-items-total-val').text(formatRupiah(subtotalWithDiscount, "Rp"));
+                    // $('.checkout-payment-total-price-val').text(formatRupiah(subtotalWithDiscount, "Rp"));
                     $('.checkout-payment-total-all-val').text(formatRupiah(subtotalWithDiscount + parseInt(price), "Rp"));
                     $('.checkout-total-all-val').text(formatRupiah(subtotalWithDiscount + parseInt(price), "Rp"));
-                    $('.checkout-payment-total-all-val').text(formatRupiah(subtotalWithDiscount + parseInt(price), "Rp"));
                         
                     // $('input[name="checkout_payment_total_price"]').val(subtotalWithDiscount + parseInt(price));
                 

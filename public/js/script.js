@@ -425,6 +425,7 @@ $(document).ready(function() {
 
     $.fn.shipment_cost_checkout = function(token, city_origin, city_destination, courier, weight) {
         $('.courier-choice').empty();
+        $('select[name="sender_city_id"]').prop('disabled', true);
         $('.courier-choice').append(
             '<div class="card mb-3 checkout-courier-card"><div class="card-body p-4"><div class="d-flex align-items-center courier-choice-text"><p class="m-0 checkout-courier-loading-text">Memuat data...</p><div class="spinner-border ms-auto checkout-courier-loading" role="status" aria-hidden="true"></div></div></div></div>'
         );
@@ -445,6 +446,7 @@ $(document).ready(function() {
                 if (response) {
                     console.log(response);
                     if (response.length > 1) {
+                        $('select[name="sender_city_id"]').prop('disabled', false);
                         $('.courier-choice').empty();
                         $('.courier-choice').append(
                             '<div class="card mb-3 checkout-courier-card"><div class="card-body p-4"><button type="button" class="btn w-100 shadow-none text-start p-0 d-flex align-items-center" data-bs-toggle="modal"data-bs-target="#courierModal"><p class="m-0 checkout-courier-able-text ">Pilihan Kurir yang tersedia</p><i class="bi bi-arrow-right-circle ms-auto"></i></button></div></div>'
