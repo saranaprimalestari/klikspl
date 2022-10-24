@@ -1,6 +1,6 @@
 @extends('layouts.main')
 @section('container')
-    {{-- <script type="text/javascript">
+    <script type="text/javascript">
         function disableBack() {
             window.history.forward();
         }
@@ -8,7 +8,7 @@
         window.onunload = function() {
             null
         };
-    </script> --}}
+    </script>
     <div class="container-fluid breadcrumb-products">
         {{ Breadcrumbs::render('checkout') }}
     </div>

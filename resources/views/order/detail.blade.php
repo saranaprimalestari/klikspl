@@ -292,37 +292,38 @@
                                     <div class="row d-flex align-items-center justify-content-center text-center ">
                                         <div class="col-md-8">
                                             @foreach ($order->orderitem as $item)
-                                            <a href="{{ route('order.detail.product', ['id' =>Crypt::encrypt($order->id), 'orderItem'=> ($item->id)]) }}" class="text-decoration-none text-dark">
-                                                <div class="row my-3 align-items-center">
-                                                    <div class="col-md-2 col-4 text-end">
-                                                        @if (!is_null($item->orderproduct->orderproductimage->first()))
-                                                            <img src="{{ asset('/storage/' . $item->orderproduct->orderproductimage->first()->name) }}"
-                                                                class="w-100 border-radius-5px" alt="">
-                                                        @endif
-                                                    </div>
-                                                    <div class="col-md-10 col-8 ps-0">
-                                                        <div class="order-items-product-info text-start">
-                                                            <div class="text-truncate order-items-product-name">
-                                                                {{ $item->orderproduct->name }}
-                                                            </div>
-                                                            <div
-                                                                class="text-truncate order-items-product-variant text-grey">
-                                                                Varian:
-                                                                {{ !is_null($item->orderproduct->variant_name) ? $item->orderproduct->variant_name : 'Tidak ada Varian' }}
-                                                            </div>
-                                                            <div
-                                                                class="text-truncate order-items-product-variant text-grey">
-                                                                Berat: {{ $item->orderproduct->weight }}g
-                                                            </div>
-                                                            <div
-                                                                class="text-truncate order-items-product-price-qty text-grey text-end text-md-start">
-                                                                {{ $item->quantity }} x
-                                                                Rp{{ price_format_rupiah($item->orderproduct->price) }}
+                                                <a href="{{ route('order.detail.product', ['id' => Crypt::encrypt($order->id), 'orderItem' => $item->id]) }}"
+                                                    class="text-decoration-none text-dark">
+                                                    <div class="row my-3 align-items-center">
+                                                        <div class="col-md-2 col-4 text-end">
+                                                            @if (!is_null($item->orderproduct->orderproductimage->first()))
+                                                                <img src="{{ asset('/storage/' . $item->orderproduct->orderproductimage->first()->name) }}"
+                                                                    class="w-100 border-radius-5px" alt="">
+                                                            @endif
+                                                        </div>
+                                                        <div class="col-md-10 col-8 ps-0">
+                                                            <div class="order-items-product-info text-start">
+                                                                <div class="text-truncate order-items-product-name">
+                                                                    {{ $item->orderproduct->name }}
+                                                                </div>
+                                                                <div
+                                                                    class="text-truncate order-items-product-variant text-grey">
+                                                                    Varian:
+                                                                    {{ !is_null($item->orderproduct->variant_name) ? $item->orderproduct->variant_name : 'Tidak ada Varian' }}
+                                                                </div>
+                                                                <div
+                                                                    class="text-truncate order-items-product-variant text-grey">
+                                                                    Berat: {{ $item->orderproduct->weight }}g
+                                                                </div>
+                                                                <div
+                                                                    class="text-truncate order-items-product-price-qty text-grey text-end text-md-start">
+                                                                    {{ $item->quantity }} x
+                                                                    Rp{{ price_format_rupiah($item->orderproduct->price) }}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </a>
+                                                </a>
                                             @endforeach
                                         </div>
                                         <div class="col-md-4 text-end order-item-total-payment py-2">
@@ -621,6 +622,23 @@
                                         </div>
                                     </div>
 
+                                    @if (!empty($order->discount))
+                                        <div class="row">
+                                            <div class="col-md-6 col-6">
+                                                Diskon Promo
+                                            </div>
+                                            <div class="col-md-6 col-6 text-end">
+                                                - Rp{{ price_format_rupiah($order->discount) }}
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-9 text-grey fs-12">
+                                                {{ $order->UserPromoOrderUse->first()->promo_name }}
+                                                ({{ $order->UserPromoOrderUse->first()->promo_type }})
+                                            </div>
+                                        </div>
+                                    @endif
+
                                     <div class="my-3 border-bottom">
                                     </div>
 
@@ -629,7 +647,7 @@
                                             Total Pembayaran
                                         </div>
                                         <div class="col-md-6 col-5 text-end text-danger fw-bold">
-                                            Rp{{ price_format_rupiah($order->courier_price + $order->total_price + $order->unique_code) }}
+                                            Rp{{ price_format_rupiah($order->courier_price + $order->total_price + $order->unique_code - $order->discount) }}
                                         </div>
                                     </div>
 
@@ -640,6 +658,51 @@
                             $order->order_status == 'pesanan dibayarkan' ||
                             $order->order_status == 'pembayaran dikonfirmasi' ||
                             $order->order_status == 'pesanan disiapkan')
+                            
+                            <div class="modal fade" id="orderCancellationRequest" tabindex="-1"
+                                aria-labelledby="orderCancellationRequestModal" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content border-radius-075rem">
+                                        <div class="modal-header border-0 pt-4 px-4">
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <form action="{{ route('order.cancellation.request', $order) }}" method="post"
+                                            class="d-inline">
+                                            {{-- @method('delete') --}}
+                                            @csrf
+                                            <div class="modal-body text-center py-2 px-5">
+                                                <h5 class="mb-3">Konfirmasi Pembatalan Pesanan</h5>
+                                                <p class="fs-14 mb-0">
+                                                    Apakah kamu yakin ingin membatalkan pesanan ini? Pesanan yang dibatalkan
+                                                    akan
+                                                    dihapus dari daftar pesananmu. Mohon tuliskan alasan mengapa kamu
+                                                    membatalkan
+                                                    pesananmu.
+                                                </p>
+                                                <div class="form-floating my-3">
+                                                    <textarea class="form-control fs-14" placeholder="Tuliskan alasan pembatalan pesanan" id="cancel-order"
+                                                        style="height: 100px" required name="order_cancellation_request"></textarea>
+                                                    <label for="cancel-order" class="fs-14">Alasan Pembatalan
+                                                        Pesanan
+                                                    </label>
+                                                    <div
+                                                        class="cancel_order_error_message fs-12 text-danger text-start my-1">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer border-0 d-flex justify-content-center">
+                                                <button type="button" class="btn btn-outline-secondary fs-14"
+                                                    data-bs-dismiss="modal">Tutup</button>
+                                                <button type="submit"
+                                                    class="btn btn-danger fs-14 my-2 shadow-none">Batalkan
+                                                    Pesanan</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="col-md-12 col-12">
                                 <div class="card fs-14 border-radius-075rem mb-4 box-shadow">
                                     <div class="card-body p-4">
@@ -654,9 +717,11 @@
                                         </div>
                                         <div class="row mb-2 text-end">
                                             <div class="col-md-12 col-12">
-                                                <a href="{{ route('order.show', $order) }}" class="btn btn-danger fs-13">
-                                                    Ajukan Pembatalan
-                                                </a>
+                                                <button type="button"
+                                                    class="btn btn-outline-secondary fs-14 my-2 shadow-none"
+                                                    data-bs-toggle="modal" data-bs-target="#orderCancellationRequest">
+                                                    Batalkan Pesanan
+                                                </button>
                                             </div>
                                         </div>
                                     </div>

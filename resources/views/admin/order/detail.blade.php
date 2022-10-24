@@ -1347,6 +1347,23 @@
                                 </div>
                             </div>
 
+                            @if (!empty($orders->discount))
+                                <div class="row">
+                                    <div class="col-md-6 col-6">
+                                        Diskon Promo
+                                    </div>
+                                    <div class="col-md-6 col-6 text-end">
+                                        - Rp{{ price_format_rupiah($orders->discount) }}
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-9 text-grey fs-12">
+                                        {{ $orders->UserPromoOrderUse->first()->promo_name }}
+                                        ({{ $orders->UserPromoOrderUse->first()->promo_type }})
+                                    </div>
+                                </div>
+                            @endif
+
                             <div class="my-3 border-bottom">
                             </div>
 
@@ -1355,7 +1372,7 @@
                                     Total Pembayaran
                                 </div>
                                 <div class="col-md-6 col-5 text-end text-danger fw-bold">
-                                    Rp{{ price_format_rupiah($orders->courier_price + $orders->total_price + $orders->unique_code) }}
+                                    Rp{{ price_format_rupiah($orders->courier_price + $orders->total_price + $orders->unique_code - $orders->discount) }}
                                 </div>
                             </div>
 

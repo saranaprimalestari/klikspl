@@ -153,7 +153,7 @@
                                     <div class="">
                                         <div class="d-flex">
                                             {{-- {{ isset($merk->image) }} --}}
-                                            @if (isset($merk->image))
+                                            @if (!empty($merk->image))
                                                 <img id="main-image" class=""
                                                     src="{{ asset($merk->image) }}" class="img-fluid" alt="..."
                                                     width="12%" height="12%">

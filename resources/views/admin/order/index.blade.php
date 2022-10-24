@@ -315,7 +315,7 @@
                                     Total Pesanan
                                 </div>
                                 <div class="fs-14 text-red-klikspl">
-                                    Rp{{ price_format_rupiah($order->courier_price + $order->total_price + $order->unique_code) }}
+                                    Rp{{ price_format_rupiah($order->courier_price + $order->total_price + $order->unique_code - $order->discount) }}
                                 </div>
                             </div>
                         </div>

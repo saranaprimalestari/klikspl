@@ -338,19 +338,19 @@ class OrderController extends Controller
             //     $orderProduct['promo_name'] = '';
             //     $orderProduct['promo_discount'] = 0;
             // }
-            // // cek apakah item terdapat varian
-            // if ($item->product_variant_id == 0) {
-            //     $orderProduct['stock'] = $item->product->stock;
-            //     $orderProduct['weight'] = $item->product->weight;
-            //     $orderProduct['price'] = $item->product->price;
-            // } else {
-            //     $orderProduct['variant_name'] = $item->productvariant->variant_name;
-            //     $orderProduct['variant_value'] = $item->productvariant->variant_name;
-            //     $orderProduct['variant_code'] = $item->productvariant->variant_code;
-            //     $orderProduct['stock'] = $item->productvariant->stock;
-            //     $orderProduct['weight'] = $item->productvariant->weight;
-            //     $orderProduct['price'] = $item->productvariant->price;
-            // }
+            // cek apakah item terdapat varian
+            if ($item->product_variant_id == 0) {
+                $orderProduct['stock'] = $item->product->stock;
+                $orderProduct['weight'] = $item->product->weight;
+                $orderProduct['price'] = $item->product->price;
+            } else {
+                $orderProduct['variant_name'] = $item->productvariant->variant_name;
+                $orderProduct['variant_value'] = $item->productvariant->variant_name;
+                $orderProduct['variant_code'] = $item->productvariant->variant_code;
+                $orderProduct['stock'] = $item->productvariant->stock;
+                $orderProduct['weight'] = $item->productvariant->weight;
+                $orderProduct['price'] = $item->productvariant->price;
+            }
 
             // insert data orderProduct ke dalam table order product
             $orderProducts = OrderProduct::firstOrCreate($orderProduct);
@@ -610,10 +610,10 @@ class OrderController extends Controller
         // dd($order);
         if ($order->order_status === 'belum bayar') {
             // dd(1);
-            return redirect()->route('payment.order.bind', $id);
+            return redirect()->route('payment.order.bind', ['id' => Crypt::encrypt($id)]);
         } else {
             // dd($order->id);
-            return redirect()->route('order.detail.bind', $id);
+            return redirect()->route('order.detail.bind', ['id' => Crypt::encrypt($id)]);
         }
     }
 
@@ -882,10 +882,10 @@ class OrderController extends Controller
         // dd(Order::orderBy('invoice_no','desc')->whereNotNull('invoice_no')->pluck('invoice_no')->first());
 
 
-        if (Order::whereNotNull('invoice_no')->exists()) {
+        if (Order::withTrashed()->whereNotNull('invoice_no')->exists()) {
             // dd(Order::where('invoice_no','like','%0822%')->max('invoice_no'));
             // $lastInvNo = Order::orderBy('invoice_no', 'desc')->whereNotNull('invoice_no')->pluck('invoice_no')->first();
-            $lastInvNo = Order::where('invoice_no', 'like', '%' . date('my') . '%')->max('invoice_no');
+            $lastInvNo = Order::withTrashed()->where('invoice_no', 'like', '%' . date('my') . '%')->max('invoice_no');
             // dd($lastInvNo);
             // if(is_null($lastInvNo)){
             //     $noInv = 'SPL/INVC/KLIKSPL/000001/'.date('my');
@@ -1036,6 +1036,7 @@ class OrderController extends Controller
 
     public function paymentOrderBind($id)
     {
+        $id = Crypt::decrypt($id);
         $this->expiredCheck();
 
         $order = Order::where('id', $id)->with(['orderitem', 'orderstatusdetail'])->first();
@@ -1081,6 +1082,7 @@ class OrderController extends Controller
 
     public function orderDetailBind($id)
     {
+        $id = Crypt::decrypt($id);
         $this->expiredCheck();
 
         // dd($order->id);
@@ -1307,5 +1309,29 @@ class OrderController extends Controller
             "product" => $product,
             "stock" => $stock,
         ]);
+    }
+
+    public function orderCancellationRequest(Request $request, Order $order)
+    {
+        // dd($order);
+        // dd($request->order_cancellation_request);
+        $order->order_status = 'pengajuan pembatalan';
+        $order->save();
+        if ($order->save()) {
+            foreach ($order->orderitem as $item) {
+                $item->order_item_status = 'pengajuan pembatalan';
+                $item->save();
+            }
+            // $order->delete();
+            $orderStatus = OrderStatusDetail::create(
+                [
+                    'order_id' => $order->id,
+                    'status' => 'pengajuan pembatalan',
+                    'status_detail' => 'Proses pengajuan pembatalan pesanan. Alasan pembatalan: ' . $request->order_cancellation_request,
+                    'status_date' => date('Y-m-d H:i:s')
+                ]
+            );
+            return redirect()->route('order.index')->with('success', 'Berhasil mengajukan pembatalan pesanan.');
+        }
     }
 }

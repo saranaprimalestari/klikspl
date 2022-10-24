@@ -176,6 +176,7 @@ Route::name('profile.update.email.fill.new')->get('/user/account/update-email-fi
 //order
 // delete order
 Route::name('order.delete')->post('/order-delete/{order}', [OrderController::class, 'deleteOrder'])->middleware('auth');
+Route::name('order.cancellation.request')->post('/order-cancellation-request/{order}', [OrderController::class, 'orderCancellationRequest'])->middleware('auth');
 // download order proof of payment
 Route::name('order.detail.proof.of.payment.download')->post('/order/detail/proof-pf-payment-download', [OrderController::class, 'downloadProofOfPayment'])->middleware('auth');
 // order proof of payment

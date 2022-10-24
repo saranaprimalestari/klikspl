@@ -70,17 +70,21 @@ class AdminMerkController extends Controller
                 'slug.regex' => 'Nama Merk tidak boleh mengandung angka, simbol!, atau karakter khusus',
             ]
         );
-
-        $folderPathSave = 'img/merk/';
-        $imageName = date('Ymd') . '-' . $request->slug . '.' . $request->file('image')->extension();
-        $upload  = $request->file('image')->move($folderPathSave, $imageName);
-
+        
         $merk = ProductMerk::create([
             'name' => $validatedData['name'],
             'slug' => $validatedData['slug'],
-            'image' => $folderPathSave . $imageName,
         ]);
+        
+        if(!is_null($request->file('image'))){
+            $folderPathSave = 'img/merk/';
+    
+            $imageName = date('Ymd') . '-' . $request->slug . '.' . $request->file('image')->extension();
+            $upload  = $request->file('image')->move($folderPathSave, $imageName);
 
+            $merk->image = $folderPathSave . $imageName;
+            $merk->save();
+        }
         if ($merk) {
             return redirect()->back()->with('addSuccess', 'Sukses menambahkan Merk');
         } else {

@@ -18,7 +18,6 @@
                 <div class="col-6 my-2 p-0 px-1">
                     <a class="text-decoration-none text-dark"
                         href="/products?{{ $page === 'Kategori' ? 'category' : ($page === 'Merk' ? 'merk' : '') }}={{ $query->slug }}">
-
                         <div class="card h-100 product-card">
                             @if ($page == 'Kategori')
                                 {{-- <img src="{{ $imgSource }}" class="card-img-top" alt="Gambar gagal dimuat"> --}}
@@ -41,12 +40,18 @@
                                         alt="https://source.unsplash.com/500x500?fire-extinguisher">
                                 @endif
                             @elseif($page == 'Merk')
-                                <img src="/{{ $query->image }}" class="card-img-top px-3 py-5" alt="Gambar gagal dimuat">
+                                @if (!empty($query->image))
+                                    <img src="/{{ $query->image }}" class="card-img-top px-3 py-5"
+                                        alt="Gambar gagal dimuat">
+                                @else
+                                    <img src="{{ asset('/assets/pict.png') }}" class="card-img-top"
+                                        alt="Gambar gagal dimuat">
+                                @endif
                             @endif
                             <div class="card-body d-flex justify-content-center align-items-center">
                                 {{-- <i class="fas fa-boxes"></i>&nbsp; --}}
 
-                                <p class="card-title  fw-bold">
+                                <p class="card-title fw-bold">
                                     {{ $query->name }}
                                 </p>
                                 <p class="card-text"></p>

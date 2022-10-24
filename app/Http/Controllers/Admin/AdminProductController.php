@@ -70,6 +70,10 @@ class AdminProductController extends Controller
      */
     public function store(Request $request)
     {
+        // foreach ($request->sender as $key => $sender) {
+        //     echo ($sender);
+        //     echo "<br>";
+        // }
         // dd($request);
         // dd(gettype($request->variant_stock));
         // for ($i = 0; $i < count($request->variant_name); $i++) {
@@ -113,6 +117,10 @@ class AdminProductController extends Controller
             echo '</br>';
         }
 
+        if ($request->company_id !=  auth()->guard('adminMiddle')->user()->company_id) {
+            return redirect()->back()->with(['addProductFailed' => 'Id perusahaan anda tidak match! Coba relogin kembali']);
+        }
+
         // dd($request);
         $validatedData = $request->validate(
             [
@@ -136,6 +144,7 @@ class AdminProductController extends Controller
                 'stock_notification' => 'required',
                 'promo_id' => 'required',
                 'sender' => 'required',
+                'company_id' => 'required',
             ],
             [
                 'name.required' => 'Nama produk harus diisi!',
@@ -158,6 +167,7 @@ class AdminProductController extends Controller
                 'height.regex' => 'Tinggi produk harus berupa angka',
                 'price.required' => 'Harga produk harus diisi',
                 'sender.required' => 'Pilih setidaknya satu alamat pengiriman!',
+                'company_id.required' => 'Id Perusahaan harus diisi!',
             ]
         );
 
@@ -258,13 +268,20 @@ class AdminProductController extends Controller
             $product->save();
         } else {
             // insert product origin
-            for ($i = 0; $i < count($request->sender); $i++) {
+            foreach ($request->sender as $key => $sender) {
                 $productOrigin = ProductOrigin::create([
                     'product_id' => $product->id,
-                    'city_ids' => $request->city_ids_single[$i],
-                    'sender_address_id' => $request->sender[$i],
+                    'city_ids' => $request->city_ids_single[$key],
+                    'sender_address_id' => $sender,
                 ]);
             }
+            // for ($i = 0; $i < count($request->sender); $i++) {
+            //     $productOrigin = ProductOrigin::create([
+            //         'product_id' => $product->id,
+            //         'city_ids' => $request->city_ids_single[$i],
+            //         'sender_address_id' => $request->sender[$i],
+            //     ]);
+            // }
         }
 
         $admin = Admin::find($request->admin_id);
@@ -901,7 +918,7 @@ class AdminProductController extends Controller
             abort(403);
         }
     }
-    
+
     public function isWhLogAndAdministrator()
     {
         if (auth()->guard('adminMiddle')->user()->admin_type != 2  && auth()->guard('adminMiddle')->user()->admin_type != 4) {
@@ -909,6 +926,4 @@ class AdminProductController extends Controller
             abort(403);
         }
     }
-
-
 }

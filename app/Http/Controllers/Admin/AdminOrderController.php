@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use Carbon\Carbon;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\CartItem;
 use App\Models\OrderItem;
+use App\Models\OrderProduct;
 use Illuminate\Http\Request;
+use App\Models\ProductVariant;
 use App\Models\OrderStatusDetail;
 use App\Http\Controllers\Controller;
 
@@ -301,13 +304,157 @@ class AdminOrderController extends Controller
 
     public function confirmPayment(Request $request)
     {
+        $this->expiredCheck();
+
+        $validatedData = $request->validate(
+            [
+                'proof_of_payment' => 'image|file||mimes:jpeg,png,jpg|max:2048'
+            ],
+            [
+                'proof_of_payment.image' => 'Bukti Pembayaran harus berupa gambar',
+                'proof_of_payment.file' => 'Bukti Pembayaran harus berupa file',
+                'proof_of_payment.mimes' => 'Bukti Pembayaran harus memiliki format file .jpg, .jpeg, .png',
+                'proof_of_payment.max' => 'Bukti Pembayaran berukuran maximal 2MB',
+            ]
+        );
         // dd($request);
         // dd($request->session()->get('status'));
+        $order = Order::where('id', '=', $request->order_id)->first();
+
+        $stockVariant = 0;
+        $soldVariant = 0;
+        foreach ($order->orderitem as $orderitem) {
+            $product = Product::where('id', '=', $orderitem->product_id)->first();
+            if (!empty($orderitem->product_variant_id)) {
+                $productVariantId = ProductVariant::where('id', '=', $orderitem->product_variant_id)->first();
+                // echo "product variant stock before : " .$productVariantId->stock;
+                // echo "<br>";
+                // echo "product variant sold before : " .$productVariantId->sold;
+                // echo "<br>";
+                $productVariantId->stock = (int)$productVariantId->stock - (int)$orderitem->quantity;
+                $productVariantId->sold = (int)$orderitem->quantity + (int)$productVariantId->sold;
+                // echo "product variant stock : " .$productVariantId->stock;
+                // echo "<br>";
+                // echo "product variant sold : " .$productVariantId->sold;
+                // echo "<br>";
+                // echo "order item qty : " .$orderitem->quantity;
+                // echo "<br>";
+                $stockVariant += $productVariantId->stock;
+                $soldVariant += $productVariantId->sold;
+                $productVariantId->save();
+
+                // $product->stock = $stockVariant;
+                // $product->sold = $soldVariant;
+                // $product->save();
+            } else {
+                $product->stock = (int)$product->stock - (int)$orderitem->quantity;
+                $product->sold = (int)$orderitem->quantity + (int)$product->sold;
+                // echo "product stock : " . $product->stock;
+                // echo "<br>";
+                // echo "product sold : " . $product->sold;
+                // echo "<br>";
+                // echo "order item qty : " . $orderitem->quantity;
+                // echo "<br>";
+                $product->save();
+            }
+            // echo "product id : " . $product->id;
+            // echo "<br>";
+            // echo "not empty : " . !empty($product->productvariant);
+            // echo "<br>";
+            // echo "not null : " . !is_null($product->productvariant);
+            // echo "<br>";
+            // echo "count : " . count($product->productvariant);
+            // echo "<br>";
+            if (count($product->productvariant) > 0) {
+                // echo ('ada product variant');
+                // echo "<br>";
+                $product->stock = $product->productvariant->sum('stock');
+                $product->sold = $product->productvariant->sum('sold');
+                $product->save();
+            }
+            // dd($request);
+        }
+
+        // dd(Order::whereNotNull('invoice_no')->exists());
+        // dd(Order::orderBy('invoice_no','desc')->whereNotNull('invoice_no')->pluck('invoice_no')->first());
+
+
+        if (Order::withTrashed()->whereNotNull('invoice_no')->exists()) {
+            // dd(Order::where('invoice_no','like','%0822%')->max('invoice_no'));
+            // $lastInvNo = Order::orderBy('invoice_no', 'desc')->whereNotNull('invoice_no')->pluck('invoice_no')->first();
+            $lastInvNo = Order::withTrashed()->where('invoice_no', 'like', '%' . date('my') . '%')->max('invoice_no');
+            // dd($lastInvNo);
+            // if(is_null($lastInvNo)){
+            //     $noInv = 'SPL/INVC/KLIKSPL/000001/'.date('my');
+            // }else{
+            // echo $lastInvNo;
+            // echo "<br><br>";
+            $exp = explode('/', $lastInvNo);
+            // dd($exp);
+            // echo($exp[4]);
+            // echo "<br><br>";
+            if (!is_null($lastInvNo)) {
+                if (($exp[4] != date('my'))) {
+                    $noInv = 'SPL/INVC/KLIKSPL/000001/' . date('my');
+                } else {
+                    // echo $exp[3];
+                    // echo "<br><br>";
+                    $seqTemp = ltrim($exp[3], '0');
+                    // echo $seqTemp;
+                    // echo "<br><br>";
+                    $seqTemp = $seqTemp + 1;
+                    $seq = sprintf("%'.06d", $seqTemp);
+                    // echo $seq;
+                    // echo "<br><br>";
+                    $noInv = implode("/", array($exp[0], $exp[1], $exp[2], $seq, date('my')));
+                    // echo $noInv;
+                    // echo "<br><br>";
+                }
+            } else {
+                $noInv = 'SPL/INVC/KLIKSPL/000001/' . date('my');
+            }
+            // }
+        } else {
+            $noInv = 'SPL/INVC/KLIKSPL/000001/' . date('my');
+        }
+        //commentes
+        // dd($request->file('proof_of_payment')->guessExtension());
+        if(!is_null($request->file('proof_of_payment')) || $request->file('proof_of_payment')){
+            $folderPathSave = 'user/' . auth()->user()->username . '/order/' . $request->order_id . '/proof-of-payment';
+    
+            // echo $folderPathSave;
+            // echo "<br><br>";
+            // echo $request->order_id;
+    
+            if ($request->file('proof_of_payment')) {
+                // echo 'if req proof';
+                $validatedData['proof_of_payment'] = $request->file('proof_of_payment')->store($folderPathSave);
+                // echo $validatedData['proof_of_payment'];
+            }
+            $order->proof_of_payment = $validatedData['proof_of_payment'];
+        }
+        $order->invoice_no = $noInv;
+        $order->order_status = 'pesanan dibayarkan';
+        $orderSave = $order->save();
+
+        if ($orderSave) {
+            foreach ($order->orderitem as $item) {
+                $item->order_item_status = 'pesanan dibayarkan';
+                $item->save();
+            }
+        }
+        $orderStatus = OrderStatusDetail::create(
+            [
+                'order_id' => $order->id,
+                'status' => 'pesanan dibayarkan',
+                'status_detail' => 'Menunggu Verifikasi Pembayaran oleh Admin KLIKSPL',
+                'status_date' => date('Y-m-d H:i:s')
+            ]
+        );
         $status = str_replace(" ", "+", $request->session()->get('status'));
-        $this->expiredCheck();
         // dd($request);
 
-        $order = Order::where('id', '=', $request->order_id)->first();
+        // $order = Order::where('id', '=', $request->order_id)->first();
 
         $order->order_status = 'pembayaran dikonfirmasi';
         $order->save();

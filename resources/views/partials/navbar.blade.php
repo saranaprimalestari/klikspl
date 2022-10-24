@@ -405,7 +405,9 @@
                                                             title="{{ is_null($order->invoice_no) ? 'No.Invoice belum terbit' : $order->invoice_no }}">
                                                             {{ is_null($order->invoice_no) ? 'No.Invoice belum terbit' : $order->invoice_no }}
                                                         </div>
-                                                        <div class="col-5 ps-0 text-end text-truncate">
+                                                        <div class="col-5 ps-0 text-end text-truncate"  data-bs-toggle="tooltip"
+                                                        data-bs-placement="bottom"
+                                                        title="{{ $order->order_status }}">
                                                             @if ($order->order_status == 'pembayaran ditolak')
                                                                 <span class="badge bg-danger">
                                                                     {{ $order->order_status }}

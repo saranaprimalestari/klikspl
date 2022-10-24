@@ -25,6 +25,7 @@
     </div>
     <form action="{{ route('adminproduct.store') }}" method="post" enctype="multipart/form-data">
         @csrf
+        <input type="hidden" name="company_id" value="{{ auth()->guard('adminMiddle')->user()->company_id }}">
         <div class="container p-0 mb-4">
             <div class="card product-image-card border-0 border-radius-1-5rem fs-14">
                 <div class="card-header bg-transparent p-4 border-0">
