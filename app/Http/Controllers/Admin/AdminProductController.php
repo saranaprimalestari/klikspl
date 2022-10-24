@@ -37,7 +37,7 @@ class AdminProductController extends Controller
         $currentPage = last($currentURL);
         Session::put('currentPage', $currentPage);
 
-        $product = Product::latest()->get();
+        $product = Product::latest()->where('company_id', '=', auth()->guard('adminMiddle')->user()->company_id)->get();
         return view('admin.product.index', [
             'title' => 'Produk',
             'active' => 'adminproduct',

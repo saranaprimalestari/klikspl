@@ -332,8 +332,8 @@
             </div>
         </div>
 
-        <div class="container product-activation-container p-0 mb-4">
-            <div class="card product-activation-card border-0 border-radius-1-5rem fs-14">
+        <div class="container promo-product-container p-0 mb-4">
+            <div class="card promo-product-card border-0 border-radius-1-5rem fs-14">
                 <div class="card-header bg-transparent p-4 border-0">
                     <div class="header">
                         <h5 class="m-0">Produk Promo</h5>
@@ -350,26 +350,26 @@
                         <div class="col-sm-9 py-1">
                             <div class="mb-2">
                                 <select id="promoVoucherProducts"
-                                    class="form-control shadow-none promo-voucher-product form-select shadow-none @error('promo_type_id') is-invalid @enderror"
-                                    name="product_promos[]" 
-                                    {{-- multiple="multiple"  --}}
-                                    required>
+                                    class="form-control shadow-none promo-voucher-product form-select shadow-none @error('product_promos') is-invalid @enderror"
+                                    name="product_promos[]" {{-- multiple="multiple"  --}} required>
                                     {{-- <option value="">Pilih produk</option> --}}
                                     @foreach ($products as $product)
                                         <option value="{{ $product->id }}">
                                             {{ $product->name }}</option>
                                     @endforeach
                                 </select>
-                                @error('promo_type_id')
+                                @error('product_promos')
                                     <div class="invalid-feedback">
                                         {{ $message }}
                                     </div>
                                 @enderror
                             </div>
-                            <input class="form-check-input" type="checkbox" value="all"
-                                id="chechkbox_product_promos" name="all_product_promos">
-                            <label class="form-check-label" for="chechkbox_product_promos">Pilih
-                                semua</label>
+                            <div class="check_product_input d-none">
+                                <input class="form-check-input" type="checkbox" value="all"
+                                    id="chechkbox_product_promos" name="all_product_promos">
+                                <label class="form-check-label" for="chechkbox_product_promos">Pilih
+                                    semua</label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -520,6 +520,28 @@
         });
 
         $(document).ready(function() {
+            $('select[name="promo_type_id"]').on('change', function() {
+                console.log('asdasd');
+                selectedPromoTypeId = $('select[name="promo_type_id"]').find(":selected").val();
+                if (selectedPromoTypeId == 3 || selectedPromoTypeId == 4) {
+                    console.log($('select[name="promo_type_id"]').find(":selected").val());
+                    $('#chechkbox_product_promos').prop("checked", true);
+                    // $('#chechkbox_product_promos').prop("disabled", true);
+                    $('.promo-voucher-product').attr("disabled", true);
+                    if (!$(".promo-product-container").hasClass("d-none")) {
+                        $(".promo-product-container").addClass("d-none");
+                    }
+                } else {
+                    $('#chechkbox_product_promos').prop("checked", false);
+                    // $('#chechkbox_product_promos').prop("disabled", false);
+                    $('.promo-voucher-product').attr("disabled", false);
+                    if ($(".promo-product-container").hasClass("d-none")) {
+                        $(".promo-product-container").removeClass("d-none");
+                    }
+                }
+            });
+
+
             function promoCodeCheck(csrfToken, codeCheck) {
                 $.ajax({
                     url: "{{ url('/administrator/promovoucher/promocodecheck') }}",
@@ -567,12 +589,12 @@
                 });
             }
 
-            $(document).on('change','[name="all_product_promos"]',function(){
+            $(document).on('change', '[name="all_product_promos"]', function() {
                 if ($(this).prop("checked") == true) {
                     $('.promo-voucher-product').attr("disabled", true);
                     $('.promo-voucher-product').val("");
                     $('.promo-voucher-product').trigger("change");
-                }else{
+                } else {
                     $('.promo-voucher-product').removeAttr("disabled");
                 }
             });

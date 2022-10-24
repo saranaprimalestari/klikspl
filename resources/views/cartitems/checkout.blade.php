@@ -29,15 +29,17 @@
             </div>
 
             <div class="col-12">
-                @if (session()->has('successChangeAddress'))
+                @if (session()->has('successChangeAddress') or session()->has('success'))
                     <div class="alert alert-success alert-dismissible fade show alert-success-cart" role="alert">
                         {{ session('successChangeAddress') }}
+                        {{ session('success') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-                @if (session()->has('failedChangeAddress'))
+                @if (session()->has('failedChangeAddress') or session()->has('failed'))
                     <div class="alert alert-danger alert-dismissible fade show alert-success-cart" role="alert">
                         {{ session('failedChangeAddress') }}
+                        {{ session('failed') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
@@ -454,7 +456,7 @@
                                         {{-- <br> - -}}
                                         {{-- @foreach ($item->product->productpromo as $productPromo) --}}
                                         {{-- @foreach ($productPromo as $productPromo) --}}
-                                        @if ($items->sum('subtotal') > $productPromo[0]->promo->min_transaction &&
+                                        @if ($items->sum('subtotal') >= $productPromo[0]->promo->min_transaction &&
                                             $productPromo[0]->promo->is_active == 1)
                                             {{-- prod id on promo : {{ $productPromo[0]->product_id }}
                                                 <br>
@@ -463,7 +465,14 @@
                                                 promo id : {{ $productPromo[0]->promo_id }}
                                                 <br> --}}
                                             <div
-                                                class="card mb-3 border-radius-075rem box-shadow promo-card-checkout-modal product-promo-{{ $productPromo[0]->id }} promo-{{ $productPromo[0]->promo->id }}">
+                                                class="card mb-3 border-radius-075rem box-shadow promo-card-checkout-modal product-promo-{{ $productPromo[0]->id }} promo-{{ $productPromo[0]->promo->id }} 
+                                                @foreach ($productPromo[0]->promo->userPromoUse as $userPromoUse)
+                                                    @if ($userPromoUse->user_id == auth()->user()->id)
+                                                        @if($userPromoUse->promo_use >= $productPromo[0]->promo->quota)
+                                                            {{ 'd-none exceeding-the-quota-limit' }}
+                                                        @endif
+                                                    @endif
+                                                @endforeach">
                                                 <div class="card-body p-4">
                                                     <div class="row align-items-center">
                                                         <div class="col-md-9 col-12">
@@ -492,6 +501,20 @@
                                                                 <div class="col-md-10 col-12 my-2 ps-md-0">
                                                                     <p class="m-0 fw-600 pb-1 fs-14">
                                                                         {{ $productPromo[0]->promo->name }}
+                                                                    </p>
+                                                                    <p class="m-0 fs-14">
+                                                                        @if (count($productPromo[0]->promo->userPromoUse))
+                                                                            @foreach ($productPromo[0]->promo->userPromoUse as $userPromoUse)
+                                                                                @if ($userPromoUse->user_id == auth()->user()->id)
+                                                                                    @if($userPromoUse->promo_use <= $productPromo[0]->promo->quota)
+                                                                                        {{ $productPromo[0]->promo->quota - $userPromoUse->promo_use }}
+                                                                                    @endif
+                                                                                @endif
+                                                                            @endforeach
+                                                                        @else
+                                                                            {{ $productPromo[0]->promo->quota }}
+                                                                        @endif
+                                                                        Voucher
                                                                     </p>
                                                                     <p class="m-0 fs-14">
                                                                         Min, transaksi
@@ -683,7 +706,8 @@
                                                 <div class="col-7 fs-12 discount-used-text">
                                                 </div>
                                                 <div class="col-5 fs-12 m-0 text-end">
-                                                    <div class="text-red-klikspl fw-600 discount-used-cancel-btn">Batalkan</div>
+                                                    <div class="text-red-klikspl fw-600 discount-used-cancel-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Batalkan penggunaan promo"
+                                                    >Batalkan</div>
                                                 </div>
                                             </div>
 
@@ -1030,22 +1054,35 @@
             </div>
         </div>
     </div>
-    <div class="promo-lists">
+    <div class="promo-lists d-none">
+        {{-- @foreach ($items as $item) --}}
         @foreach ($productPromos as $productPromo)
-            {{-- id : {{ $productPromo[0]->promo->id }}
-            <br>
-            subtotal : {{ $items->sum('subtotal') }}
-            <br>
-            min transaksi : {{ $productPromo[0]->promo->min_transaction }}
-            <br>
-            is active : {{ $productPromo[0]->promo->is_active }}
-            <br> --}}
-            @if ($items->sum('subtotal') > $productPromo[0]->promo->min_transaction &&
+            {{-- product id : {{ $item->product->id }} --}}
+            {{-- <br> - -}}
+            {{-- @foreach ($item->product->productpromo as $productPromo) --}}
+            {{-- @foreach ($productPromo as $productPromo) --}}
+            @if ($items->sum('subtotal') >= $productPromo[0]->promo->min_transaction &&
                 $productPromo[0]->promo->is_active == 1)
-                {{-- promo active id : {{ $productPromo[0]->promo->id }}
-                <br> --}}
+                {{-- prod id on promo : {{ $productPromo[0]->product_id }}
+                    <br>
+                    prod promo id : {{ $productPromo[0]->id }}
+                    <br>
+                    promo id : {{ $productPromo[0]->promo_id }}
+                    <br> --}}
+                @if (count($productPromo[0]->promo->userPromoUse)>0)
+                    
+                @else
+                    
+                @endif
+               
                 <div
-                    class="card mb-3 border-radius-075rem box-shadow promo-card-checkout-modal product-promo-{{ $productPromo[0]->id }} promo-{{ $productPromo[0]->promo->id }}">
+                    class="card mb-3 border-radius-075rem box-shadow promo-card-checkout-modal product-promo-{{ $productPromo[0]->id }} promo-{{ $productPromo[0]->promo->id }}  @foreach ($productPromo[0]->promo->userPromoUse as $userPromoUse)
+                    @if ($userPromoUse->user_id == auth()->user()->id)
+                        @if($userPromoUse->promo_use >= $productPromo[0]->promo->quota)
+                            {{ 'd-none exceeding-the-quota-limit' }}
+                        @endif
+                    @endif
+                @endforeach">
                     <div class="card-body p-4">
                         <div class="row align-items-center">
                             <div class="col-md-9 col-12">
@@ -1054,22 +1091,40 @@
                                         @if (!empty($productPromo[0]->promo->image))
                                             @if (File::exists(public_path($productPromo[0]->promo->image)))
                                                 <img src="{{ asset($productPromo[0]->promo->image) }}"
-                                                    class="img-fluid w-100 border-radius-075rem" alt="...">
+                                                    class="img-fluid w-100 border-radius-075rem"
+                                                    alt="...">
                                             @elseif(Storage::exists($productPromo[0]->promo->image))
                                                 <img src="{{ asset('/storage/' . $productPromo[0]->promo->image) }}"
-                                                    class="img-fluid w-100 border-radius-075rem" alt="...">
+                                                    class="img-fluid w-100 border-radius-075rem"
+                                                    alt="...">
                                             @else
                                                 <img src="{{ asset('assets/voucher.png') }}"
-                                                    class="img-fluid w-100 border-radius-075rem" alt="...">
+                                                    class="img-fluid w-100 border-radius-075rem"
+                                                    alt="...">
                                             @endif
                                         @else
                                             <img src="{{ asset('assets/voucher.png') }}"
-                                                class="img-fluid w-100 border-radius-075rem" alt="...">
+                                                class="img-fluid w-100 border-radius-075rem"
+                                                alt="...">
                                         @endif
                                     </div>
                                     <div class="col-md-10 col-12 my-2 ps-md-0">
                                         <p class="m-0 fw-600 pb-1 fs-14">
                                             {{ $productPromo[0]->promo->name }}
+                                        </p>
+                                        <p class="m-0 fs-14">
+                                            @if (count($productPromo[0]->promo->userPromoUse))
+                                                @foreach ($productPromo[0]->promo->userPromoUse as $userPromoUse)
+                                                    @if ($userPromoUse->user_id == auth()->user()->id)
+                                                        @if($userPromoUse->promo_use <= $productPromo[0]->promo->quota)
+                                                            {{ $productPromo[0]->promo->quota - $userPromoUse->promo_use }}
+                                                        @endif
+                                                    @endif
+                                                @endforeach
+                                            @else
+                                                {{ $productPromo[0]->promo->quota }}
+                                            @endif
+                                            Voucher
                                         </p>
                                         <p class="m-0 fs-14">
                                             Min, transaksi
@@ -1103,7 +1158,8 @@
 
                                         </span>
                                         <div>
-                                            <a href="{{ route('promo.show', $productPromo[0]->promo) }}" target="_blank"
+                                            <a href="{{ route('promo.show', $productPromo[0]->promo) }}"
+                                                target="_blank"
                                                 class="text-decoration-none fs-12 text-danger">S&K</a>
                                         </div>
                                     </div>
@@ -1112,6 +1168,7 @@
                             <div class="col-md-3 col-12 text-end">
                                 <button
                                     class="btn btn-outline-danger fs-12 promo-use-btn promo-btn-{{ $productPromo[0]->promo->id }}"
+                                    id="{{ $productPromo[0]->promo->id }}"
                                     id="{{ $productPromo[0]->promo->id }}">
                                     Pakai Promo
                                 </button>
@@ -1120,6 +1177,7 @@
                     </div>
                 </div>
             @endif
+            {{-- @endforeach --}}
         @endforeach
     </div>
     <script>
@@ -1206,26 +1264,23 @@
                         isInArray = jQuery.inArray(promos[key]['id'], paymentMethodArr);
                         console.log('* is in arry : ' + isInArray);
                         if (isInArray != -1) {
-                            $('.promo-' + promos[key]['id']).hasClass("d-none");
-                            $('.promo-' + promos[key]['id']).removeClass("d-none");
-                            $('.promo-btn-' + promos[key]['id']).prop("disabled", false);
-                            // if ($items->sum('subtotal') > $productPromo[0]->promo->min_transaction &&
-                            //                     $productPromo[0]->promo->is_active == 1)
-                            console.log('** promo key-' + key + ' id-' + promos[key]['id']);
+                            if (!$('.promo-' + promos[key]['id']).hasClass("exceeding-the-quota-limit")) {
+                                $('.promo-' + promos[key]['id']).hasClass("d-none");
+                                $('.promo-' + promos[key]['id']).removeClass("d-none");
+                                $('.promo-btn-' + promos[key]['id']).prop("disabled", false);
+                                console.log('** promo key-' + key + ' id-' + promos[key]['id']);
+                            }
                             
                         } else {
-                            console.log('++ cannot be used promo key-' + key + ' id-' + promos[key]['id']);
-                            console.log('++ promo btn'+ promos[key]['id']+' : '+$('.promo-btn-' + promos[key]['id']).attr('id'));
-                            $('.promo-btn-' + promos[key]['id']).prop("disabled", true);
-                            $('.promo-' + promos[key]['id']).addClass("d-none");
-    
+                            if (!$('.promo-' + promos[key]['id']).hasClass("exceeding-the-quota-limit")) {
+                                console.log('++ cannot be used promo key-' + key + ' id-' + promos[key]['id']);
+                                console.log('++ promo btn'+ promos[key]['id']+' : '+$('.promo-btn-' + promos[key]['id']).attr('id'));
+                                $('.promo-btn-' + promos[key]['id']).prop("disabled", true);
+                                $('.promo-' + promos[key]['id']).addClass("d-none");
+                            }
                         }
                     });
                 });
-            });
-
-            $.each(productPromos, function(keys, values) {
-                $('.promo-lists').append('');
             });
 
             $('body').on('click', '.promo-use-btn', function(e) {
@@ -1258,7 +1313,7 @@
                             discountName = productPromo['name'];    
                             $('.discount-used-row').hasClass('d-none') ? $('.discount-used-row').removeClass('d-none') : '';
                             $.each(items, function(idItem, item){
-                                $('.subtotal-cart-items-'+item['id']).text(formatRupiah((item['subtotal']),'Rp'));
+                                $('.subtotal-cart-items-'+item['id']).text(formatRupiah(Math.round(item['subtotal']),'Rp'));
                                 
                                 $('.subtotal-cart-items-'+item['id']).hasClass('text-decoration-line-through') ? $('.subtotal-cart-items-'+item['id']).removeClass('text-decoration-line-through') : '' ; 
                             
@@ -1271,8 +1326,8 @@
                                 if (promoTypeId == 1 || promoTypeId == 2) {
                                     if (promoTypeId == 1) {
                                         if (promoProductId == item['product_id']) {
-                                            discount = (item['subtotal']*productPromo['discount']/100);
-                                            discountedPrice = item['subtotal'] - (item['subtotal']*productPromo['discount']/100);
+                                            discount = Math.round(item['subtotal']*productPromo['discount']/100);
+                                            discountedPrice = item['subtotal'] - Math.round(item['subtotal']*productPromo['discount']/100);
                                             console.log('subtotal : '+ discountedPrice); 
                                             $('.subtotal-cart-items-'+item['id']).removeClass('text-danger');
                                             $('.subtotal-cart-items-'+item['id']).addClass('text-secondary');
@@ -1314,7 +1369,7 @@
                                 if (promoTypeId == 3 || promoTypeId == 4) {
                                     console.log('promo type : ' + promoTypeId);
                                     if (promoTypeId == 3) {
-                                        discount = subtotalWithDiscount*productPromo['discount']/100;
+                                        discount = Math.round(subtotalWithDiscount*productPromo['discount']/100);
                                         subtotalWithDiscount -= discount;
                                         console.log('discount : '+ discount);
                                         console.log('subtotal with discount  : '+ subtotalWithDiscount);
@@ -1350,6 +1405,22 @@
 
                 $('#promoModal').modal('hide');
                 $('#paymentModal').modal('show');
+            });
+
+            $('body').on('click','.discount-used-cancel-btn', function(){
+                var subtotalProductPrice = 0;
+                $.each(items, function(idItem, item){
+                    subtotalProductPrice += item['subtotal'];
+                });
+
+                $('input[name="promo_use_id"]').val('');
+                $('.discount-used-row').hasClass('d-none') ? '': $('.discount-used-row').addClass('d-none');
+                $('.discount-used-text').text('');
+                $('.discount-val').text('');
+                $('.checkout-payment-total-all-val').text(formatRupiah(subtotalProductPrice + parseInt(price), "Rp"));
+                $('.checkout-total-all-val').text(formatRupiah(subtotalProductPrice + parseInt(price), "Rp"));
+                $('.promo-use-btn').text('Pakai Promo');
+                $('.promo-use-btn').prop('disabled',false);
             });
 
             $('body').on('change', 'select[name="sender_city_id"]', function(e) {
@@ -1515,23 +1586,6 @@
                 $('.show-promo-modal-button').attr('data-bs-target', '#promoModal');
 
             });
-            // $('#promoModal').on('show.bs.modal', function(e) {
-            //     var button = e.relatedTarget;
-            //     console.log(e.relatedTarget);
-            //     if ($(button).hasClass('show-promo-modal-button')) {
-            //         if ($('.paymentMethods').is(':checked')) {
-            //         }else{
-
-            //             // console.log($('input[name="courier-name-choosen"]').val());
-            //             // e.preventDefault();
-            //             // alert('Pilih metode pembayaran terlebih dahulu');
-            //             // $('#paymentModal').show();
-            //             // $('.courier-error-text').text('Pilih kurir pengirim terlebih dahulu');
-            //             // expand();
-
-            //         }
-            //     }
-            // });
 
             function expand() {
                 console.log($('.checkout-bill-form'));

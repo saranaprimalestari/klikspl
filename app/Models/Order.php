@@ -214,12 +214,20 @@ class Order extends Model
     {
         return $this->hasMany(ProductComment::class);
     }
+
     public function scopeUserId($query, $userId)
     {
         return $query->where('user_id', $userId);
     }
+    
     public function senderAddress()
     {
         return $this->belongsTo(SenderAddress::class, 'sender_address_id');
     }
+
+    public function UserPromoOrderUse()
+    {
+        return $this->hasMany(UserPromoOrderUse::class);
+    }
+    
 }

@@ -59,8 +59,7 @@
                             </div>
                             <div class="row mb-2">
                                 <div class="col-7 checkout-payment-weight-text">
-                                    Berat total: <span
-                                        class="total-weight-checkout">
+                                    Berat total: <span class="total-weight-checkout">
                                         {{ $weight }}
                                         kg</span>
                                 </div>
@@ -96,6 +95,37 @@
                                     KLIKSPL
                                 </div>
                             </div>
+                            @if (!empty($order->discount))
+                                <div class="row">
+                                    <div class="col-md-6 col-6">
+                                        Diskon Promo
+                                    </div>
+                                    <div class="col-md-6 col-6 text-end">
+                                        - Rp{{ price_format_rupiah($order->discount) }}
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-9 text-grey fs-12">
+                                        {{ $order->UserPromoOrderUse->first()->promo_name }}
+                                        ({{ $order->UserPromoOrderUse->first()->promo_type }})
+                                    </div>
+                                </div>
+                            @endif
+
+                            {{-- <div class="row mb-2">
+                                <div class="col-9 text-grey fs-12">
+                                    @if (empty($order->discount))
+                                        @foreach ($order->orderItem as $item)
+                                            @if (!empty($item->discount))
+                                                Diskon harga item :
+                                                {{ $item->orderproduct->name }}
+                                            @endif
+                                        @endforeach
+                                    @else
+                                        - Rp{{ price_format_rupiah($order->unique_code) }}
+                                    @endif
+                                </div>
+                            </div> --}}
 
                             <div class="my-3 border-bottom">
                             </div>
@@ -105,7 +135,7 @@
                                     Total yang harus dibayar
                                 </div>
                                 <div class="col-md-6 col-5 text-end text-danger fw-bold">
-                                    Rp{{ price_format_rupiah($order->courier_price + $order->total_price + $order->unique_code) }}
+                                    Rp{{ price_format_rupiah($order->courier_price + $order->total_price + $order->unique_code - $order->discount) }}
                                 </div>
                             </div>
                             <div class="col-7 text-grey fs-12 text-danger">
@@ -342,7 +372,8 @@
                                         <button type="button" class="btn btn-secondary fs-14"
                                             data-bs-dismiss="modal">Tutup</button>
                                         <input type="hidden" name="order_id" value="{{ $orders[0]->id }}">
-                                        <button type="submit" class="btn btn-danger shadow-none fs-14">Konfirmasi</button>
+                                        <button type="submit"
+                                            class="btn btn-danger shadow-none fs-14">Konfirmasi</button>
                                     </div>
                                 </form>
                             </div>
@@ -555,12 +586,22 @@
                                                     {{ $item->orderproduct->name }}
                                                 </div>
                                                 <div class="text-truncate order-items-product-variant text-grey">
-                                                    Varian: {{ isset($item->orderproduct->variant_name) ? $item->orderproduct->variant_name : 'Tidak ada varian' }} 
+                                                    Varian:
+                                                    {{ isset($item->orderproduct->variant_name) ? $item->orderproduct->variant_name : 'Tidak ada varian' }}
                                                 </div>
                                                 <div
                                                     class="text-truncate order-items-product-price-qty text-grey text-end text-md-start">
-                                                    {{ $item->quantity }} x
-                                                    Rp{{ price_format_rupiah($item->orderproduct->price) }}
+                                                    <span>
+                                                        {{ $item->quantity }} x
+                                                    </span>
+                                                    <span class="{{ (!empty($item->discount) ? 'text-decoration-line-through' : '') }}">
+                                                        Rp{{ price_format_rupiah($item->orderproduct->price) }}
+                                                    </span>
+                                                    <span>
+                                                        @if (!empty($item->discount))
+                                                            Rp{{ price_format_rupiah($item->orderproduct->price - $item->discount) }}
+                                                        @endif
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>

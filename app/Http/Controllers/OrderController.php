@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use App\Models\City;
 use App\Models\Order;
 use App\Models\Promo;
+use App\Models\Payment;
 use App\Models\Product;
 use App\Models\CartItem;
 use App\Models\Province;
@@ -14,6 +15,8 @@ use App\Models\OrderItem;
 use App\Models\UserAddress;
 use App\Models\OrderAddress;
 use App\Models\OrderProduct;
+use App\Models\ProductPromo;
+use App\Models\UserPromoUse;
 use Illuminate\Http\Request;
 use App\Models\ProductOrigin;
 use App\Models\SenderAddress;
@@ -22,8 +25,9 @@ use App\Models\ProductVariant;
 use App\Models\UserNotification;
 use App\Models\OrderProductImage;
 use App\Models\OrderStatusDetail;
-use Illuminate\Support\Facades\Crypt;
+use App\Models\UserPromoOrderUse;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Crypt;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 
@@ -93,6 +97,7 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request);
 
         $request->session()->put(['courier' => $request->courier]);
         $request->session()->put(['courier_package_type' => $request->courier_package_type]);
@@ -104,6 +109,40 @@ class OrderController extends Controller
         $request->session()->put(['checkout_payment_total_price' => $request->checkout_payment_total_price]);
         // dd(auth()->user());
         // dd(session()->all());
+
+        // dd($userPromoUse);
+        $discount = 0;
+        // $userPromoUse = null;
+
+        if (!is_null($request->promo_use_id)) {
+
+            $userPromoUse = UserPromoUse::firstOrCreate(
+                [
+                    'user_id' => auth()->user()->id,
+                    'promo_id' => $request->promo_use_id,
+                ]
+            );
+
+            $promo = Promo::find($request->promo_use_id);
+
+            if ((int)$request->checkout_total_prices >= (int)$promo->min_transaction) {
+                // dd($promo->min_transaction);
+                echo 'dapat diskon';
+            }
+            // dd($promo->min_transaction);
+            // $productPromoGroup = $productPromo->groupBy('promo_id');
+            // dd($productPromoGroup);
+
+            if ($userPromoUse->promo_use >= $promo->quota) {
+                return redirect()->back()->with('failed', 'Gagal menggunakan kode promo! Penggunaan kode promo melebihi batas quota yang ditentukan');
+            } else {
+                // $userPromoUse->promo_use +=1;
+                // $userPromoUse->save();
+                // dd($userPromoUse);
+            }
+        }
+        // dd($promo);
+
         // dd($request);
         // dd(session()->get('items'));
         $this->expiredCheck();
@@ -112,47 +151,54 @@ class OrderController extends Controller
         // echo $stockCheck;
         // dd($request); 
 
-        $req_cart = CartItem::where('id', '=', $request->cart_ids)->first();
+        // cek stock cart items
+        $req_cart = CartItem::whereIn('id', $request->cart_ids)->get();
         // dd($req_cart);
-        if ($req_cart) {
-
-            if ($req_cart->product_variant_id != 0) {
-                if ($req_cart->productvariant->stock == 0) {
-                    // dd($req_cart->productvariant->stock);
-                    // echo "prod var stock";
-                    // print_r($req_cart->productvariant->stock);
-                    // echo "</br></br>";
-                    // echo redirect()->route('cart.index')->with(['failed' => 'Stock produk saat ini sedang kosong, silakan pesan kembali jika stock product kembali ada']);
-                    return redirect()->route('cart.index')->with(['failed' => 'Stock produk saat ini sedang kosong, silakan pesan kembali jika stock product kembali ada']);
-                    // dd($id);
-                }
-            } else {
-                if ($req_cart->product->stock == 0) {
-                    // echo "prod stock";
-                    // print_r($req_cart->product->stock);
-                    // echo "</br></br>";
-                    return redirect()->route('cart.index')->with(['failed' => 'Stock produk saat ini sedang kosong, silakan pesan kembali jika stock product kembali ada']);
-                    // 
-                }
-            }
-        } elseif (!is_null($request->product_variant_id)) {
-            $product = Product::where('id', '=', $request->product_id)->first();
-            $prodVariant = ProductVariant::where('id', '=', $request->product_variant_id)->first();
-            if ($prodVariant) {
-                if ($prodVariant->stock == 0) {
-                    return redirect()->route('product.show', $product)->with(['failed' => 'Stock produk saat ini sedang kosong, silakan pesan kembali jika stock product kembali ada']);
+        foreach ($req_cart as $cart_item) {
+            if ($cart_item) {
+                if ($cart_item->product_variant_id != 0) {
+                    if ($cart_item->productvariant->stock == 0) {
+                        // dd($cart_item->productvariant->stock);
+                        // echo "prod var stock";
+                        // print_r($cart_item->productvariant->stock);
+                        // echo "</br></br>";
+                        // echo redirect()->route('cart.index')->with(['failed' => 'Stock produk saat ini sedang kosong, silakan pesan kembali jika stock product kembali ada']);
+                        return redirect()->route('cart.index')->with(['failed' => 'Stock produk saat ini sedang kosong, silakan pesan kembali jika stock product kembali ada']);
+                        // dd($id);
+                    }
+                } else {
+                    if ($cart_item->product->stock == 0) {
+                        // echo "prod stock";
+                        // print_r($req_cart->product->stock);
+                        // echo "</br></br>";
+                        return redirect()->route('cart.index')->with(['failed' => 'Stock produk saat ini sedang kosong, silakan pesan kembali jika stock product kembali ada']);
+                        // 
+                    }
                 }
             }
-        } elseif (!is_null($request->product_id)) {
-            $product = Product::where('id', '=', $request->product_id)->first();
-            if ($product) {
-                if ($product->stock) {
-                    return redirect()->route('product.show', $product)->with(['failed' => 'Stock produk saat ini sedang kosong, silakan pesan kembali jika stock product kembali ada']);
-                }
-            }
+            // } elseif (!is_null($request->product_variant_id)) {
+            //     $product = Product::where('id', '=', $request->product_id)->first();
+            //     $prodVariant = ProductVariant::where('id', '=', $request->product_variant_id)->first();
+            //     if ($prodVariant) {
+            //         if ($prodVariant->stock == 0) {
+            //             return redirect()->route('product.show', $product)->with(['failed' => 'Stock produk saat ini sedang kosong, silakan pesan kembali jika stock product kembali ada']);
+            //         }
+            //     }
+            // } elseif (!is_null($request->product_id)) {
+            //     $product = Product::where('id', '=', $request->product_id)->first();
+            //     if ($product) {
+            //         if ($product->stock) {
+            //             return redirect()->route('product.show', $product)->with(['failed' => 'Stock produk saat ini sedang kosong, silakan pesan kembali jika stock product kembali ada']);
+            //         }
+            //     }
+            // }
         }
         // dd($request);
+        // retrieve user address yang order
         $userAddress = UserAddress::where([['user_id', '=', $request->user_id], ['is_active', '=', '1']])->first();
+
+        // membuat alamat pengiriman untuk user di table orderAddress
+        // jika alamat user tidak ditemukan maka membuat alamat baru
         $orderAddress = OrderAddress::firstOrCreate(
             [
                 'user_id' => $userAddress->user_id,
@@ -165,6 +211,8 @@ class OrderController extends Controller
                 'telp_no' => $userAddress->telp_no,
             ]
         );
+
+        // inisiasi val. $orderAddressId dari $orderAddress diatas
         $orderAddressId = $orderAddress->id;
 
         // echo "Order Address<br> : ";
@@ -172,11 +220,13 @@ class OrderController extends Controller
         // echo "<br><br>";
 
         // $unique_code = mt_rand(000, 999);
+        // menambahkan kode unik ke pembayaran pesanan, estimasi jlh hari pengiriman, estimasi tanggal pengiriman sampai, dan batas pembayaran
         $unique_code = 000;
         $estimation_day = substr($request->estimation, -1);
         $estimation_date = date('Y-m-d H:i:s', strtotime('+' . $estimation_day . ' days'));
         $payment_due_date = date("Y-m-d H:i:s", strtotime('+24 hours'));
 
+        // menambahkan variabel ke $request
         $request->merge([
             'order_address_id' => $orderAddressId,
             'unique_code' => $unique_code,
@@ -190,6 +240,7 @@ class OrderController extends Controller
 
         ]);
 
+        // melakukan validasi variabel yang ada di $request dengan rules yang diberikan
         $validatedData = $request->validate([
             'user_id' => 'required',
             'order_address_id' => 'required',
@@ -207,12 +258,20 @@ class OrderController extends Controller
             'sender_address_id' => 'required',
         ]);
 
+        // insert order/pesanan ke dalam DB 
         $order = Order::create($validatedData);
+        // $order->discount = $discount;
         $order->save();
+
         $orderId = $order->id;
+
+        // menambahkan variabel $orderId ke session() agar dapat diakses menggunakan session()
         $request->session()->put('orderId', $orderId);
 
+        // status detail pesanan
         $statusDetail = 'batas pembayaran ' . \Carbon\Carbon::parse($order->payment_due_date)->isoFormat('dddd,D MMMM Y | HH:mm') . ' WIB';
+
+        // insert status order ke dalam DB
         $orderStatus = OrderStatusDetail::create(
             [
                 'order_id' => $orderId,
@@ -226,6 +285,8 @@ class OrderController extends Controller
         // print_r($order);
         // echo "<br><br>";
 
+        // cek apakah ada nilai yg kosong/null dalam array cart ids
+        // case untuk order dari BUY NOW
         if (empty(array_filter($request->cart_ids))) {
             // echo 'empty';
             $validatedData = $request->validate(
@@ -240,9 +301,13 @@ class OrderController extends Controller
                     'product_variant_id.required' => 'Pilih varian produk terlebih dahulu'
                 ]
             );
+            // insert data produk yg di BUY NOW ke dalam cart items
             $cart = CartItem::create($validatedData);
+            // retrieve cart items yg baru di buat dan disimpan di $items
             $items = CartItem::where('id', '=', $cart->id)->with('product', 'productvariant')->get()->sortByDesc('created_at');
+            // case dari CART (produk yang dipesan sudah masuk ke dalam cart items)
         } else {
+            // retrieve cart items yg baru di buat dan disimpan di $items
             $items = CartItem::whereIn('id', $request->cart_ids)->with('product', 'productvariant')->get()->sortByDesc('created_at');
             // $items = session()->get('items');
         }
@@ -251,8 +316,9 @@ class OrderController extends Controller
         // print_r($items);
         // echo "<br><br>";
 
+        // Looping $items
         foreach ($items as $item) {
-
+            // inisiasi array $orderProduct (product yang dipesan) dari data $items sebelumnya
             $orderProduct = [
                 'name' => $item->product->name,
                 'specification' => $item->product->specification,
@@ -263,29 +329,33 @@ class OrderController extends Controller
                 'product_category' => $item->product->productCategory->name,
                 'product_merk' => $item->product->productMerk->name,
             ];
-            $promo = Promo::where('id', '=', $item->product->promo_id)->first();
-            if ($promo) {
-                $orderProduct['promo_name'] = $promo->name;
-                $orderProduct['promo_discount'] = $promo->discount;
-            } else {
-                $orderProduct['promo_name'] = '';
-                $orderProduct['promo_discount'] = 0;
-            }
+            // retrieve apakah ada promo
+            // $promo = Promo::where('id', '=', $item->product->promo_id)->first();
+            // if ($promo) {
+            //     $orderProduct['promo_name'] = $promo->name;
+            //     $orderProduct['promo_discount'] = $promo->discount;
+            // } else {
+            //     $orderProduct['promo_name'] = '';
+            //     $orderProduct['promo_discount'] = 0;
+            // }
+            // // cek apakah item terdapat varian
+            // if ($item->product_variant_id == 0) {
+            //     $orderProduct['stock'] = $item->product->stock;
+            //     $orderProduct['weight'] = $item->product->weight;
+            //     $orderProduct['price'] = $item->product->price;
+            // } else {
+            //     $orderProduct['variant_name'] = $item->productvariant->variant_name;
+            //     $orderProduct['variant_value'] = $item->productvariant->variant_name;
+            //     $orderProduct['variant_code'] = $item->productvariant->variant_code;
+            //     $orderProduct['stock'] = $item->productvariant->stock;
+            //     $orderProduct['weight'] = $item->productvariant->weight;
+            //     $orderProduct['price'] = $item->productvariant->price;
+            // }
 
-            if ($item->product_variant_id == 0) {
-                $orderProduct['stock'] = $item->product->stock;
-                $orderProduct['weight'] = $item->product->weight;
-                $orderProduct['price'] = $item->product->price;
-            } else {
-                $orderProduct['variant_name'] = $item->productvariant->variant_name;
-                $orderProduct['variant_value'] = $item->productvariant->variant_name;
-                $orderProduct['variant_code'] = $item->productvariant->variant_code;
-                $orderProduct['stock'] = $item->productvariant->stock;
-                $orderProduct['weight'] = $item->productvariant->weight;
-                $orderProduct['price'] = $item->productvariant->price;
-            }
-
+            // insert data orderProduct ke dalam table order product
             $orderProducts = OrderProduct::firstOrCreate($orderProduct);
+
+            // retrieve order product id ke dalam array
             $orderProductId = $orderProducts->id;
             $orderProductIds[] = $orderProducts->id;
 
@@ -295,9 +365,13 @@ class OrderController extends Controller
             // echo "Order product image<br> : ";
             // print_r($item->product->productImage);
             // echo "<br><br>";
+
+            // cek apakah ada product image dari product yang dipesan
             if ($item->product->productImage->count()) {
                 // echo "image product issets";
                 // echo "<br><br>";
+
+                // looping product image
                 foreach ($item->product->productImage as $image) {
 
                     $folderPathSave = 'user/' . auth()->user()->username . '/order/' . $orderId . '/' . $orderProductId . '/';
@@ -310,12 +384,17 @@ class OrderController extends Controller
                     // print_r($img);
                     // echo "<br><br>";
 
+                    // inisiasi nama order product image 
                     $imageName = uniqid() . '.jpg';
 
+                    // alamat penyimpanan serta nama order product image  
                     $imageFullPathSave = $folderPathSave . $imageName;
 
                     // $copy = Storage::copy($image->name, $imageFullPathSave);
+
+                    // membuat folder / direktori untuk penyimoanan order product image
                     $createFolder = Storage::makeDirectory($folderPathSave);
+                    // resize image menjadi resolusi 300x300 dan menyimpan sesuai $imagefullpathsave
                     $copy = Image::make(Storage::path($image->name))->resize(300, 300, function ($constraint) {
                         $constraint->aspectRatio();
                     })->save(Storage::path($imageFullPathSave));
@@ -324,11 +403,13 @@ class OrderController extends Controller
                     // print_r($copy);
                     // echo "<br><br>";
 
+                    //inisiasi data order product image (order product id dan nama file image)
                     $orderProductImages = [
                         'order_product_id' => $orderProductId,
                         'name' => $imageFullPathSave
                     ];
 
+                    // insert data order product image ke table order product image
                     $orderProductImage = OrderProductImage::create($orderProductImages);
 
                     // echo "Order Product Image<br> : ";
@@ -336,37 +417,38 @@ class OrderController extends Controller
                     // echo "<br><br>";
                 }
             } else {
-                $folderPathSave = 'user/' . auth()->user()->username . '/order/' . $orderId . '/' . $orderProductId . '/';
-                // img nantinya mengakses ke storage product image 
-                $img = auth()->user()->profile_image;
-                $img = explode('/', $img);
+                // $folderPathSave = 'user/' . auth()->user()->username . '/order/' . $orderId . '/' . $orderProductId . '/';
+                // // img nantinya mengakses ke storage product image 
+                // $img = auth()->user()->profile_image;
+                // $img = explode('/', $img);
 
-                // echo "user Image with no prod images<br> : ";
-                // print_r($img);
-                // echo "<br><br>";
+                // // echo "user Image with no prod images<br> : ";
+                // // print_r($img);
+                // // echo "<br><br>";
 
-                $imageName = uniqid() . '.jpg';
+                // $imageName = uniqid() . '.jpg';
 
-                $imageFullPathSave = $folderPathSave . $imageName;
+                // $imageFullPathSave = $folderPathSave . $imageName;
 
-                $copy = Storage::copy(auth()->user()->profile_image, $imageFullPathSave);
+                // $copy = Storage::copy(auth()->user()->profile_image, $imageFullPathSave);
 
-                // echo "copy<br> : ";
-                // print_r($copy);
-                // echo "<br><br>";
+                // // echo "copy<br> : ";
+                // // print_r($copy);
+                // // echo "<br><br>";
 
-                $orderProductImages = [
-                    'order_product_id' => $orderProductId,
-                    'name' => $imageFullPathSave
-                ];
+                // $orderProductImages = [
+                //     'order_product_id' => $orderProductId,
+                //     'name' => $imageFullPathSave
+                // ];
 
-                $orderProductImage = OrderProductImage::create($orderProductImages);
+                // $orderProductImage = OrderProductImage::create($orderProductImages);
 
-                // echo "Order Product Image<br> : ";
-                // print_r($orderProductImage);
-                // echo "<br><br>";
+                // // echo "Order Product Image<br> : ";
+                // // print_r($orderProductImage);
+                // // echo "<br><br>";
             }
 
+            // membuat data yang akan dimasukkan ke order item
             $data = [
                 'order_id' => $orderId,
                 'user_id' => $request->user_id,
@@ -379,25 +461,88 @@ class OrderController extends Controller
                 'retur' => '0',
             ];
 
+
             if ($item->product_variant_id == 0) {
                 $data['price'] = $item->product->price;
             } else {
                 $data['price'] = $item->productvariant->price;
             }
 
+            // insert data order items
             $orderItems = OrderItem::create($data);
+            // $orderItems->discount = $discount;
+            $orderItems->save();
+
             $orderItemIds[] = $orderItems->id;
 
             // echo "Order Items<br> : ";
             // print_r($orderItems);
             // echo "<br><br>";
+            if (!is_null($request->promo_use_id)) {
+                // dd($promo);
+                $productPromo = ProductPromo::whereIn('product_id', $request->product_ids)->get();
+
+                if ((int)$request->checkout_total_prices >= (int)$promo->min_transaction) {
+                    if ($promo->promo_type_id == 1 || $promo->promo_type_id == 2) {
+                        foreach ($promo->productPromo as $productPromo) {
+                            if ((int)$orderItems->product_id == (int)$productPromo->product_id) {
+                                if ($promo->promo_type_id == 1) {
+                                    $discount = $orderItems->total_price_item * $promo->discount / 100;
+                                } elseif ($promo->promo_type_id == 2) {
+                                    $discount = $promo->discount;
+                                }
+                                $orderItems->discount = $discount;
+                                $order->discount = $discount;
+                            } else {
+                                $orderItems->discount = 0;
+                            }
+                            $order->save();
+                            $orderItems->save();
+                        }
+                    } elseif ($promo->promo_type_id == 3 || $promo->promo_type_id == 4) {
+                        if ($promo->promo_type_id == 3) {
+                            $discount = $request->checkout_total_prices * $promo->discount / 100;
+                        } elseif ($promo->promo_type_id == 4) {
+                            $discount = $promo->discount;
+                        }
+                        $order->discount = $discount;
+                        $order->save();
+                    }
+                    $userPromoUse->promo_use += 1;
+                    $userPromoUse->save();
+                    // $promo_name = 'Diskon Harga';
+
+                } else {
+                    return redirect()->back()->with('failed', 'Gagal menggunakan kode promo! Jumlah transaksi kurang dari minimal transaksi promo');
+                }
+            }
         }
+        if (!is_null($request->promo_use_id)) {
+
+            $promo_name = $promo->name;
+            $promo_type = $promo->promoType->name;
+
+            $userPromoOrderUse = UserPromoOrderUse::create([
+                'user_id' => auth()->user()->id,
+                'promo_id' => $promo->id,
+                'order_id' => $order->id,
+                'promo_name' => $promo_name,
+                'promo_type' => $promo_type,
+                'discount' => $order->discount,
+            ]);
+        }
+        // menambahkan variabel $orderItemIds ke session() agar dapat diakses menggunakan session()
         $request->session()->put(['orderItemIds' => $orderItemIds]);
+        // menambahkan variabel $orderproductIds ke session() agar dapat diakses menggunakan session()
         $request->session()->put(['orderProductIds' => $orderProductIds]);
 
+        // menghapus cart item menggunakan fitur soft deletes agar dapat di retrieve kembali jika orde tidak dibayarkan
         foreach ($request->cart_ids as $ids) {
             $deleteCartItem = CartItem::where('id', $ids)->delete();
+            // dd($ids);
+            // dd($deleteCartItem);
         }
+
         $description = '';
         $notifications = [
             'user_id' => auth()->user()->id,
@@ -408,7 +553,7 @@ class OrderController extends Controller
             'image' => 'storage/' . $orderProductImage->name,
             'is_read' => 0
         ];
-
+        // membuat notifikasi pembuatan pesanan untuk user
         $notification = UserNotification::create($notifications);
 
         return redirect()->route('payment.order.bind', $order);
@@ -1147,7 +1292,7 @@ class OrderController extends Controller
         $stock = 0;
 
         $stock = $orderProduct->stock;
-        
+
         $product = $orderItem->product;
         // $orderProduct = Product::find($orderProduct->id);
         // $origin =  ProductOrigin::where('product_id', '=', $orderProduct->id)->with('city')->groupBy('sender_address_id')->get();

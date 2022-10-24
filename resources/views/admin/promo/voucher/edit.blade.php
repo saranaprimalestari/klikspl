@@ -340,7 +340,7 @@
                             <div class="col-sm-9 py-1">
                                 <div class="mb-2">
                                     <select id="promoVoucherProducts"
-                                        class="form-control shadow-none promo-voucher-product form-select shadow-none @error('promo_type_id') is-invalid @enderror"
+                                        class="form-control shadow-none promo-voucher-product form-select shadow-none @error('product_promos') is-invalid @enderror"
                                         name="product_promos[]" {{-- multiple="multiple" --}} required>
                                         {{-- <option value="">Pilih produk</option> --}}
                                         @foreach ($products as $product)
@@ -349,7 +349,7 @@
                                                 {{ $product->name }}</option>
                                         @endforeach
                                     </select>
-                                    @error('promo_type_id')
+                                    @error('product_promos')
                                         <div class="invalid-feedback">
                                             {{ $message }}
                                         </div>

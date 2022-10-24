@@ -310,6 +310,7 @@ class CartItemUserController extends Controller
     {
         // dd($request);
         $items = session()->get('items');
+        // dd($items);
         // foreach ($items as $item) {
         //     // echo $item;
         //     // print_r($item->product->productpromo);
@@ -319,12 +320,57 @@ class CartItemUserController extends Controller
         // }
         // dd($items);
         // dd($items[0]->product);
-        $productIds = $items->pluck('product_id');
+        if (session()) {
+            if (!isset($items)) {
+                return redirect()->route('home');
+            }
+        }
+        if (is_null($items)) {
+            return redirect()->route('cart.index')->with('failed', 'Terdapat kesalahan saat melakukan checkout pesanan, silakan coba lagi');
+        }else{
+            $productIds = $items->pluck('product_id');
+            $productPromo = ProductPromo::whereIn('product_id', $productIds)->get();
+            $productPromoGroup = $productPromo->groupBy('promo_id');
+            $promos = Promo::where('is_active', '=', 1)->with('productPromo', 'PromoPaymentMethod', 'promoType')->get();
+        }
         // dd($productId);
-        $productPromo = ProductPromo::whereIn('product_id', $productIds)->get();
-        $productPromoGroup = $productPromo->groupBy('promo_id');
-        $promos = Promo::where('is_active', '=', 1)->with('productPromo','PromoPaymentMethod','promoType')->get();
+       
         // dd($promos);
+        // foreach ($productPromoGroup as $productPromo) {
+        //     echo "promo id : ";
+        //     print_r($productPromo[0]->promo->id);
+        //     echo "<br>";
+        //     print_r($productPromo[0]->promo->userPromoUse);
+        //     echo "<br>";
+        //     echo count($productPromo[0]->promo->userPromoUse);
+        //     echo "<br>";
+        //     echo isset($productPromo[0]->promo->userPromoUse);
+        //     echo "<br>";
+        //     echo !is_null($productPromo[0]->promo->userPromoUse);
+        //     echo "<br>";
+        //     echo !empty($productPromo[0]->promo->userPromoUse);
+        //     echo "<br>";
+        //     if (count($productPromo[0]->promo->userPromoUse)) {
+        //         // foreach ($productPromo[0]->promo as $key => $promo) {
+        //         foreach ($productPromo[0]->promo->userPromoUse as $key => $userPromoUse) {
+        //             echo "user Id : ";
+        //             echo "<br>";
+        //             print_r($userPromoUse->user_id);
+        //             if ($userPromoUse->promo_use <= $productPromo[0]->promo->quota) {
+        //                 echo "-masih bisa digunakan";
+        //                 echo "<br>";
+        //             }else{
+        //                 echo "-tidak bisa digunakan";
+        //                 echo "<br>";
+        //             }
+        //             echo "<br>";
+        //             echo "<br>";
+        //         }
+        //         // }
+        //     }
+        //     echo "<br>";
+        //     echo "<br>";
+        // }
         // dd($productPromoGroup);
         // foreach ($productPromo->groupBy('promo_id') as $prodPromo) {
         //     foreach ($prodPromo as $promo) {
@@ -341,10 +387,12 @@ class CartItemUserController extends Controller
         // dd($productPromo->groupBy('promo_id'));
 
         $paymentMethods = PaymentMethod::where('is_active', '=', 1)->get();
-        if (session())
+        if (session()) {
             if (!isset($items)) {
                 return redirect()->route('home');
             }
+        }
+        $items = session()->get('items');
         foreach ($items as $index => $item) {
             // echo $item->product_id;
             // echo "<br>";

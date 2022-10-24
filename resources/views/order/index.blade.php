@@ -186,10 +186,14 @@
                                                         {{ ucfirst($order->order_status) }},
                                                     </span> --}}
                                                     <span>
-                                                        {{-- @foreach ($order->orderstatusdetail as $statusDetail)
+                                                        {{-- {{ dd(empty($order->orderstatusdetail)) }} --}}
+                                                        @if (count($order->orderstatusdetail) > 0)
+                                                            {{-- @foreach ($order->orderstatusdetail as $statusDetail)
                                                             {{ $statusDetail->status_detail }}
                                                         @endforeach --}}
-                                                        {{ ucfirst($order->orderstatusdetail->last()->status_detail) }}
+                                                            {{ ucfirst($order->orderstatusdetail->last()->status_detail) }}
+                                                        @endif
+
                                                     </span>
                                                 </span>
                                             </div>
@@ -208,7 +212,10 @@
                                                         {{-- @foreach ($order->orderstatusdetail as $statusDetail)
                                                             {{ $statusDetail->status_detail }}
                                                         @endforeach --}}
+                                                        @if (count($order->orderstatusdetail) >0)
+                                                            
                                                         {{ ucfirst($order->orderstatusdetail->last()->status_detail) }}
+                                                        @endif
                                                     </span>
                                                 </span>
                                             </div>

@@ -5306,3 +5306,15 @@ echo "</br>";
                                     </button>
                                 </div>
                             </form>
+
+                            
+        // if ($request->checkout_total_prices >= $promo->min_transaction) {
+        //     if ($promo->promo_type_id == 1 || $promo->promo_type_id == 2) {
+        //     } elseif ($promo->promo_type_id == 3 || $promo->promo_type_id == 4) {
+        //         if ($promo->promo_type_id == 3) {
+        //             $discount = $request->checkout_total_prices * $promo->discount / 100;
+        //         } elseif ($promo->promo_type_id == 4) {
+        //             $discount = (int)$request->checkout_total_prices - (int)$promo->discount;
+        //         }
+        //     }
+        // }

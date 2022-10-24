@@ -86,4 +86,9 @@ class Promo extends Model
         return $this->hasMany(UserPromoUse::class);
     }
     
+    public function UserPromoOrderUse()
+    {
+        return $this->hasMany(UserPromoOrderUse::class);
+    }
+    
 }
