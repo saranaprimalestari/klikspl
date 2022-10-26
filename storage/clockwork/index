@@ -46,3 +46,6 @@
 1666773542-7832-1054614199,1666773542.6059,GET,/administrator/incomes,"\App\Http\Controllers\Admin\AdminIncomeController@index",200,939.76998329163,request
 1666773643-5027-316872327,1666773643.2728,GET,/administrator/incomes,"\App\Http\Controllers\Admin\AdminIncomeController@index",200,799.39413070679,request
 1666773717-6823-1335140940,1666773717.5116,GET,/administrator/incomes,"\App\Http\Controllers\Admin\AdminIncomeController@index",200,786.18597984314,request
+1666775037-7796-879659849,1666775037.4146,GET,/administrator/incomes,"\App\Http\Controllers\Admin\AdminIncomeController@index",200,1878.4599304199,request
+1666775107-4140-909727411,1666775107.2522,GET,/administrator/adminproduct,"App\Http\Controllers\Admin\AdminProductController@index",200,722.12791442871,request
+1666775441-0655-1941368279,1666775439.2343,GET,/administrator/adminproduct,"App\Http\Controllers\Admin\AdminProductController@index",200,4484.0090274811,request
