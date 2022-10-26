@@ -25,7 +25,6 @@
     </div>
     <form action="{{ route('adminproduct.store') }}" method="post" enctype="multipart/form-data">
         @csrf
-        <input type="hidden" name="company_id" value="{{ auth()->guard('adminMiddle')->user()->company_id }}">
         <div class="container p-0 mb-4">
             <div class="card product-image-card border-0 border-radius-1-5rem fs-14">
                 <div class="card-header bg-transparent p-4 border-0">
@@ -42,7 +41,7 @@
                             <p class="text-grey fs-12 m-0">Format Gambar (.jpg, .jpeg, .png), ukuran maksimal 2MB,
                                 Cantumkan
                                 minimal 1 foto</p>
-                                
+
                         </label>
                         <div class="col-md-9 col-6">
                             <div class="row mb-3">
@@ -284,7 +283,7 @@
                 <div class="card-footer bg-transparent p-4 pt-0 border-0">
                     <div class="d-flex justify-content-end">
                         <div class="btn btn-outline-danger mx-1 fs-14" onclick="removeProductVariant()"><i
-                            class="bi bi-trash3"></i> Hapus Varian</div>
+                                class="bi bi-trash3"></i> Hapus Varian</div>
                         <div class="btn btn-danger mx-1 fs-14 add-variant-btn" onclick="addProductVariant()"><i
                                 class="bi bi-plus-lg"></i> Tambah Varian</div>
                         {{-- <button type="submit" class="btn btn-danger mx-1 fs-14">Upload</button> --}}
@@ -363,20 +362,24 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <input type="number" class="form-control fs-14 @error('long') is-invalid @enderror"
-                                        id="productLong" name="long" placeholder="Panjang produk (cm)" step="0.01" value="{{ old('long') }}">
+                                        id="productLong" name="long" placeholder="Panjang produk (cm)" step="0.01"
+                                        value="{{ old('long') }}">
                                     @error('long')
                                         <p class="text-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
                                 <div class="col-md-4">
                                     <input type="number" class="form-control fs-14 @error('width') is-invalid @enderror"
-                                        id="productLong" name="width" placeholder="Lebar produk (cm)" value="{{ old('width') }}">
+                                        id="productLong" name="width" placeholder="Lebar produk (cm)"
+                                        value="{{ old('width') }}">
                                     @error('width')
                                         <p class="text-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
                                 <div class="col-md-4">
-                                    <input type="number" class="form-control fs-14 @error('height') is-invalid @enderror" id="productLong" name="height" placeholder="Tinggi / Tebal produk (cm)" value="{{ old('height') }}">
+                                    <input type="number" class="form-control fs-14 @error('height') is-invalid @enderror"
+                                        id="productLong" name="height" placeholder="Tinggi / Tebal produk (cm)"
+                                        value="{{ old('height') }}">
                                     @error('height')
                                         <p class="text-danger">{{ $message }}</p>
                                     @enderror
@@ -400,7 +403,8 @@
                         <label for="productPrice" class="col-sm-3 col-form-label fw-600">Harga Produk</label>
                         <div class="col-sm-9">
                             <input type="number" class="form-control fs-14 @error('price') is-invalid @enderror"
-                                id="productPrice" name="price" placeholder="Masukkan Harga produk, Contoh: 180000" value="{{ old('price') }}">
+                                id="productPrice" name="price" placeholder="Masukkan Harga produk, Contoh: 180000"
+                                value="{{ old('price') }}">
                             @error('price')
                                 <p class="text-danger">{{ $message }}</p>
                             @enderror
@@ -457,6 +461,41 @@
                 </div>
             </div>
         </div>
+        @if (auth()->guard('adminMiddle')->user()->admin_type == 1)
+            <div class="container product-company-container p-0 mb-4">
+                <div class="card product-company-card border-0 border-radius-1-5rem fs-14">
+                    <div class="card-header bg-transparent p-4 border-0">
+                        <div class="header">
+                            <h5 class="m-0">Perusahaan</h5>
+                            <p class="text-grey fs-13 m-0">Pilih perusahaan dimana produk akan ditampilkan</p>
+                        </div>
+                    </div>
+                    <div class="card-body p-4 pt-0">
+                        <div class="mb-3 row">
+                            <label for="productCompany" class="col-sm-3 col-form-label fw-600">Perusahaan</label>
+                            <div class="col-sm-9">
+                                <select required
+                                    class="form-control shadow-none admin-product-company form-select shadow-none fs-14 @error('company_id') is-invalid @enderror"
+                                    name="company_id" required>
+                                    <option value="" class="fs-14">Pilih Perusahaan
+                                    </option>
+                                    @foreach ($companies as $company)
+                                        <option class="fs-14" value="{{ $company->id }}">
+                                            {{ $company->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('company_id')
+                                    <p class="text-danger">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @else
+            <input type="hidden" name="company_id" value="{{ auth()->guard('adminMiddle')->user()->company_id }}">
+        @endif
+        
         <div class="container p-0 mb-5 pb-5">
             <div class="row">
                 <div class="col-12 text-end">
@@ -497,11 +536,11 @@
         </div>
     </form>
     <script>
-        
         document.addEventListener("trix-file-accept", event => {
             event.preventDefault();
             alert("File attachment not supported!");
         })
+
         function addImage() {
             var img_no = parseInt($('#total_product_img').val()) + 1;
             var new_image =

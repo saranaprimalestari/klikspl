@@ -14,6 +14,7 @@ use App\Models\ProductVariant;
 use App\Models\ProductCategory;
 use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use \Cviebrock\EloquentSluggable\Services\SlugService;
@@ -37,7 +38,12 @@ class AdminProductController extends Controller
         $currentPage = last($currentURL);
         Session::put('currentPage', $currentPage);
 
-        $product = Product::latest()->where('company_id', '=', auth()->guard('adminMiddle')->user()->company_id)->get();
+        if (auth()->guard('adminMiddle')->user()->admin_type == 1) {
+            $product = Product::latest()->get();
+        } else {
+            $product = Product::latest()->where('company_id', '=', auth()->guard('adminMiddle')->user()->company_id)->get();
+        }
+
         return view('admin.product.index', [
             'title' => 'Produk',
             'active' => 'adminproduct',
@@ -59,6 +65,7 @@ class AdminProductController extends Controller
             'categories' => ProductCategory::all(),
             'merks' => ProductMerk::all(),
             'senderAddresses' => SenderAddress::all(),
+            'companies' => Company::all(),
         ]);
     }
 
@@ -378,6 +385,7 @@ class AdminProductController extends Controller
             'categories' => ProductCategory::all(),
             'merks' => ProductMerk::all(),
             'senderAddresses' => SenderAddress::all(),
+            'companies' => Company::all(),
         ]);
     }
 
@@ -446,6 +454,7 @@ class AdminProductController extends Controller
                 'product_merk_id' => 'required',
                 'is_active' => 'required',
                 'stock_notification' => 'required',
+                'company_id' => 'required',
 
             ],
             [
@@ -457,6 +466,7 @@ class AdminProductController extends Controller
                 'product_code.required' => 'ID produk harus diisi!',
                 'product_category_id.required' => 'Kategori produk harus diisi',
                 'product_merk_id.required' => 'Merk produk harus diisi',
+                'company_id.required' => 'Company Id harus diisi',
 
             ]
         );
@@ -896,14 +906,24 @@ class AdminProductController extends Controller
         $currentURL = explode('/', url()->current());
         $currentPage = last($currentURL);
         Session::put('currentPage', $currentPage);
+        if (auth()->guard('adminMiddle')->user()->admin_type == 1) {
+            $outStock =  Product::with(['productvariant' => fn ($query) => $query->where('stock', '=', '0')])
+                ->whereHas(
+                    'productvariant',
+                    fn ($query) =>
+                    $query->where('stock', '=', '0')
+                )->orWhere('stock', '=', '0')
+                ->get();
+        } else {
+            $outStock =  Product::where('company_id', '=', auth()->guard('adminMiddle')->user()->company_id)->with(['productvariant' => fn ($query) => $query->where('stock', '=', '0')])
+                ->whereHas(
+                    'productvariant',
+                    fn ($query) =>
+                    $query->where('stock', '=', '0')
+                )->orWhere('stock', '=', '0')
+                ->get();
+        }
 
-        $outStock =  Product::with(['productvariant' => fn ($query) => $query->where('stock', '=', '0')])
-            ->whereHas(
-                'productvariant',
-                fn ($query) =>
-                $query->where('stock', '=', '0')
-            )->orWhere('stock', '=', '0')
-            ->get();
         // dd($outStock);
         return view('admin.product.index', [
             'title' => 'Produk Habis',
@@ -914,15 +934,16 @@ class AdminProductController extends Controller
 
     public function isAdministrator()
     {
-        if (auth()->guard('adminMiddle')->user()->admin_type != 2) {
+        if (auth()->guard('adminMiddle')->user()->admin_type != 1 && auth()->guard('adminMiddle')->user()->admin_type != 2) {
             abort(403);
         }
     }
 
     public function isWhLogAndAdministrator()
     {
-        if (auth()->guard('adminMiddle')->user()->admin_type != 2  && auth()->guard('adminMiddle')->user()->admin_type != 4) {
+        if (auth()->guard('adminMiddle')->user()->admin_type != 1 && auth()->guard('adminMiddle')->user()->admin_type != 2  && auth()->guard('adminMiddle')->user()->admin_type != 4) {
             // dd(auth()->guard('adminMiddle')->user()->admin_type);
+
             abort(403);
         }
     }

@@ -173,7 +173,7 @@
                                                     </td>
                                                     <td>
                                                         <div class="text-end">
-                                                            Rp{{ price_format_rupiah($order->courier_price + $order->total_price + $order->unique_code) }}
+                                                            Rp{{ price_format_rupiah($order->courier_price + $order->total_price + $order->unique_code - $order->discount) }}
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -218,7 +218,7 @@
                                                     </td>
                                                     <td>
                                                         <div class="text-end">
-                                                            Rp{{ price_format_rupiah($orderThisMonth->courier_price + $orderThisMonth->total_price + $orderThisMonth->unique_code) }}
+                                                            Rp{{ price_format_rupiah($orderThisMonth->courier_price + $orderThisMonth->total_price + $orderThisMonth->unique_code - $orderThisMonth->discount) }}
                                                         </div>
                                                     </td>
                                                 </tr>

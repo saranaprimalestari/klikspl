@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Admin;
 use File;
 use Carbon\Carbon;
 use App\Models\Promo;
+use App\Models\Company;
+use App\Models\Product;
 use App\Models\PromoType;
+use App\Models\ProductPromo;
 use Illuminate\Http\Request;
 use App\Models\PaymentMethod;
-use App\Http\Controllers\Controller;
-use App\Models\Product;
-use App\Models\ProductPromo;
 use App\Models\PromoPaymentMethod;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 
 class AdminPromoVoucherController extends Controller
@@ -24,6 +25,7 @@ class AdminPromoVoucherController extends Controller
     public function index(Request $request)
     {
         $this->expiredCheck();
+        // dd('index voucher');
         // dd('index voucher');
         if (empty(request(['status'])['status'])) {
             $request->request->add(['status' => '']);
@@ -42,7 +44,11 @@ class AdminPromoVoucherController extends Controller
             abort(404);
         }
         // dd(request(['status'])['status']);
-        $promos = Promo::latest()->where('company_id', '=', auth()->guard('adminMiddle')->user()->company_id)->filterIndex(request(['status']))->get();
+        if(auth()->guard('adminMiddle')->user()->admin_type == 1){
+            $promos = Promo::latest()->filterIndex(request(['status']))->get();
+        }else{
+            $promos = Promo::latest()->where('company_id', '=', auth()->guard('adminMiddle')->user()->company_id)->filterIndex(request(['status']))->get();
+        }
         return view('admin.promo.voucher.index', [
             'title' => 'Promo Voucher',
             'active' => 'promo-voucher',
@@ -58,7 +64,12 @@ class AdminPromoVoucherController extends Controller
     public function create()
     {
         $promoType = PromoType::all();
-        $products = Product::where('is_active', '=', 1)->where('company_id', '=', auth()->guard('adminMiddle')->user()->company_id)->get();
+        if (auth()->guard('adminMiddle')->user()->admin_type == 1 ) {
+            $products = Product::where('is_active', '=', 1)->get();
+        } else {
+            $products = Product::where('is_active', '=', 1)->where('company_id', '=', auth()->guard('adminMiddle')->user()->company_id)->get();
+        }
+        
         $paymentMethod = PaymentMethod::where('is_active', '=', 1)->get();
         return view('admin.promo.voucher.create', [
             'title' => 'Tambah Promo Voucher Baru',
@@ -66,7 +77,7 @@ class AdminPromoVoucherController extends Controller
             'promoTypes' => $promoType,
             'paymentMethods' => $paymentMethod,
             'products' => $products,
-
+            'companies' => Company::all(),
         ]);
     }
 
@@ -242,7 +253,8 @@ class AdminPromoVoucherController extends Controller
             'promo' => $promovoucher,
             'promoTypes' => $promoType,
             'paymentMethods' => $paymentMethod,
-            'products' => $products
+            'products' => $products,
+            'companies' => Company::all(),
         ]);
     }
 
@@ -278,6 +290,7 @@ class AdminPromoVoucherController extends Controller
                 'discount' => 'required',
                 'quota' => 'required',
                 'is_active' => 'required',
+                'company_id' => 'required',
             ],
             [
                 'name.required' => 'Nama promo harus diisi!',

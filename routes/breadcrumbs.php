@@ -86,7 +86,7 @@ Breadcrumbs::for('notification', function ($trail) {
 // Home > User Notifications > [notification]
 Breadcrumbs::for('notification.show', function ($trail, $notification) {
     $trail->parent('notification');
-    $trail->push($notification->slug, route('notifications.show', $notification->slug));
+    $trail->push($notification->type, route('notifications.show', $notification->type));
 });
 
 // Home > Beli Langsung

@@ -717,6 +717,41 @@
         </div>
         {{-- @endif --}}
 
+        @if (auth()->guard('adminMiddle')->user()->admin_type == 1)
+            <div class="container product-company-container p-0 mb-4">
+                <div class="card product-company-card border-0 border-radius-1-5rem fs-14">
+                    <div class="card-header bg-transparent p-4 border-0">
+                        <div class="header">
+                            <h5 class="m-0">Perusahaan</h5>
+                            <p class="text-grey fs-13 m-0">Pilih perusahaan dimana produk akan ditampilkan</p>
+                        </div>
+                    </div>
+                    <div class="card-body p-4 pt-0">
+                        <div class="mb-3 row">
+                            <label for="productCompany" class="col-sm-3 col-form-label fw-600">Perusahaan</label>
+                            <div class="col-sm-9">
+                                <select required
+                                    class="form-control shadow-none admin-product-company form-select shadow-none fs-14 @error('company_id') is-invalid @enderror"
+                                    name="company_id" required>
+                                    <option value="" class="fs-14">Pilih Perusahaan
+                                    </option>
+                                    @foreach ($companies as $company)
+                                        <option class="fs-14" value="{{ $company->id }}" {{ ($product->company_id == $company->id) ? 'selected' : '' }}>
+                                            {{ $company->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('company_id')
+                                    <p class="text-danger">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @else
+            <input type="hidden" name="company_id" value="{{ auth()->guard('adminMiddle')->user()->company_id }}">
+        @endif
+        
         <div class="container p-0 mb-5 pb-5">
             <div class="row">
                 <div class="col-12 text-end">

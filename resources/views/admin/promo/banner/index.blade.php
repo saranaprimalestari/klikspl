@@ -64,6 +64,11 @@
     <div class="container p-0 mb-5">
         @foreach ($promoBanners as $promo)
             <div class="card admin-card-dashboard border-radius-1-5rem fs-14 mb-3 box-shadow">
+                @if (auth()->guard('adminMiddle')->user()->admin_type == 1)
+                    <div class="card-header bg-transparent px-4 pt-4 pb-0 border-0">
+                        {{ $promo->company->name }}
+                    </div>
+                @endif
                 <div class="card-body p-4">
                     <div class="row align-items-center">
                         <div class="col-12">
@@ -82,7 +87,8 @@
                                         alt="...">
                                 @else
                                     <img src="{{ asset('assets/voucher.png') }}"
-                                        class="img-fluid w-100 border-radius-075rem promo_banner_image_{{ $promo->id }}" alt="...">
+                                        class="img-fluid w-100 border-radius-075rem promo_banner_image_{{ $promo->id }}"
+                                        alt="...">
                                 @endif
                             </a>
                         </div>
@@ -141,8 +147,10 @@
                                     </tr>
                                 </table>
                             </a>
-                            <input type="hidden" name="promo_banner_name_{{ $promo->id }}" value="{{ $promo->name }}">
-                            <input type="hidden" name="promo_banner_image_{{ $promo->id }}" value="{{ $promo->image }}">
+                            <input type="hidden" name="promo_banner_name_{{ $promo->id }}"
+                                value="{{ $promo->name }}">
+                            <input type="hidden" name="promo_banner_image_{{ $promo->id }}"
+                                value="{{ $promo->image }}">
                         </div>
                         {{-- <div class="col-md-1 col-12 text-end">
                             <p class="m-0 fs-14 fw-600">Status</p>
@@ -192,7 +200,9 @@
                             </p>
                             <div class="row justify-content-center">
                                 <div class="col-md-4 col-12 mb-2">
-                                    <img src="" class="img-fluid w-100 border-radius-05rem deleted-promo-banner-image" alt="...">
+                                    <img src=""
+                                        class="img-fluid w-100 border-radius-05rem deleted-promo-banner-image"
+                                        alt="...">
                                 </div>
                                 <div class="col-12 ps-md-0">
                                     <strong>
@@ -226,7 +236,8 @@
             console.log(base_url);
             console.log(($('input[name="promo_banner_image_' + promoBannerId + '"]').val()));
             $('.deleted-promo-banner').text($('input[name="promo_banner_name_' + promoBannerId + '"]').val());
-            $('.deleted-promo-banner-image').attr('src',base_url+'/'+($('input[name="promo_banner_image_' + promoBannerId + '"]').val()));
+            $('.deleted-promo-banner-image').attr('src', base_url + '/' + ($('input[name="promo_banner_image_' +
+                promoBannerId + '"]').val()));
             $('.promo-banner-form-delete').attr('action', route);
             $('.promo-banner-form-delete').append('<input name="_method" type="hidden" value="DELETE">');
             $('.promo-banner-form-delete').append('<input name="merk_id" type="hidden" value="' +

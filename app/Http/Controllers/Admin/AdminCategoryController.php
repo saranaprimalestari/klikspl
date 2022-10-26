@@ -162,7 +162,7 @@ class AdminCategoryController extends Controller
     
     public function isAdministrator()
     {
-        if (auth()->guard('adminMiddle')->user()->admin_type != 2) {
+        if (auth()->guard('adminMiddle')->user()->admin_type != 1 && auth()->guard('adminMiddle')->user()->admin_type != 2) {
             abort(403);
         }
     }

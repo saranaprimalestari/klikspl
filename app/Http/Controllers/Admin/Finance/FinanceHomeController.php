@@ -26,7 +26,7 @@ class FinanceHomeController extends Controller
             'active' => 'dashboard',
             'cartItems' => CartItem::all(),
             'waitingPayment' => Order::where('order_status','=', 'belum bayar')->get(),
-            'confrimPayment' => Order::where('order_status','=', 'pesanan dibayarkan')->get(),
+            'confirmPayment' => Order::where('order_status','=', 'pesanan dibayarkan')->get(),
             'mustBeProcess' => Order::where('order_status','=', 'pembayaran dikonfirmasi')->get(),
             'mustBeSent' => Order::where('order_status','=', 'perlu dikirim')->get(),
             'onDelivery' => Order::where('order_status','=', 'dalam pengiriman')->get(),

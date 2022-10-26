@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\UserNotification;
+use Illuminate\Support\Facades\Crypt;
 use App\Http\Requests\StoreUserNotificationRequest;
 use App\Http\Requests\UpdateUserNotificationRequest;
 
@@ -63,7 +64,8 @@ class UserNotificationController extends Controller
         if($notification->type == 'Pesanan'){
             // dd($notification->slug);
             $exp = explode('-',$notification->slug);
-            $orderId = $exp[1];
+            $orderIdExp = Crypt::decryptString($exp[1]);
+            $orderId = $orderIdExp;
             // $orderId = preg_replace('/[^0-9]/','',$notification->slug);
             // dd($orderId);
             $order = Order::withTrashed()->find($orderId);

@@ -31,7 +31,7 @@ class Promo extends Model
                 return $query->where(function ($query) use ($keyword) {
                     // $keyword = 'pesanan dibatalkan';
                     // dd($keyword);
-                    $query->where('is_active', '=', 0)->where('start_period', '<=', Carbon::now())->where('end_period', '>=', Carbon::now());
+                    $query->where('is_active', '=', 0)->where('end_period', '<', Carbon::now());
                     // dd($query);
                 });
             });
@@ -89,6 +89,11 @@ class Promo extends Model
     public function UserPromoOrderUse()
     {
         return $this->hasMany(UserPromoOrderUse::class);
+    }
+    
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
     }
     
 }

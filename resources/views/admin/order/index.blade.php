@@ -348,9 +348,14 @@
                         @endif
                     </div>
                     <div class="card-footer bg-transparent px-4 py-3 border-top-0">
-                        <div class="d-flex justify-content-end">
+                        {{-- <div class="d-flex justify-content-end"> --}}
                             <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-md-6 col-7">
+                                    @if (auth()->guard('adminMiddle')->user()->admon_type == 1)
+                                        {{ $order->senderaddress->name }}
+                                    @endif
+                                </div>
+                                <div class="col-md-6 col-5 text-end">
                                     {{-- <a href="{{ route('order.show', $order) }}" class="btn btn-danger fs-13 my-1 mx-1"> --}}
                                     {{-- <a href="{{ route('order.show', $order) }}" class="text-red-klikspl fs-14 py-2 fw-600 text-decoration-none">
                                             <i class="bi bi-receipt"></i> Detail Pesanan
@@ -362,7 +367,7 @@
                                     {{-- </a> --}}
                                 </div>
                             </div>
-                        </div>
+                        {{-- </div> --}}
                     </div>
                     {{-- </a> --}}
                 </div>

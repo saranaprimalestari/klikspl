@@ -11,9 +11,9 @@
                 </a>
               </li>
         </ul>
-        <ul class="navbar-nav mb-2 mb-lg-0 d-none d-sm-block">
+        <ul class="navbar-nav mb-2 mb-lg-0 d-none d-sm-block fs-14">
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle link-dark color-red-klikspl-hover" id="notification-navbar-dropdown"
+                <a class="fs-14 nav-link dropdown-toggle link-dark color-red-klikspl-hover" id="notification-navbar-dropdown"
                     role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-bell"></i>
                     {{-- @auth --}}
@@ -26,42 +26,29 @@
                     {{-- @endauth --}}
                 </a>
                 @if (Auth::guard('adminMiddle')->user())
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notification-navbar-dropdown">
+                    <ul class="dropdown-menu dropdown-menu-end admin-notification-dropdown" aria-labelledby="notification-navbar-dropdown">
                         <div class="">
                             {{-- <div class="d-flex fixed-top bg-white p-3"> --}}
                             <div class="">
                                 {{-- {{ dd($userNotifications) }} --}}
                                 {{-- Notifikasi({{ count($userNotifications) }}) --}}
                             </div>
-                            <div class="mx-3 ms-auto">
+                            <div class="mx-3 my-2">
                                 <a href="{{ route('notifications.index') }}"
-                                    class="text-decoration-none text-danger fw-bold">Lihat Semua
+                                    class="fs-14 text-decoration-none text-danger fw-bold">Lihat Semua
                                     Notifikasi</a>
                             </div>
                             {{-- </div> --}}
                             {{-- {{ dd($userCartItems) }} --}}
-                            <div class="nav-notification-items mt-5">
-                                <li><a class="dropdown-item" href="#">Action</a></li>
-                                <li><a class="dropdown-item" href="#">Another action</a></li>
+                            <div class="nav-notification-items mt-1">
+                                <li><a class="fs-14 dropdown-item" href="#">Action</a></li>
+                                <li><a class="fs-14 dropdown-item" href="#">Another action</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                <li><a class="fs-14 dropdown-item" href="#">Something else here</a></li>
                             </div>
                         </div>
-                    </ul>
-                @else
-                    <ul class="dropdown-menu notification-dropdown">
-                        <li>
-                            <div class="nofitication-no-auth pt-3 justify-content-center text-center rounded-3 px-3">
-                                <i class="bi bi-bell fs-1 text-secondary"></i>
-                                <p class="text-muted py-3 px-2">
-                                    Tidak ada notifikasi untuk anda saat ini, masuk untuk melihat notifikasi di
-                                    akun
-                                    membership anda.
-                                </p>
-                            </div>
-                        </li>
                     </ul>
                 @endif
             </li>

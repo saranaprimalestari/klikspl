@@ -192,7 +192,7 @@ Route::name('payment.completed')->post('/order/payment-completed', [OrderControl
 // reupload payment
 Route::name('payment.reupload')->post('/order/payment-reupload', [OrderController::class, 'paymentReupload'])->middleware('auth');
 // payment order
-Route::name('payment.order.bind')->get('/order/payment/{order}', [OrderController::class, 'paymentOrderBind'])->middleware('auth');
+Route::name('payment.order.bind')->get('/order/payment/{id}', [OrderController::class, 'paymentOrderBind'])->middleware('auth');
 Route::name('payment.order')->get('/order/payment', [OrderController::class, 'paymentOrder'])->middleware('auth');
 // Route::name('order.waiting.payment')->get('/order-waiting-for-payment', [OrderController::class, 'confirmOrder'])->middleware('auth');
 // confirm order

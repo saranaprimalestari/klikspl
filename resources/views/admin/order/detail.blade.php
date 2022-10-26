@@ -44,6 +44,20 @@
             {{-- @foreach ($orders as $order) --}}
             {{-- {{ dd($orders->orderitem->count()) }} --}}
             <div class="row">
+                @if (auth()->guard('adminMiddle')->user()->admin_type == 1)
+                    <div class="col-md-12 col-12">
+                        <div class="card fs-14 border-radius-1-5rem border-0 mb-4 box-shadow">
+                            <div class="card-body p-4">
+                                <p class=" fs-14 fw-bold m-0 mb-1">
+                                    Perusahaan
+                                </p>
+                                <p class="fs-14 m-0 mb-1">
+                                    {{ $orders->senderaddress->name }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
                 <div class="col-md-12 col-12">
                     @if ($orders->order_status === 'pesanan dibayarkan' || $orders->order_status === 'upload ulang bukti pembayaran')
                         <div class="card fs-14 border-radius-1-5rem border-0 mb-4 box-shadow">
@@ -768,6 +782,119 @@
                                                 Batalkan Pesanan
                                             </button>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @elseif($orders->order_status === 'pengajuan pembatalan')
+                        <div class="card fs-14 border-radius-1-5rem border-0 mb-4 box-shadow">
+                            <div class="card-body p-4">
+                                {{-- @if ($orders->order_status === 'pesanan dibayarkan') --}}
+                                <p class=" fs-14 fw-bold m-0 mb-1">
+                                    Konfirmasi Pembatalan Pesanan
+                                </p>
+                                <p class="fs-12 m-0 mb-4">
+                                    Pembeli mengajukan pembatalan pesanan, pilih konfirmasi pembatalan untuk menyetujui
+                                    pembatalan pesanan atau pilih tolak pembatalan untuk menolak pengajuan pembatalan
+                                    pesanan oleh pembeli.
+                                </p>
+                                <div class="row mb-2">
+                                    <div class="col-md-3 col-6">
+                                        {{ ucwords($orders->order_status) }}
+                                    </div>
+                                    <div class="col-md-9 col-6 text-end text-danger">
+                                        <p class="m-0">
+                                            <span>
+                                                {{ $orders->orderstatusdetail->last()->status_detail }}
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <div class="row my-3 text-end">
+                                        <div class="col-md-12">
+                                            <button type="button" class="btn btn-secondary fs-14 mb-2"
+                                                data-bs-toggle="modal" data-bs-target="#rejectCancellation">
+                                                Tolak Pembatalan
+                                            </button>
+                                            <button type="button" class="btn btn-danger fs-14 mb-2"
+                                                data-bs-toggle="modal" data-bs-target="#cancellationConfirm">
+                                                Konfirmasi Pembatalan
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                {{-- @else
+                            @endif --}}
+                            </div>
+                        </div>
+                        <div class="modal fade" id="rejectCancellation" tabindex="-1"
+                            aria-labelledby="rejectCancellationModal" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content border-radius-1-5rem">
+                                    <div class="modal-header border-0 pt-4 px-4">
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <form action="{{ route('decline.payment') }}" method="post" class="d-inline">
+                                        {{-- @method('delete') --}}
+                                        @csrf
+                                        <div class="modal-body text-center py-2 px-5">
+                                            <h5 class="mb-3">Tolak Pengajuan Pembatalan Pesanan</h5>
+                                            <p class="fs-14 mb-0">
+                                                Berikan alasan/deskripsi penolakan pengajuan pembatalan pesanan pembeli
+                                            </p>
+                                            <div class="form-floating mt-3">
+                                                <input type="hidden" name="order_id" value="{{ $orders->id }}">
+                                                <textarea class="form-control fs-14 h-100" placeholder="Tuliskan alasan pembatalan pesanan" id="cancel-order"
+                                                    rows="6" required name="cancel_order_detail"></textarea>
+                                                <label for="cancel-order" class="fs-14">
+                                                    Alasan Penolakan
+                                                </label>
+                                                <div class="cancel_order_error_message fs-12 text-danger text-start my-1">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer border-0 d-flex justify-content-center pb-4">
+                                            <button type="button" class="btn btn-outline-secondary fs-14"
+                                                data-bs-dismiss="modal">Tutup</button>
+                                            <button type="submit" class="btn btn-danger fs-14 my-2 shadow-none">Tolak
+                                                Pembayaran</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="cancellationConfirm" tabindex="-1"
+                            aria-labelledby="cancellationConfirmModal" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content border-radius-1-5rem">
+                                    <div class="modal-header border-0 pt-4 px-4">
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body text-center py-2 px-5">
+                                        <h5 class="mb-3">Konfirmasi Pengajuan Pembatalan Pesanan</h5>
+                                        <p class="fs-14 mb-0">
+                                            Apakah anda yakin ingin mengonfirmasi pengajuan pembatalan pesanan?
+                                        </p>
+                                        <small class="text-danger">
+                                            *Ketika anda mengonfirmasi pengajuan pembatalan pesanan, maka anda tidak dapat
+                                            membatalkan aksi
+                                        </small>
+                                    </div>
+                                    <div class="modal-footer border-0 d-flex justify-content-center pb-4">
+                                        <button type="button" class="btn btn-outline-secondary fs-14"
+                                            data-bs-dismiss="modal">Tutup</button>
+                                        <form class="confirm-payment-form" action="{{ route('confirm.payment') }}"
+                                            method="POST" enctype="multipart/form-data">
+                                            @csrf
+                                            <input type="hidden" name="order_id" value="{{ $orders->id }}">
+                                            <button type="submit"
+                                                class="btn btn-danger fs-14 my-2 shadow-none">Konfirmasi
+                                                Pembatalan
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>

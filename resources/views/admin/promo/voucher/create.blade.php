@@ -46,12 +46,27 @@
                             </p> --}}
                         </div>
                         <div class="col-sm-9">
-                            <p class="m-0">
-                                {{ auth()->guard('adminMiddle')->user()->company->name }}
-                            </p>
+                            @if (auth()->guard('adminMiddle')->user()->admin_type == 1)
+                                <select required
+                                    class="form-control shadow-none admin-product-company form-select shadow-none fs-14 @error('company_id') is-invalid @enderror"
+                                    name="company_id" required>
+                                    <option value="" class="fs-14">Pilih Perusahaan
+                                    </option>
+                                    @foreach ($companies as $company)
+                                        <option class="fs-14" value="{{ $company->id }}">
+                                            {{ $company->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('company_id')
+                                    <p class="text-danger">{{ $message }}</p>
+                                @enderror
+                            @else
+                                <p class="m-0">
+                                    {{ auth()->guard('adminMiddle')->user()->company->name }}
+                                </p>
+                                <input type="hidden" name="company_id" value="{{ auth()->guard('adminMiddle')->user()->company_id }}">
+                            @endif
                             {{-- <input required type="text" class="form-control fs-14 bg-white @error('name') is-invalid @enderror" id="promoVoucherName" name="company" value="{{ auth()->guard('adminMiddle')->user()->company->name }}" disabled readonly> --}}
-                            <input type="hidden" name="company_id"
-                                value="{{ auth()->guard('adminMiddle')->user()->company_id }}">
                             @error('company_id')
                                 <div class="invalid-feedback">
                                     {{ $message }}

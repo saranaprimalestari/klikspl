@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use Carbon\Carbon;
+use App\Models\Company;
 use App\Models\PromoBanner;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
@@ -37,7 +38,12 @@ class AdminPromoBannerController extends Controller
             abort(404);
         }
         // dd(request(['status'])['status']);
-        $promobanner = PromoBanner::latest()->where('company_id', '=', auth()->guard('adminMiddle')->user()->company_id)->filter(request(['status']))->get();
+        if (auth()->guard('adminMiddle')->user()->admin_type == 1) {
+            $promobanner = PromoBanner::latest()->filter(request(['status']))->get();
+        } else {
+            $promobanner = PromoBanner::latest()->where('company_id', '=', auth()->guard('adminMiddle')->user()->company_id)->filter(request(['status']))->get();
+        }
+        
         return view('admin.promo.banner.index', [
             'title' => 'Promo Banner',
             'active' => 'promo-banner',
@@ -55,6 +61,7 @@ class AdminPromoBannerController extends Controller
         return view('admin.promo.banner.create', [
             'title' => 'Promo Banner',
             'active' => 'promo-banner',
+            'companies' => Company::all(),
         ]);
     }
 
@@ -84,12 +91,14 @@ class AdminPromoBannerController extends Controller
                 'start_period' => 'required|date',
                 'end_period' => 'required|date',
                 'is_active' => 'required',
+                'company_id' => 'required',
 
             ],
             [
                 'name.required' => 'Nama promo harus diisi!',
                 'start_period.required' => 'Tanggal awal promo harus diisi!',
                 'end_period.required' => 'Tanggal akhir promo harus diisi!',
+                'company_id.required' => 'Perusahaan harus diisi!',
             ]
         );
         $start_period = (Carbon::parse($request->start_period)->isoFormat('Y-MM-DD HH:mm'));
@@ -101,7 +110,7 @@ class AdminPromoBannerController extends Controller
             'end_period' => $end_period,
             'is_active' => $validatedData['is_active'],
             'admin_id' =>  auth()->guard('adminMiddle')->user()->id,
-            'company_id' =>  auth()->guard('adminMiddle')->user()->company_id
+            'company_id' => $validatedData['company_id']
         ]);
 
         $image_parts = explode(";base64,", $request->promoBannerImageUpload);
@@ -162,7 +171,8 @@ class AdminPromoBannerController extends Controller
         return view('admin.promo.banner.edit', [
             'title' => 'Promo Banner',
             'active' => 'promo-banner',
-            'promoBanner' => $promobanner
+            'promoBanner' => $promobanner,
+            'companies' => Company::all(),
         ]);
     }
 
@@ -196,12 +206,14 @@ class AdminPromoBannerController extends Controller
                 'start_period' => 'required|date',
                 'end_period' => 'required|date',
                 'is_active' => 'required',
+                'company_id' => 'required',
 
             ],
             [
                 'name.required' => 'Nama promo harus diisi!',
                 'specification.required' => 'Spesifikasi produk harus diisi!',
                 'description.required' => 'Deskripsi produk harus diisi!',
+                'company_id.required' => 'Perusahaan harus diisi!',
             ]
         );
 
@@ -239,6 +251,7 @@ class AdminPromoBannerController extends Controller
         $promobanner->start_period = $start_period;
         $promobanner->end_period = $end_period;
         $promobanner->is_active = $validatedData['is_active'];
+        $promobanner->company_id = $validatedData['company_id'];
 
         $promobanner->save();
 

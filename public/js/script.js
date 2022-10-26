@@ -236,7 +236,7 @@ $(document).ready(function() {
         dropdownParent: $('#shipmentCourierModal')
     });
 
-    $(".city-origin-select, .address-province, .address-city, .postal-code, .address-province-edit, .address-city-edit, .postal-code-edit,.admin-product-category,.admin-product-merk, .sender-address, .promo-type, .promo-voucher-product").select2({
+    $(".city-origin-select, .address-province, .address-city, .postal-code, .address-province-edit, .address-city-edit, .postal-code-edit,.admin-product-category,.admin-product-merk, .admin-product-company, .sender-address, .promo-type, .promo-voucher-product").select2({
         theme: "bootstrap-5",
         width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
         placeholder: $(this).data('placeholder'),

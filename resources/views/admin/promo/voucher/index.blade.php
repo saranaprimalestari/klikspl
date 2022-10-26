@@ -72,6 +72,9 @@
                         <tr>
                             <th class="min-mobile">No</th>
                             <th class="min-mobile">Nama Promo</th>
+                            @if (auth()->guard('adminMiddle')->user()->admin_type == 1)
+                                <th class="min-mobile">Company</th>
+                            @endif
                             {{-- <th class="not-mobile">Kode</th>
                             <th class="not-mobile">Jenis Promo</th> --}}
                             <th class="not-mobile">Tgl Mulai</th>
@@ -134,6 +137,11 @@
                                 <td>
                                     {{ $promo->promotype->name }}
                                 </td> --}}
+                                @if (auth()->guard('adminMiddle')->user()->admin_type == 1)
+                                    <td>
+                                        {{ $promo->company->name }}
+                                    </td>    
+                                @endif
                                 <td>
                                     {{ \Carbon\Carbon::parse($promo->start_period)->isoFormat('D MMM Y, HH:mm') }} WIB
                                 </td>

@@ -205,6 +205,16 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 
+/* 
+.dropdown:hover .admin-notification-dropdown {
+    display: block;
+} */
+
+.admin-notification-dropdown {
+    width: 27rem;
+}
+
+
 /*         
         .cart-dropdown-logged-in {
             max-height: 350px;

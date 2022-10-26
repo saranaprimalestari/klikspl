@@ -160,7 +160,7 @@
                                             Total Pesanan
                                         </p>
                                         <p class="m-0 fw-bold text-danger">
-                                            Rp{{ price_format_rupiah($order->courier_price + $order->total_price + $order->unique_code) }}
+                                            Rp{{ price_format_rupiah($order->courier_price + $order->total_price + $order->unique_code- $order->discount) }}
                                         </p>
                                     </div>
                                 </div>
@@ -197,7 +197,7 @@
                                                     </span>
                                                 </span>
                                             </div>
-                                        @elseif($order->order_status === 'belum bayar' || $order->order_status === 'pembayaran ditolak')
+                                        @elseif($order->order_status === 'belum bayar' || $order->order_status === 'pembayaran ditolak' || $order->order_status === 'pengajuan pembatalan')
                                             <div>
                                                 <span class="badge bg-danger">
                                                     {{ ucfirst($order->order_status) }}
@@ -344,7 +344,7 @@
                                                         </p>
                                                         <p
                                                             class="m-0 fw-bold text-danger orderitem-total-payment-confirm-modal-ammount">
-                                                            Rp{{ price_format_rupiah($order->courier_price + $order->total_price + $order->unique_code) }}
+                                                            Rp{{ price_format_rupiah($order->courier_price + $order->total_price + $order->unique_code - $order->discount) }}
                                                         </p>
                                                     </div>
                                                 </div>

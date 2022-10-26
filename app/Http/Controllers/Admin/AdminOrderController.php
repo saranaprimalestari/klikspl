@@ -36,7 +36,7 @@ class AdminOrderController extends Controller
         if (empty(request(['status'])['status'])) {
             $request->request->add(['status' => '']);
         }
-        if (auth()->guard('adminMiddle')->user()->admin_type == 2) {
+        if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2) {
             if (request(['status'])['status'] == '') {
                 $header = 'Semua Pesanan';
             } else if (request(['status'])['status'] == 'belum bayar') {
@@ -57,6 +57,8 @@ class AdminOrderController extends Controller
                 $header = 'Pesanan Dibatalkan';
             } else if (request(['status'])['status'] == 'pesanan dibatalkan') {
                 $header = 'Pesanan Dibatalkan';
+            } else if (request(['status'])['status'] == 'pengajuan pembatalan') {
+                $header = 'Pengajuan Pembatalan';
             } else {
                 return redirect()->route('adminorder.index');
             }
@@ -80,10 +82,21 @@ class AdminOrderController extends Controller
             abort(403);
         }
 
-
         $request->session()->put('status', request(['status'])['status']);
         // dd(request(['date_start']));
-        $orders =  Order::withTrashed()->with(['orderitem', 'orderstatusdetail'])->filterAdmin(request(['status', 'search', 'date_start', 'date_end', 'orderBy']))->paginate(100)->withquerystring();
+        // if (auth()->guard('adminMiddle')->user()->admin_type == 1) {
+        //     $orders =  Order::withTrashed()->with(['orderitem', 'orderstatusdetail'])->filterAdmin(request(['status', 'search', 'date_start', 'date_end', 'orderBy']))->paginate(100)->withquerystring();
+        // } else 
+        if (auth()->guard('adminMiddle')->user()->admin_type == 2 || auth()->guard('adminMiddle')->user()->admin_type == 4) {
+            $orders =  Order::withTrashed()->with(['orderitem', 'orderstatusdetail'])->filterAdmin(request(['status', 'search', 'date_start', 'date_end', 'orderBy']))->where(['sender_address_id' => function($query){
+                $query->select('sender_address_id')
+                ->from('admin_sender_addresses')
+                ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+            }])->paginate(100)->withquerystring();
+        } else {
+            $orders =  Order::withTrashed()->with(['orderitem', 'orderstatusdetail'])->filterAdmin(request(['status', 'search', 'date_start', 'date_end', 'orderBy']))->paginate(100)->withquerystring();
+        }
         // dd($orders);
         // dd(request(['status']));
         return view('admin.order.index', [

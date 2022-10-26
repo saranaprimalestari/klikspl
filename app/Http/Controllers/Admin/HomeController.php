@@ -38,30 +38,115 @@ class HomeController extends Controller
         // dd(Order::where('order_status', '=', 'selesai')->whereIn('id', function ($query) {
         //     $query->select('order_id')->from(with(new OrderItem)->getTable())->where('is_review', '=', '1');
         // })->get());
-        
+        if (auth()->guard('adminMiddle')->user()->admin_type == 1) {
+            $waitingPayment =  Order::where('order_status', '=', 'belum bayar')->get();
+            $confirmPayment = Order::where('order_status', '=', 'pesanan dibayarkan')->get();
+            $mustBeProcess = Order::where('order_status', '=', 'pembayaran dikonfirmasi')->get();
+            $mustBeSent = Order::where('order_status', '=', 'pesanan disiapkan')->get();
+            $onDelivery = Order::where('order_status', '=', 'pesanan dikirim')->get();
+            $arrived = Order::where('order_status', '=', 'selesai')->get();
+            $finish = Order::where('order_status', '=', 'selesai')->whereIn('id', function ($query) {
+                $query->select('order_id')->from(with(new OrderItem)->getTable())->where('is_review', '=', '1');
+            })->get();
+            $canceled = Order::withTrashed()->where('order_status', '=', 'expired')->orWhere('order_status', '=', 
+            'pesanan dibatalkan')->get();
+            $outStock = Product::with(['productvariant' => fn ($query) => $query->where('stock', '=', '0')])
+            ->whereHas(
+                'productvariant',
+                fn ($query) =>
+                $query->where('stock', '=', '0')
+            )->orWhere('stock', '=', '0')
+            ->get();
+            $activedPromo = Promo::where('is_active', '=', 1)->get();
+            $activedBannerPromo = PromoBanner::where('is_active', '=', 1)->get();
+        } else {
+            $waitingPayment =  Order::where('order_status', '=', 'belum bayar')->where(['sender_address_id' => function($query){
+                $query->select('sender_address_id')
+                ->from('admin_sender_addresses')
+                ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+            }])->get();
+    
+            $confirmPayment = Order::where('order_status', '=', 'pesanan dibayarkan')->where(['sender_address_id' => function($query){
+                $query->select('sender_address_id')
+                ->from('admin_sender_addresses')
+                ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+            }])->get();
+    
+            $mustBeProcess = Order::where('order_status', '=', 'pembayaran dikonfirmasi')->where(['sender_address_id' => function($query){
+                $query->select('sender_address_id')
+                ->from('admin_sender_addresses')
+                ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+            }])->get();
+    
+            $mustBeSent = Order::where('order_status', '=', 'pesanan disiapkan')->where(['sender_address_id' => function($query){
+                $query->select('sender_address_id')
+                ->from('admin_sender_addresses')
+                ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+            }])->get();
+    
+            $onDelivery = Order::where('order_status', '=', 'pesanan dikirim')->where(['sender_address_id' => function($query){
+                $query->select('sender_address_id')
+                ->from('admin_sender_addresses')
+                ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+            }])->get();
+    
+            $arrived = Order::where('order_status', '=', 'selesai')->where(['sender_address_id' => function($query){
+                $query->select('sender_address_id')
+                ->from('admin_sender_addresses')
+                ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+            }])->get();
+    
+            $finish = Order::where('order_status', '=', 'selesai')->where(['sender_address_id' => function($query){
+                $query->select('sender_address_id')
+                ->from('admin_sender_addresses')
+                ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+            }])->whereIn('id', function ($query) {
+                $query->select('order_id')->from(with(new OrderItem)->getTable())->where('is_review', '=', '1');
+            })->get();
+    
+            $canceled = Order::withTrashed()->where(['sender_address_id' => function($query){
+                $query->select('sender_address_id')
+                ->from('admin_sender_addresses')
+                ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+            }])->where('order_status', '=', 'expired')->orWhere('order_status', '=', 
+            'pesanan dibatalkan')->get();
+
+            $outStock = Product::where('company_id', '=', auth()->guard('adminMiddle')->user()->company_id)->with(['productvariant' => fn ($query) => $query->where('stock', '=', '0')])
+            ->whereHas(
+                'productvariant',
+                fn ($query) =>
+                $query->where('stock', '=', '0')
+            )->orWhere('stock', '=', '0')
+            ->get();
+
+            $activedPromo = Promo::where('company_id', '=', auth()->guard('adminMiddle')->user()->company_id)->where('is_active', '=', 1)->get();
+            
+            $activedBannerPromo = PromoBanner::where('company_id', '=', auth()->guard('adminMiddle')->user()->company_id)->where('is_active', '=', 1)->get();
+        }
+
         return view('admin.home', [
             'title' => 'Admin Dashboard',
             'active' => 'dashboard',
             'cartItems' => CartItem::all(),
-            'waitingPayment' => Order::where('order_status', '=', 'belum bayar')->get(),
-            'confrimPayment' => Order::where('order_status', '=', 'pesanan dibayarkan')->get(),
-            'mustBeProcess' => Order::where('order_status', '=', 'pembayaran dikonfirmasi')->get(),
-            'mustBeSent' => Order::where('order_status', '=', 'pesanan disiapkan')->get(),
-            'onDelivery' => Order::where('order_status', '=', 'pesanan dikirim')->get(),
-            'arrived' => Order::where('order_status', '=', 'selesai')->get(),
-            'finish' => Order::where('order_status', '=', 'selesai')->whereIn('id', function ($query) {
-                $query->select('order_id')->from(with(new OrderItem)->getTable())->where('is_review', '=', '1');
-            })->get(),
-            'canceled' => Order::withTrashed()->where('order_status', '=', 'expired')->orWhere('order_status', '=', 'pesanan dibatalkan')->get(),
-            'outStock' => Product::with(['productvariant' => fn ($query) => $query->where('stock', '=', '0')])
-                ->whereHas(
-                    'productvariant',
-                    fn ($query) =>
-                    $query->where('stock', '=', '0')
-                )->orWhere('stock', '=', '0')
-                ->get(),
-            'activedPromo' => Promo::where('is_active', '=', 1)->get(),
-            'activedBannerPromo' => PromoBanner::where('is_active', '=', 1)->get(),
+            'waitingPayment' =>$waitingPayment,
+            'confirmPayment' => $confirmPayment,
+            'mustBeProcess' => $mustBeProcess,
+            'mustBeSent' => $mustBeSent,
+            'onDelivery' => $onDelivery,
+            'arrived' => $arrived,
+            'finish' => $finish,
+            'canceled' => $canceled,
+            'outStock' => $outStock,
+            'activedPromo' => $activedPromo,
+            'activedBannerPromo' => $activedBannerPromo,
             'orderStatistics' => Order::all(),
         ]);
     }

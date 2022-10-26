@@ -25,13 +25,48 @@ class WarehouseLogisticHomeController extends Controller
             'title' => 'Admin Dashboard',
             'active' => 'dashboard',
             'cartItems' => CartItem::all(),
-            'waitingPayment' => Order::where('order_status','=', 'belum bayar')->get(),
-            'confrimPayment' => Order::where('order_status','=', 'pesanan dibayarkan')->get(),
-            'mustBeProcess' => Order::where('order_status','=', 'pembayaran dikonfirmasi')->get(),
-            'mustBeSent' => Order::where('order_status','=', 'pesanan disiapkan')->get(),
-            'onDelivery' => Order::where('order_status','=', 'dalam pengiriman')->get(),
-            'arrive' => Order::where('order_status','=', 'sampai tujuan')->get(),
-            'canceled' => Order::withTrashed()->where('order_status','=', 'expired')->orWhere('order_status','=', 'pesanan dibatalkan')->get(),
+            'waitingPayment' => Order::where('order_status','=', 'belum bayar')->where(['sender_address_id' => function($query){
+                $query->select('sender_address_id')
+                ->from('admin_sender_addresses')
+                ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+            }])->get(),
+            'confirmPayment' => Order::where('order_status','=', 'pesanan dibayarkan')->where(['sender_address_id' => function($query){
+                $query->select('sender_address_id')
+                ->from('admin_sender_addresses')
+                ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+            }])->get(),
+            'mustBeProcess' => Order::where('order_status','=', 'pembayaran dikonfirmasi')->where(['sender_address_id' => function($query){
+                $query->select('sender_address_id')
+                ->from('admin_sender_addresses')
+                ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+            }])->get(),
+            'mustBeSent' => Order::where('order_status','=', 'pesanan disiapkan')->where(['sender_address_id' => function($query){
+                $query->select('sender_address_id')
+                ->from('admin_sender_addresses')
+                ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+            }])->get(),
+            'onDelivery' => Order::where('order_status','=', 'dalam pengiriman')->where(['sender_address_id' => function($query){
+                $query->select('sender_address_id')
+                ->from('admin_sender_addresses')
+                ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+            }])->get(),
+            'arrive' => Order::where('order_status','=', 'sampai tujuan')->where(['sender_address_id' => function($query){
+                $query->select('sender_address_id')
+                ->from('admin_sender_addresses')
+                ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+            }])->get(),
+            'canceled' => Order::withTrashed()->where(['sender_address_id' => function($query){
+                $query->select('sender_address_id')
+                ->from('admin_sender_addresses')
+                ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+            }])->where('order_status','=', 'expired')->orWhere('order_status','=', 'pesanan dibatalkan')->get(),
             'outStock' => Product::with(['productvariant' => fn ($query) => $query->where('stock', '=', '0')])
             ->whereHas(
                 'productvariant',

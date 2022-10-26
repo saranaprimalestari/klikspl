@@ -40,6 +40,45 @@
                     </div>
                     <div class="card-body p-4 pt-0">
                         <div class="mb-3 row">
+                            <div class="col-sm-3 pb-0">
+                                <p class="fw-600 m-0">
+                                    Perusahaan
+                                </p>
+                                {{-- <p class="text-grey fs-12 m-0">
+                                    *tidak ditampilkan di halaman pembeli
+                                </p> --}}
+                            </div>
+                            <div class="col-sm-9">
+                                @if (auth()->guard('adminMiddle')->user()->admin_type == 1)
+                                    <select required
+                                        class="form-control shadow-none admin-product-company form-select shadow-none fs-14 @error('company_id') is-invalid @enderror"
+                                        name="company_id" required>
+                                        <option value="" class="fs-14">Pilih Perusahaan
+                                        </option>
+                                        @foreach ($companies as $company)
+                                            <option class="fs-14" value="{{ $company->id }}" {{ ($promo->company_id == $company->id) ? 'selected' : '' }}>
+                                                {{ $company->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('company_id')
+                                        <p class="text-danger">{{ $message }}</p>
+                                    @enderror
+                                @else
+                                    <p class="m-0">
+                                        {{ auth()->guard('adminMiddle')->user()->company->id }}
+                                    </p>
+                                    <input type="hidden" name="company_id"
+                                        value="{{ auth()->guard('adminMiddle')->user()->company_id }}">
+                                @endif
+                                {{-- <input required type="text" class="form-control fs-14 bg-white @error('name') is-invalid @enderror" id="promoVoucherName" name="company" value="{{ auth()->guard('adminMiddle')->user()->company->name }}" disabled readonly> --}}
+                                @error('company_id')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
                             <label for="promoVoucherName" class="col-sm-3 col-form-label pb-0">
                                 <p class="fw-600 m-0">
                                     Nama Promo

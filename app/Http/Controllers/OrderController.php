@@ -546,7 +546,7 @@ class OrderController extends Controller
         $description = '';
         $notifications = [
             'user_id' => auth()->user()->id,
-            'slug' => auth()->user()->username . '-' . $order->id . '-pesanan-berhasil-dibuat',
+            'slug' => auth()->user()->username . '-' . Crypt::encryptString($order->id) . '-pesanan-berhasil-dibuat',
             'type' => 'Pesanan',
             'description' => '<p>Pesanan kamu berhasil dibuat. Produk yang kamu pesan berjumlah ' . $order->orderitem->count() . ' item.</p>',
             'excerpt' => 'Pesanan kamu berhasil dibuat',
@@ -556,7 +556,7 @@ class OrderController extends Controller
         // membuat notifikasi pembuatan pesanan untuk user
         $notification = UserNotification::create($notifications);
 
-        return redirect()->route('payment.order.bind', $order);
+        return redirect()->route('payment.order.bind', ['id' => Crypt::encrypt($order->id)]);
     }
 
     public function stockCheck($id, $route, $failedMessage)

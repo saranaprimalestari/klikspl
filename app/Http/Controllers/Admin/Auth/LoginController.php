@@ -54,7 +54,9 @@ class LoginController extends Controller
             if (auth()->guard('adminMiddle')->attempt(['email' => $request->email, 'password' => $request->password], $remember)) {
                 $admin = auth()->guard('adminMiddle')->user();
                 // Session::put('success', 'Anda berhasil masuk!');
-                if ($admin->admin_type == 2) {
+                if ($admin->admin_type == 1) {
+                    return redirect()->route('admin.home');
+                }elseif ($admin->admin_type == 2) {
                     return redirect()->route('admin.home');
                 } elseif ($admin->admin_type == 3) {
                     return redirect()->route('finance.home');
@@ -75,7 +77,9 @@ class LoginController extends Controller
             if (auth()->guard('adminMiddle')->attempt(['telp_no' => $request->telp_no, 'password' => $request->password], $remember)) {
                 $admin = auth()->guard('adminMiddle')->user();
                 // Session::put('success', 'Anda berhasil masuk!');
-                if ($admin->admin_type == 2) {
+                if ($admin->admin_type == 1) {
+                    return redirect()->route('admin.home');
+                }elseif ($admin->admin_type == 2) {
                     return redirect()->route('admin.home');
                 } elseif ($admin->admin_type == 3) {
                     return redirect()->route('finance.home');
@@ -98,7 +102,9 @@ class LoginController extends Controller
                 // Session::put('success', 'Anda berhasil masuk!');
                 // dd($admin);
                 // dd($admin->admin_type);
-                if ($admin->admin_type == 2) {
+                if ($admin->admin_type == 1) {
+                    return redirect()->route('admin.home');
+                }elseif ($admin->admin_type == 2) {
                     return redirect()->route('admin.home');
                 } elseif ($admin->admin_type == 3) {
                     return redirect()->route('finance.home');
