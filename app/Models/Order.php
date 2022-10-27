@@ -78,7 +78,9 @@ class Order extends Model
                     // $keyword = 'pesanan dibatalkan';
                     // dd($keyword);
                     $query->where('order_status', 'like', '%' . $keyword . '%')
-                        ->orwhere('order_status', 'like', '%selesai%');
+                        ->orwhere('order_status', 'like', '%selesai%')->whereIn('id', function ($query) {
+                            $query->select('order_id')->from(with(new OrderItem)->getTable())->where('is_review', '=', '0');
+                        });
                     // dd($query);
                 });
             } elseif ($keyword == 'selesai') {

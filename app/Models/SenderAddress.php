@@ -34,5 +34,10 @@ class SenderAddress extends Model
     {
         return $this->hasMany(Order::class);
     }
+    
+    public function adminSenderAddress()
+    {
+        return $this->hasMany(AdminSenderAddress::class);
+    }
 
 }

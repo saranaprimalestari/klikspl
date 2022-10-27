@@ -218,7 +218,8 @@ Route::prefix('administrator')->group(function () {
     Route::name('admin.logout')->post('/logout', [Admin\Auth\LoginController::class, 'logout']);
 
     Route::name('admin.home')->get('/', [Admin\HomeController::class, 'index']);
-
+    Route::resource('/management', Admin\AdminManagementController::class)->middleware('adminMiddle');
+    
     Route::name('admin.product.check.slug')->get('/adminproduct/checkSlug', [Admin\AdminProductController::class, 'checkSlug']);
     Route::name('admin.product.delete.image')->post('/adminproduct/deleteproductimage', [Admin\AdminProductController::class, 'deleteProductImage']);
     Route::name('admin.product.update.status')->post('/adminproduct/updatestatus', [Admin\AdminProductController::class, 'updateStatus']);

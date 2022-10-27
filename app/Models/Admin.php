@@ -39,4 +39,10 @@ class Admin extends Authenticatable
     {
         return $this->belongsTo(Company::class, 'company_id');
     }
+
+    public function AdminSenderAddress()
+    {
+        return $this->hasMany(AdminSenderAddress::class);
+    }
+
 }

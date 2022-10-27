@@ -281,7 +281,7 @@
                         </div>
                     @elseif($orders->order_status === 'pembayaran dikonfirmasi' || $orders->order_status === 'pesanan disiapkan')
                         <div class="card fs-14 border-radius-1-5rem border-0 mb-4 box-shadow">
-                            <div class="card-body p-4">
+                            <div class="card-body p-4 pb-0">
                                 <p class=" fs-14 fw-bold m-0 mb-1">
                                     @if ($orders->order_status === 'pembayaran dikonfirmasi')
                                         Pesanan Perlu Diproses
@@ -303,6 +303,8 @@
                                         pesanan.
                                     @endif
                                 </p>
+                            </div>
+                            <div class="card-footer px-4 pt-0 bg-transparent border-0">
                                 <div class="d-flex justify-content-end">
                                     <div class="row my-3">
                                         <div class="col-md-12">
@@ -350,8 +352,8 @@
                                             method="POST">
                                             @csrf
                                             <input type="hidden" name="order_id" value="{{ $orders->id }}">
-                                            <button type="submit" class="btn btn-danger fs-14 my-2 shadow-none">Siapkan
-                                                Pesanan
+                                            <button type="submit" class="btn btn-danger fs-14 my-2 shadow-none">
+                                                Siapkan Pesanan
                                             </button>
                                         </form>
                                     </div>
@@ -396,7 +398,7 @@
                     @elseif($orders->order_status === 'pesanan dikirim' &&
                         $orders->orderstatusdetail->last()->status != 'Nomor resi telah terbit')
                         <div class="card fs-14 border-radius-1-5rem border-0 mb-4 box-shadow">
-                            <div class="card-body p-4">
+                            <div class="card-body p-4 pb-0">
                                 {{-- <form action="{{ route('shipping.receipt.upload') }}" method="POST">
                                     @csrf --}}
                                 <p class=" fs-14 fw-bold m-0 mb-1">
@@ -425,6 +427,10 @@
                                         @enderror
                                     </div>
                                 </div>
+
+                                {{-- </form> --}}
+                            </div>
+                            <div class="modal-footer border-0 d-flex justify-content-center pb-4">
                                 <div class="d-flex justify-content-end">
                                     <div class="row my-3">
                                         <div class="col-md-12">
@@ -438,7 +444,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                {{-- </form> --}}
                             </div>
                         </div>
 
@@ -1359,7 +1364,7 @@
                 </div>
                 <div class="col-md-12 col-12">
                     <div class="card fs-14 border-radius-1-5rem border-0 mb-4 box-shadow">
-                        <div class="card-body p-4">
+                        <div class="card-body p-4 pb-0">
                             <p class="mb-3 fs-14 fw-bold">Pembayaran</p>
                             <div class="row mb-2">
                                 <div class="col-md-3 col-6">
@@ -1490,10 +1495,10 @@
                                     </div>
                                 </div>
                             @endif
-
-                            <div class="my-3 border-bottom">
+                        </div>
+                        <div class="card-footer bg-transparent border-0 p-4 pt-0">
+                            <div class=" mt-2 mb-3 border-bottom">
                             </div>
-
                             <div class="row">
                                 <div class="col-md-6 col-7">
                                     Total Pembayaran
@@ -1502,7 +1507,6 @@
                                     Rp{{ price_format_rupiah($orders->courier_price + $orders->total_price + $orders->unique_code - $orders->discount) }}
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>

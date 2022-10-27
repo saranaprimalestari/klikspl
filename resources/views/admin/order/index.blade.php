@@ -256,17 +256,33 @@
 
                             </div>
                             <div class="col-md-3">
-                                <div class="fw-600">
-                                    Alamat
+                                <div>
+                                    <div class="fw-600">
+                                        Alamat
+                                    </div>
+                                    <div class="fs-12">
+                                        {{ $order->orderaddress->name }}
+                                    </div>
+                                    <div class="fs-12">
+                                        {{ $order->orderaddress->address }}
+                                    </div>
+                                    <div class="fs-12">
+                                        {{ $order->orderaddress->telp_no }}
+                                    </div>
                                 </div>
-                                <div class="fs-12">
-                                    {{ $order->orderaddress->name }}
-                                </div>
-                                <div class="fs-12">
-                                    {{ $order->orderaddress->address }}
-                                </div>
-                                <div class="fs-12">
-                                    {{ $order->orderaddress->telp_no }}
+                                <div class="pt-2">
+                                    <div class="fw-600">
+                                        Pengirim
+                                    </div>
+                                    <div class="fs-12">
+                                        {{ $order->senderAddress->name }}
+                                    </div>
+                                    <div class="fs-12">
+                                        {{ $order->senderAddress->address }}
+                                    </div>
+                                    <div class="fs-12">
+                                        {{ $order->senderAddress->telp_no }}
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-2">

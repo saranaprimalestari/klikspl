@@ -120,16 +120,18 @@
                                         Edit Alamat
                                     </a>
                                     {{-- @if ($address->is_active != 1) --}}
-                                    <span class="text-secondary mx-1"> | </span>
-                                    <form action="{{ route('senderaddress.destroy', $address) }}" method="post">
-                                        @csrf
-                                        @method('delete')
-                                        <button type="submit"
-                                            class="btn m-0 p-0 text-decoration-none shadow-none text-danger fs-14"
-                                            href="#editAddressModal" data-bs-toggle="modal" role="button">
-                                            Hapus
-                                        </button>
-                                    </form>
+                                    @if ($address->order->count() <= 0)
+                                        <span class="text-secondary mx-1"> | </span>
+                                        <form action="{{ route('senderaddress.destroy', $address) }}" method="post">
+                                            @csrf
+                                            @method('delete')
+                                            <button type="submit"
+                                                class="btn m-0 p-0 text-decoration-none shadow-none text-danger fs-14"
+                                                href="#editAddressModal" data-bs-toggle="modal" role="button">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    @endif
                                     {{-- @endif --}}
                                 </div>
                             </div>

@@ -538,7 +538,7 @@
     <script>
         document.addEventListener("trix-file-accept", event => {
             event.preventDefault();
-            alert("File attachment not supported!");
+            alert("Fitur File attachment tidak diizinkan");
         })
 
         function addImage() {

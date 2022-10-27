@@ -44,7 +44,9 @@ class HomeController extends Controller
             $mustBeProcess = Order::where('order_status', '=', 'pembayaran dikonfirmasi')->get();
             $mustBeSent = Order::where('order_status', '=', 'pesanan disiapkan')->get();
             $onDelivery = Order::where('order_status', '=', 'pesanan dikirim')->get();
-            $arrived = Order::where('order_status', '=', 'selesai')->get();
+            $arrived = Order::where('order_status', '=', 'selesai')->whereIn('id', function ($query) {
+                $query->select('order_id')->from(with(new OrderItem)->getTable())->where('is_review', '=', '0');
+            })->get();
             $finish = Order::where('order_status', '=', 'selesai')->whereIn('id', function ($query) {
                 $query->select('order_id')->from(with(new OrderItem)->getTable())->where('is_review', '=', '1');
             })->get();

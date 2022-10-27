@@ -20,6 +20,8 @@ class WarehouseLogisticHomeController extends Controller
     }
     public function index(Request $request)
     {
+        // dd(auth()->guard('adminMiddle')->user()->adminsenderaddress);
+        // dd(auth()->guard('adminMiddle')->user()->admin_type);
         // dd(Order::where('order_status','=', 'pesanan disiapkan')->get());
         return view('admin.home',[
             'title' => 'Admin Dashboard',

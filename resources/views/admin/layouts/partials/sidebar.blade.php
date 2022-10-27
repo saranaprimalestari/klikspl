@@ -10,8 +10,8 @@
             </li>
             @if (auth()->guard('adminMiddle')->user()->admin_type == 1)
             <li class="nav-item">
-                <a class="nav-link {{ isset($active) ? ($active == 'senderAddress' ? 'active' : '') : '' }}"
-                    href="{{ route('senderaddress.index') }}">
+                <a class="nav-link {{ isset($active) ? ($active == 'management' ? 'active' : '') : '' }}"
+                    href="{{ route('management.index') }}">
                     <i class="bi bi-people"></i> Manajemen Admin
                 </a>
             </li>
