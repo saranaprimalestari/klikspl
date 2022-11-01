@@ -764,7 +764,7 @@ class AdminProductController extends Controller
                         foreach ($originDelete as $deleteOrigin) {
                             $deleteOrigins = $deleteOrigin->delete();
                         }
-
+                        
                         // query mencari variant origin yang tidak ada dari DB
                         $originAdd = ProductOrigin::where('product_id', $product->id)->whereIn('sender_address_id', $request->sender_no_variant)->pluck('sender_address_id')->toArray();
                         // dd($originAdd);

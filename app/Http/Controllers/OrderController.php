@@ -53,6 +53,8 @@ class OrderController extends Controller
             $header = 'Pesanan Belum Dibayar';
         } else if (request(['status'])['status'] == 'pesanan dibayarkan') {
             $header = 'Pesanan Menunggu Verifikasi';
+        } else if (request(['status'])['status'] == 'pembayaran dikonfirmasi') {
+            $header = 'Pembayaran Dikonfirmasi';
         } else if (request(['status'])['status'] == 'pesanan disiapkan') {
             $header = 'Pesanan Disiapkan';
         } else if (request(['status'])['status'] == 'pesanan dikirim') {
@@ -1037,47 +1039,51 @@ class OrderController extends Controller
     public function paymentOrderBind($id)
     {
         $id = Crypt::decrypt($id);
+        // dd($id);
         $this->expiredCheck();
 
         $order = Order::where('id', $id)->with(['orderitem', 'orderstatusdetail'])->first();
         // dd($order->orderitem[0]->product);
-
-        if (!is_null($order->invoice_no)) {
-            return redirect()->route('order.index');
+        if(!is_null($order)){
+            if (!is_null($order->invoice_no)) {
+                return redirect()->route('order.index');
+            }
+            // $now = Carbon::now();
+            // echo $now;
+            // echo "<br><br>";
+            // $due_date = Carbon::createFromFormat('Y-m-d H:s:i', $order->payment_due_date);
+            // echo $due_date;
+            // echo "<br><br>";
+            // if ($due_date > $now) {
+            //     dd('telat');
+            // }
+            foreach ($order->orderitem as $item) {
+                $orderProductIds[] = $item->orderproduct->id;
+            }
+            $orders = Order::where('id', $order->id)->with(['orderitem', 'orderstatusdetail', 'paymentmethod', 'orderaddress'])->get();
+            $orderItems = $order->orderitem;
+            $orderProducts = OrderProduct::whereIn('id', $orderProductIds)->with(['orderitem', 'orderproductimage'])->get();
+    
+            $weightGr = 0;
+            foreach ($orderItems as $item) {
+                $weightGr += ($item->quantity * $item->orderproduct->weight);
+            }
+            $weight = round(($weightGr / 1000), 2);
+    
+            return view(
+                'order.payment',
+                [
+                    'title' => 'Pembayaran',
+                    'active' => 'order',
+                    'orders' => $orders,
+                    'orderItems' => $orderItems,
+                    'orderProducts' => $orderProducts,
+                    'weight' => $weight,
+                ]
+            );
+        }else{
+            return redirect()->route('order.index')->with(['failed' => 'pesanan sudah kedaluwarsa']);
         }
-        // $now = Carbon::now();
-        // echo $now;
-        // echo "<br><br>";
-        // $due_date = Carbon::createFromFormat('Y-m-d H:s:i', $order->payment_due_date);
-        // echo $due_date;
-        // echo "<br><br>";
-        // if ($due_date > $now) {
-        //     dd('telat');
-        // }
-        foreach ($order->orderitem as $item) {
-            $orderProductIds[] = $item->orderproduct->id;
-        }
-        $orders = Order::where('id', $order->id)->with(['orderitem', 'orderstatusdetail', 'paymentmethod', 'orderaddress'])->get();
-        $orderItems = $order->orderitem;
-        $orderProducts = OrderProduct::whereIn('id', $orderProductIds)->with(['orderitem', 'orderproductimage'])->get();
-
-        $weightGr = 0;
-        foreach ($orderItems as $item) {
-            $weightGr += ($item->quantity * $item->orderproduct->weight);
-        }
-        $weight = round(($weightGr / 1000), 2);
-
-        return view(
-            'order.payment',
-            [
-                'title' => 'Pembayaran',
-                'active' => 'order',
-                'orders' => $orders,
-                'orderItems' => $orderItems,
-                'orderProducts' => $orderProducts,
-                'weight' => $weight,
-            ]
-        );
     }
 
     public function orderDetailBind($id)
@@ -1159,7 +1165,7 @@ class OrderController extends Controller
                 $due_date = Carbon::createFromFormat('Y-m-d H:s:i', $userOrder->payment_due_date);
                 // dd($due_date);
                 if ($now > $due_date) {
-                    // dd('expired');
+                    dd('expired');
                     $userOrder->order_status = 'expired';
                     $userOrder->save();
                     if ($userOrder->save()) {
@@ -1202,15 +1208,20 @@ class OrderController extends Controller
                             // echo "<br><br>";
 
                             $cartItem = CartItem::where([['user_id', '=', auth()->user()->id], ['product_id', '=', $orderItem->product_id], ['product_variant_id', '=', $orderItem->product_variant_id]])->withTrashed()->first();
-                            $cartItem->deleted_at = NULL;
-                            $cartItem->save();
+                            if (!is_null($cartItem)) {
+                                $cartItem->deleted_at = NULL;
+                                $cartItem->save();
+                            }
                             // $orderProductImage->delete();
                             // $orderItem->orderProduct->delete();
                             // print_r($cartItem);
                         } else {
+
                             $cartItem = CartItem::where([['user_id', '=', auth()->user()->id], ['product_id', '=', $orderItem->product_id], ['product_variant_id', '=', $orderItem->product_variant_id]])->withTrashed()->first();
-                            $cartItem->deleted_at = NULL;
-                            $cartItem->save();
+                            if (!is_null($cartItem)) {
+                                $cartItem->deleted_at = NULL;
+                                $cartItem->save();
+                            }
                             // $orderProductImage->delete();
                             // $orderItem->orderProduct->delete();
                         }

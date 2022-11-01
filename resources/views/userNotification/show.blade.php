@@ -55,7 +55,7 @@
                                                         {{ $item->orderproduct->name }}
                                                     </div>
                                                     <div class="text-truncate order-items-product-variant text-grey">
-                                                        Varian: {{ $item->orderproduct->variant_name }}
+                                                        Varian: {{ (isset($item->orderproduct->variant_name)) ? $item->orderproduct->variant_name : 'Tidak ada varian' }}
                                                     </div>
                                                     <div
                                                         class="text-truncate order-items-product-price-qty text-grey text-end text-md-start">

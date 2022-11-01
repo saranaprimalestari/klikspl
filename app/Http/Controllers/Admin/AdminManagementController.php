@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\AdminSenderAddress;
 use App\Models\AdminType;
 use App\Models\SenderAddress;
+use Illuminate\Support\Facades\Validator;
 
 class AdminManagementController extends Controller
 {
@@ -63,7 +64,7 @@ class AdminManagementController extends Controller
             return redirect()->back()->with(['failed' => 'Perusahaan harus dipilih']);
         }
 
-        if (!$request->admin_type == 1 || is_null($request->sender_address_id)) {
+        if ($request->admin_type != 1 && is_null($request->sender_address_id)) {
             return redirect()->back()->with(['failed' => 'Pilih setidaknya satu lokasi pengirim']);
         }
         // dd($request);
@@ -152,6 +153,23 @@ class AdminManagementController extends Controller
      */
     public function update(Request $request, Admin $management)
     {
+        $validatedData = $request->validate(
+            [
+                'firstname' => 'nullable',
+                'lastname' => 'nullable',
+                'admin_type' => 'required',
+                'company_id' => 'nullable',
+                'telp_no' => 'nullable|min:10|max:13|regex:/^[0-9]*$/',
+                // 'sender_address_id' => 'required',
+            ],
+            [
+                'admin_type.required' => 'Tipe Admin tidak boleh kosong!',
+                // 'company_id.required' => 'Perusahaan tidak boleh kosong!',
+                'password.min' => 'Password minimal terdiri dari 5 karakter!',
+                // 'sender_address_id.required' => 'Pilih setidaknya satu lokasi pengirim!',
+            ]
+        );
+
         if ($request->admin_type == 1 && is_null($request->company_id)) {
             echo 'masuk sini';
             $request->merge(['company_id' => 0]);
@@ -159,44 +177,56 @@ class AdminManagementController extends Controller
             return redirect()->back()->with(['failed' => 'Perusahaan harus dipilih']);
         }
 
-        if (!$request->admin_type == 1 || is_null($request->sender_address_id)) {
+        if ($request->admin_type != 1 && $request->admin_type != 3 && (is_null($request->sender_address_id) || !isset($request->sender_address_id) || empty($request->sender_address_id))) {
+            // dd($request->admin_type);
             return redirect()->back()->with(['failed' => 'Pilih setidaknya satu lokasi pengirim']);
         }
-        // dd($request);
-        $validatedData = $request->validate(
-            [
-                'username' => ['required', 'unique:users', 'alpha_dash', 'min:5', 'max:255', 'string'],
-                'firstname' => 'nullable',
-                'lastname' => 'nullable',
-                'admin_type' => 'required',
-                'company_id' => 'nullable',
-                'telp_no' => 'nullable',
-                'email' => 'required|unique:admins|email',
-                'password' => 'min:5|max:255',
-                // 'sender_address_id' => 'required',
-            ],
-            [
-                'username.required' => 'Username harus diisi!',
-                'username.unique' => 'Username harus harus unik!',
-                'username.min' => 'Username minimal terdiri dari 5 karakter!',
-                'username.max' => 'Username minimal terdiri dari 255 karakter!',
-                'admin_type.required' => 'Tipe Admin tidak boleh kosong!',
-                // 'company_id.required' => 'Perusahaan tidak boleh kosong!',
-                'email.required' => 'Email tidak boleh kosong!',
-                // 'password.required' => 'Password tidak boleh kosong!',
-                'password.min' => 'Password minimal terdiri dari 5 karakter!',
-                // 'sender_address_id.required' => 'Pilih setidaknya satu lokasi pengirim!',
-            ]
-        );
 
-        if (!is_null($request->password)) {
-            $validatedData['password'] = Hash::make($validatedData['password']);
+        if ($request->username != $management->username) {
+            $validateUsername = $request->validate(
+                [
+                    'username' => ['required', 'unique:users', 'alpha_dash', 'min:5', 'max:255', 'string'],
+                ],
+                [
+                    'username.required' => 'Username harus diisi!',
+                    'username.unique' => 'Username harus harus unik!',
+                    'username.min' => 'Username minimal terdiri dari 5 karakter!',
+                    'username.max' => 'Username minimal terdiri dari 255 karakter!',
+                ]
+            );
+            $validatedData['username'] = $validateUsername['username'];
         }
-        // dd($request);
+        if ($request->email != $management->email) {
+            $validateEmail = $request->validate(
+                [
+                    'email' => 'required|unique:admins|email'
+                ],
+                [
+                    'email.required' => 'Email tidak boleh kosong!',
+                    'email.unique' => 'Email harus unik!',
+                    'email.required' => 'Format email tidak valid',
+                ]
+            );
+            $validatedData['email'] = $validateEmail['email'];
+        }
+        // dd($validatedData);
 
+        if (!is_null($request->password) && !Hash::check($request->password, $management->password)) {
+            $validatedData['password'] = $request->validate(
+                [
+                    'password' => 'min:5|max:255',
+                ],
+                [
+                    'password.min' => 'Password minimal terdiri dari 5 karakter!',
+                ]
+            );
+            $validatedData['password'] = Hash::make($request->password);
+        }
 
-        if (count($request->sender_address_id) > 0) {
-            if (count($management->AdminSenderAddress) > 0) {
+        $updateAdmin = $management->fill($validatedData)->save();
+        
+        if (count($management->AdminSenderAddress) > 0) {
+            if (count($request->sender_address_id) > 0) {
                 foreach ($request->sender_address_id as $key => $sender) {
                     // dd($management->AdminSenderAddress);
                     echo $sender;
@@ -222,7 +252,13 @@ class AdminManagementController extends Controller
                         }
                     }
                 }
-            } else {
+            } elseif ($request->admin_type == 1 && $request->admin_type == 3  && !isset($request->sender_address_id)) {
+                foreach ($management->AdminSenderAddress as $SenderAddressDelete) {
+                    $SenderAddressDelete->delete();
+                }
+            }
+        } else {
+            if (isset($request->sender_address_id)) {
                 foreach ($request->sender_address_id as $key => $sender) {
                     $managementOrigin = AdminSenderAddress::create([
                         'admin_id' => $management->id,
@@ -230,10 +266,13 @@ class AdminManagementController extends Controller
                     ]);
                 }
             }
-        } else {
-            
         }
-        dd($request);
+
+        if ($updateAdmin) {
+            return redirect()->route('management.index')->with(['success' => 'Berhasil memperbarui data admin']);
+        } else {
+            return redirect()->route('management.index')->with(['success' => 'Gagal memperbarui data admin']);
+        }
     }
 
     /**

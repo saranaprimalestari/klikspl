@@ -61,6 +61,13 @@
                     </button>
                 </form>
                 <form class="status-form" action="{{ route('order.index') }}" method="GET">
+                    <input type="hidden" name="status" value="pembayaran dikonfirmasi">
+                    <button type="submit"
+                        class="btn text-dark text-decoration-none shadow-none fs-13 btn-order-status btn-outline-danger me-2 my-1 shadow-none border-radius-075rem {{ isset($status) ? ($status == 'pembayaran dikonfirmasi' ? 'active-menu border-danger' : '') : '' }}">
+                        Pembayaran&nbsp;Dikonfirmasi
+                    </button>
+                </form>
+                <form class="status-form" action="{{ route('order.index') }}" method="GET">
                     <input type="hidden" name="status" value="pesanan disiapkan">
                     <button type="submit"
                         class="btn text-dark text-decoration-none shadow-none fs-13 btn-order-status btn-outline-danger me-2 my-1 shadow-none border-radius-075rem {{ isset($status) ? ($status == 'pesanan disiapkan' ? 'active-menu border-danger' : '') : '' }}">
@@ -141,7 +148,7 @@
                                                             {{ !is_null($item->orderproduct->variant_name) ? $item->orderproduct->variant_name : 'Tidak ada Varian' }}
                                                         </div>
                                                         <div
-                                                            class="text-truncate order-items-product-price-qty text-grey text-end text-md-start fs-13">
+                                                            class="text-truncate order-items-product-price-qty text-grey text-md-start fs-13">
                                                             Jumlah:
                                                             {{ $item->quantity }} item
                                                         </div>
@@ -253,7 +260,7 @@
                                         </a>
                                     @else
                                         <a href="{{ route('order.show', $order) }}"
-                                            class="text-danger fs-13 my-1 mx-1 me-2 text-decoration-none fw-bold">
+                                            class="text-danger fs-13 my-1 mx-1 me-2 text-decoration-none fw-bold d-none d-sm-block">
                                             Detail Pesanan
                                         </a>
                                     @endif
@@ -265,7 +272,7 @@
                             @if ($order->order_status == 'pesanan dikirim' &&
                                 $order->orderstatusdetail->last()->status == 'Nomor resi telah terbit')
                                 <div class="row d-flex align-items-center fs-13">
-                                    <div class="col-md-9 col-12 my-2">
+                                    <div class="col-md-9 col-12 my-2 d-none d-sm-block">
                                         Tekan tombol <strong>PESANAN DITERIMA</strong> jika pesanan sudah sampai dan anda
                                         terima
                                     </div>
@@ -288,7 +295,7 @@
                                 @endforeach
                                 @if ($itemNotReviewed > 0)
                                     <div class="row d-flex align-items-center fs-13">
-                                        <div class="col-md-9 col-12 my-2">
+                                        <div class="col-md-9 col-12 my-2 d-none d-sm-block">
                                             Pesanan kamu sudah selesai, yuk <strong>Beri Nilai dan Ulasan</strong> produk
                                             yang
                                             kamu pesan. Penilaian kamu sangat berharga untuk perkembangan KLIKSPL

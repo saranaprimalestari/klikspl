@@ -66,7 +66,9 @@
             <div class="card admin-card-dashboard border-radius-1-5rem fs-14 mb-3 box-shadow">
                 @if (auth()->guard('adminMiddle')->user()->admin_type == 1)
                     <div class="card-header bg-transparent px-4 pt-4 pb-0 border-0">
-                        {{ $promo->company->name }}
+                        <div class="fw-600">
+                            {{ $promo->company->name }}
+                        </div>
                     </div>
                 @endif
                 <div class="card-body p-4">

@@ -65,7 +65,7 @@
                                     @enderror
                                 @else
                                     <p class="m-0">
-                                        {{ auth()->guard('adminMiddle')->user()->company->id }}
+                                        {{ auth()->guard('adminMiddle')->user()->company->name }}
                                     </p>
                                     <input type="hidden" name="company_id"
                                         value="{{ auth()->guard('adminMiddle')->user()->company_id }}">

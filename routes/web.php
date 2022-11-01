@@ -243,6 +243,8 @@ Route::prefix('administrator')->group(function () {
     Route::name('delive.order')->post('/adminorder/delive-order', [Admin\AdminOrderController::class, 'deliveOrder']);
     Route::name('decline.payment')->post('/adminorder/decline-payment', [Admin\AdminOrderController::class, 'declinePayment']);
     Route::name('shipping.receipt.upload')->post('/adminorder/shipping-receipt-upload', [Admin\AdminOrderController::class, 'shippingReceiptUpload']);
+    Route::name('confirm.cancellation.order')->post('/adminorder/confirm-cancellation-order', [Admin\AdminOrderController::class, 'confirmCancellationOrder']);
+
     Route::resource('/adminorder', Admin\AdminOrderController::class)->middleware('adminMiddle');
 
     Route::name('admin.update.sender.address')->post('/senderaddress/updatestatus', [Admin\SenderAddressController::class, 'update_status'])->middleware('adminMiddle');

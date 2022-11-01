@@ -76,7 +76,7 @@ class RegisterController extends Controller
                 $request->merge(['telp_no' => $telp_no]);
                 $validatedData = $request->validate(
                     [
-                        'telp_no' => 'required|unique:users|min:12|max:13|regex:/^[0-9]*$/'
+                        'telp_no' => 'required|unique:users|min:10|max:13|regex:/^[0-9]*$/'
                     ],
                     [
                         'telp_no.required' => 'Nomor telepon harus diisi',

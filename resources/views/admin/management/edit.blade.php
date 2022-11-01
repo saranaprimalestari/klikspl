@@ -148,7 +148,7 @@
                         <div class="col-sm-9">
                             <input required type="text" class="form-control fs-14 @error('email') is-invalid @enderror"
                                 id="email" name="email" placeholder="contoh: email@klikspl.com"
-                                value="{{ $admin->email }}{{ old('email') }}">
+                                value="{{ $admin->email }}{{ !is_null(old('email')) ? '' : old('email') }}">
                             @error('email')
                                 <div class="invalid-feedback">
                                     {{ $message }}

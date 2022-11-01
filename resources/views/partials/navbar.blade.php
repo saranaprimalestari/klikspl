@@ -220,7 +220,17 @@
                                                         <div class="col-6 ps-0 text-truncate" data-bs-toggle="tooltip"
                                                             data-bs-placement="bottom"
                                                             title="{{ $cart->product->name }}">
-                                                            {{ $cart->product->name }}
+                                                            <p class="m-0 fs-14">
+                                                                {{ $cart->product->name }}
+                                                            </p>
+                                                            <p class="m-0 fs-12 text-grey">
+                                                                Varian: 
+                                                                @if ($cart->product_variant_id != 0)
+                                                                    {{ $cart->productvariant->variant_name }}
+                                                                @else
+                                                                    Tidak ada varian
+                                                                @endif
+                                                            </p>
                                                         </div>
                                                         {{-- <div class="col-2 ps-3 text-truncate">
                                                            x{{ $cart->quantity }}
@@ -405,9 +415,9 @@
                                                             title="{{ is_null($order->invoice_no) ? 'No.Invoice belum terbit' : $order->invoice_no }}">
                                                             {{ is_null($order->invoice_no) ? 'No.Invoice belum terbit' : $order->invoice_no }}
                                                         </div>
-                                                        <div class="col-5 ps-0 text-end text-truncate"  data-bs-toggle="tooltip"
-                                                        data-bs-placement="bottom"
-                                                        title="{{ $order->order_status }}">
+                                                        <div class="col-5 ps-0 text-end text-truncate"
+                                                            data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                            title="{{ $order->order_status }}">
                                                             @if ($order->order_status == 'pembayaran ditolak')
                                                                 <span class="badge bg-danger">
                                                                     {{ $order->order_status }}
@@ -526,7 +536,7 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="https://wa.me/625113269593"><i class="bi bi-chat-dots"></i> Customer
-                    Service</a>
+                    Care</a>
             </li>
         </ul>
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">

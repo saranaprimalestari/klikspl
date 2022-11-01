@@ -382,6 +382,38 @@
                                     </div>
                                     <div class="row mb-2">
                                         <div class="col-md-2 col-4">
+                                            Dikirim dari
+                                        </div>
+                                        <div class="col-md-10 col-8 d-flex">
+                                            {{-- <span class="me-2">
+                                                :
+                                            </span> --}}
+                                            <span>
+                                                <p class="m-0 checkout-shipment-address-name">
+                                                    {{ $order->senderAddress->name }}
+                                                </p>
+                                                <p class="m-0 checkout-shipment-address-phone">
+                                                    {{ $order->senderAddress->telp_no }}
+                                                </p>
+                                                <p class="m-0 checkout-shipment-address-address">
+                                                    {{ $order->senderAddress->address }}
+                                                </p>
+                                                <div class="checkout-shipment-address-city">
+                                                    <span class="m-0 me-1 ">
+                                                        {{ $order->senderAddress->city->name }},
+                                                    </span>
+                                                    <span class="m-0 checkout-shipment-address-province">
+                                                        {{ $order->senderAddress->province->name }}
+                                                    </span>
+                                                    <span class="m-0 checkout-shipment-address-postalcode">
+                                                        {{ !empty($order->senderAddress->postal_code) ? ', ' . $order->senderAddress->postal_code : '' }}
+                                                    </span>
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-md-2 col-4">
                                             Alamat
                                         </div>
                                         <div class="col-md-10 col-8 d-flex">

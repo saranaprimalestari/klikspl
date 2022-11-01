@@ -88,11 +88,11 @@ class AdminOrderController extends Controller
         //     $orders =  Order::withTrashed()->with(['orderitem', 'orderstatusdetail'])->filterAdmin(request(['status', 'search', 'date_start', 'date_end', 'orderBy']))->paginate(100)->withquerystring();
         // } else 
         if (auth()->guard('adminMiddle')->user()->admin_type == 2 || auth()->guard('adminMiddle')->user()->admin_type == 4) {
-            $orders =  Order::withTrashed()->with(['orderitem', 'orderstatusdetail'])->filterAdmin(request(['status', 'search', 'date_start', 'date_end', 'orderBy']))->where(['sender_address_id' => function($query){
+            $orders =  Order::withTrashed()->with(['orderitem', 'orderstatusdetail'])->filterAdmin(request(['status', 'search', 'date_start', 'date_end', 'orderBy']))->where(['sender_address_id' => function ($query) {
                 $query->select('sender_address_id')
-                ->from('admin_sender_addresses')
-                ->whereColumn('sender_address_id', 'orders.sender_address_id')
-                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+                    ->from('admin_sender_addresses')
+                    ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                    ->where('admin_id', '=', auth()->guard('adminMiddle')->user()->id);
             }])->paginate(100)->withquerystring();
         } else {
             $orders =  Order::withTrashed()->with(['orderitem', 'orderstatusdetail'])->filterAdmin(request(['status', 'search', 'date_start', 'date_end', 'orderBy']))->paginate(100)->withquerystring();
@@ -234,9 +234,15 @@ class AdminOrderController extends Controller
                     }
                     $userOrder->delete();
                 }
+
+                // check apakah sudah di delete dan tidak memiliki invoice no
             } elseif (!is_null($userOrder->deleted_at) && is_null($userOrder->invoice_no)) {
+
+                // mengambil data waktu delete dan diubah menjadi hitungan jam
                 $deleted_at = Carbon::createFromFormat('Y-m-d H:s:i', $userOrder->deleted_at);
                 $diff_in_hours = $deleted_at->diffInHours($now);
+
+                // jika waktu delete sudah melebihi 24 jam / 1 hari
                 if ($diff_in_hours > 24) {
 
                     foreach ($userOrder->orderItem as $orderItem) {
@@ -244,8 +250,43 @@ class AdminOrderController extends Controller
                             foreach ($orderItem->orderProduct->orderProductImage as $orderProductImage) {
                             }
                             $cartItem = CartItem::where([['user_id', '=', $orderItem->user_id], ['product_id', '=', $orderItem->product_id], ['product_variant_id', '=', $orderItem->product_variant_id]])->withTrashed()->first();
-                            $cartItem->deleted_at = NULL;
-                            $cartItem->save();
+
+                            // echo "order item id : ";
+                            // print_r($orderItem->id);
+                            // echo "<br>";
+                            // echo "<br>";
+                            if (!is_null($cartItem)) {
+                                // echo "cart item not null : ";
+                                // echo "<br>";
+                                $cartItem->deleted_at = NULL;
+                                $cartItem->save();
+                                // print_r($cartItem);
+                                // echo "<br>";
+                                // echo "<br>";
+                                // print_r($cartItem->id);
+                                // echo "<br>";
+                                // echo "<br>";
+                                // echo "<br>";
+                            } else {
+                                // $cartItemCreateNew = CartItem::create([
+                                //     'user_id' => $orderItem->user_id,
+                                //     'user_id' => $orderItem->user_id,
+                                //     'user_id' => $orderItem->user_id,
+                                // ]);
+
+                                // echo "cart item null : ";
+                                // echo "<br>";
+                                // echo "user id : ";
+                                // print_r($orderItem->user_id);
+                                // echo "<br>";
+                                // echo "product id : ";
+                                // print_r($orderItem->product_id);
+                                // echo "<br>";
+                                // echo "product variant id : ";
+                                // print_r($orderItem->product_variant_id);
+                                // echo "<br>";
+                                // echo "<br>";
+                            }
                             // $orderProductImage->delete();
                             // $orderItem->orderProduct->delete();
                         } else {
@@ -260,6 +301,7 @@ class AdminOrderController extends Controller
                 }
             }
         }
+        // dd('test');
     }
     public function orderDetailBind($id)
     {
@@ -432,13 +474,13 @@ class AdminOrderController extends Controller
         }
         //commentes
         // dd($request->file('proof_of_payment')->guessExtension());
-        if(!is_null($request->file('proof_of_payment')) || $request->file('proof_of_payment')){
+        if (!is_null($request->file('proof_of_payment')) || $request->file('proof_of_payment')) {
             $folderPathSave = 'user/' . auth()->user()->username . '/order/' . $request->order_id . '/proof-of-payment';
-    
+
             // echo $folderPathSave;
             // echo "<br><br>";
             // echo $request->order_id;
-    
+
             if ($request->file('proof_of_payment')) {
                 // echo 'if req proof';
                 $validatedData['proof_of_payment'] = $request->file('proof_of_payment')->store($folderPathSave);
@@ -569,7 +611,7 @@ class AdminOrderController extends Controller
 
         $order->order_status = 'pembayaran ditolak';
         $order->save();
-        
+
         if ($order->save()) {
             foreach ($order->orderitem as $item) {
                 $item->order_item_status = 'pembayaran ditolak';
@@ -639,6 +681,38 @@ class AdminOrderController extends Controller
         if (auth()->guard('adminMiddle')->user()->admin_type != 1  && auth()->guard('adminMiddle')->user()->admin_type != 2) {
             // dd(auth()->guard('adminMiddle')->user()->admin_type);
             abort(403);
+        }
+    }
+
+    public function confirmCancellationOrder(Request $request)
+    {
+        $this->expiredCheck();
+        $order = Order::where('id', '=', $request->order_id)->first();
+        $orderDetail = OrderStatusDetail::where([['order_id','=', $request->order_id], ['status','=','pengajuan pembatalan']])->first();
+        $cancel_order_detail = explode(': ', $orderDetail->status_detail);
+        // dd($cancel_order_detail);
+
+        // dd($orderDetail->status_detail);
+        // dd($request);
+
+        $order->order_status = 'pesanan dibatalkan';
+        $order->save();
+        if ($order->save()) {
+            foreach ($order->orderitem as $item) {
+                $item->order_item_status = 'pesanan dibatalkan';
+                $item->save();
+            }
+            $order->delete();
+            $orderStatus = OrderStatusDetail::create(
+                [
+                    'order_id' => $order->id,
+                    'status' => 'Pesanan Dibatalkan',
+                    // 'status_detail' => 'Pembatalan Dikonfirmasi oleh Admin KLIKSPL.',
+                    'status_detail' => 'Pengajuan Pembatalan Dikonfirmasi oleh Admin KLIKSPL. Alasan pembatalan: ' . $cancel_order_detail[1] . '. Dana yang sudah dibayarkan akan dikembalikan ke nonor rekening yang digunakan saat melakukan pembayaran',
+                    'status_date' => date('Y-m-d H:i:s')
+                ]
+            );
+            return redirect()->route('adminorder.index')->with('success', 'Berhasil mengonfirmasi pembatalan pesanan.');
         }
     }
 }

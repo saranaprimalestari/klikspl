@@ -152,7 +152,7 @@
                                     Rp{{ price_format_rupiah($promo->min_transaction) }}
                                 </td>
                                 <td>
-                                    @if ($promo->promo_type_id == 1)
+                                    @if ($promo->promo_type_id == 1 || $promo->promo_type_id == 3)
                                         {{ $promo->discount }}%
                                     @else
                                         Rp{{ price_format_rupiah($promo->discount) }}

@@ -430,10 +430,10 @@
 
                                 {{-- </form> --}}
                             </div>
-                            <div class="modal-footer border-0 d-flex justify-content-center pb-4">
-                                <div class="d-flex justify-content-end">
-                                    <div class="row my-3">
-                                        <div class="col-md-12">
+                            <div class="modal-footer border-0 px-4 pb-4">
+                                {{-- <div class="d-flex justify-content-end"> --}}
+                                    <div class="row m-0">
+                                        <div class="col-md-12 p-0">
                                             @if ($orders->order_status === 'pesanan dikirim')
                                                 <button type="button" class="shipping-receipt-btn btn btn-danger fs-14"
                                                     data-bs-toggle="modal" data-bs-target="#shippingReceiptUpload">
@@ -443,7 +443,7 @@
                                             @endif
                                         </div>
                                     </div>
-                                </div>
+                                {{-- </div> --}}
                             </div>
                         </div>
 
@@ -891,7 +891,7 @@
                                     <div class="modal-footer border-0 d-flex justify-content-center pb-4">
                                         <button type="button" class="btn btn-outline-secondary fs-14"
                                             data-bs-dismiss="modal">Tutup</button>
-                                        <form class="confirm-payment-form" action="{{ route('confirm.payment') }}"
+                                        <form class="confirm-cancellation-payment-form" action="{{ route('confirm.cancellation.order') }}"
                                             method="POST" enctype="multipart/form-data">
                                             @csrf
                                             <input type="hidden" name="order_id" value="{{ $orders->id }}">
