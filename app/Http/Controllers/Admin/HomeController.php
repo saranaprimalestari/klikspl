@@ -11,6 +11,7 @@ use App\Models\CartItem;
 use App\Models\OrderItem;
 use App\Models\PromoBanner;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
@@ -112,14 +113,30 @@ class HomeController extends Controller
             }])->whereIn('id', function ($query) {
                 $query->select('order_id')->from(with(new OrderItem)->getTable())->where('is_review', '=', '1');
             })->get();
-    
-            $canceled = Order::withTrashed()->where(['sender_address_id' => function($query){
-                $query->select('sender_address_id')
-                ->from('admin_sender_addresses')
-                ->whereColumn('sender_address_id', 'orders.sender_address_id')
-                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
-            }])->where('order_status', '=', 'expired')->orWhere('order_status', '=', 
-            'pesanan dibatalkan')->get();
+            
+            $canceled = Order::withTrashed()->join('admin_sender_addresses',function($join) {
+                    $join->on('orders.sender_address_id','=','admin_sender_addresses.sender_address_id')
+                    ->where('admin_sender_addresses.admin_id','=',auth()->guard('adminMiddle')->user()->id);
+                })->where('orders.order_status','=','expired')
+                ->orWhere('orders.order_status','=','pesanan dibatalkan')
+                ->get();
+            // $canceled = DB::table('orders')
+            // ->select('*')
+            // ->join('admin_sender_addresses',function($join) {
+            //     $join->on('orders.sender_address_id','=','admin_sender_addresses.sender_address_id')
+            //     ->where('admin_sender_addresses.admin_id','=',auth()->guard('adminMiddle')->user()->id);
+            // })
+            // ->where('orders.order_status','=','expired')
+            // ->orWhere('orders.order_status','=','pesanan dibatalkan')
+            // ->get();
+
+            // $canceled = Order::withTrashed()->where(['sender_address_id' => function($query){
+            //     $query->select('sender_address_id')
+            //     ->from('admin_sender_addresses')
+            //     ->whereColumn('sender_address_id', 'orders.sender_address_id')
+            //     ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+            // }])->where('order_status', '=', 'expired')->orWhere('order_status', '=', 
+            // 'pesanan dibatalkan')->get();
 
             $outStock = Product::where('company_id', '=', auth()->guard('adminMiddle')->user()->company_id)->with(['productvariant' => fn ($query) => $query->where('stock', '=', '0')])
             ->whereHas(

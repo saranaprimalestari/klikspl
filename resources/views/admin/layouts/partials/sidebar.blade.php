@@ -87,6 +87,14 @@
                                 <a href="{{ route('adminorder.index') }}"
                                     class="text-decoration-none link-dark ms-4 py-1 ps-3 d-inline-flex nav-link {{ isset($status) ? ($status == '' ? 'active' : '') : '' }}">Semua</a>
                             </li>
+                            <li class="nav-item w-100">
+                                <form class="status-form" action="{{ route('adminorder.index') }}" method="GET">
+                                    <input type="hidden" name="status" value="aktif">
+                                    <input type="submit"
+                                        class="text-decoration-none shadow-none link-dark ms-4 py-1 ps-3 d-inline-flex nav-link border-0 bg-transparent {{ isset($status) ? ($status == 'aktif' ? 'active' : '') : '' }}"
+                                        value="Aktif">
+                                </form>
+                            </li>
                             {{-- <a href="{{ route('adminorder.index') }}"
                             class="text-decoration-none link-dark ms-4 py-1 ps-3 d-inline-flex nav-link {{ isset($status) ? ($status == 'belum bayar' ? 'active-menu border-danger' : '') : '' }}">Menunggu
                             Pembayaran</a> --}}

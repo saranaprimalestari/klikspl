@@ -39,6 +39,8 @@ class AdminOrderController extends Controller
         if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2) {
             if (request(['status'])['status'] == '') {
                 $header = 'Semua Pesanan';
+            } else if (request(['status'])['status'] == 'aktif') {
+                $header = 'Menunggu Pembayaran';
             } else if (request(['status'])['status'] == 'belum bayar') {
                 $header = 'Menunggu Pembayaran';
             } else if (request(['status'])['status'] == 'pesanan dibayarkan') {
@@ -685,7 +687,7 @@ class AdminOrderController extends Controller
     }
 
     public function confirmCancellationOrder(Request $request)
-    {
+    {   
         $this->expiredCheck();
         $order = Order::where('id', '=', $request->order_id)->first();
         $orderDetail = OrderStatusDetail::where([['order_id','=', $request->order_id], ['status','=','pengajuan pembatalan']])->first();
@@ -694,7 +696,59 @@ class AdminOrderController extends Controller
 
         // dd($orderDetail->status_detail);
         // dd($request);
+        $stockVariant = 0;
+        $soldVariant = 0;
+        foreach ($order->orderitem as $orderitem) {
+            $product = Product::where('id', '=', $orderitem->product_id)->first();
+            if (!empty($orderitem->product_variant_id)) {
+                $productVariantId = ProductVariant::where('id', '=', $orderitem->product_variant_id)->first();
+                // echo "product variant stock before : " .$productVariantId->stock;
+                // echo "<br>";
+                // echo "product variant sold before : " .$productVariantId->sold;
+                // echo "<br>";
+                $productVariantId->stock = (int)$productVariantId->stock + (int)$orderitem->quantity;
+                $productVariantId->sold = (int)$productVariantId->sold - (int)$orderitem->quantity;
+                // echo "product variant stock : " .$productVariantId->stock;
+                // echo "<br>";
+                // echo "product variant sold : " .$productVariantId->sold;
+                // echo "<br>";
+                // echo "order item qty : " .$orderitem->quantity;
+                // echo "<br>";
+                $stockVariant += $productVariantId->stock;
+                $soldVariant += $productVariantId->sold;
+                $productVariantId->save();
 
+                // $product->stock = $stockVariant;
+                // $product->sold = $soldVariant;
+                // $product->save();
+            } else {
+                $product->stock = (int)$product->stock + (int)$orderitem->quantity;
+                $product->sold = (int)$product->sold - (int)$orderitem->quantity;
+                // echo "product stock : " . $product->stock;
+                // echo "<br>";
+                // echo "product sold : " . $product->sold;
+                // echo "<br>";
+                // echo "order item qty : " . $orderitem->quantity;
+                // echo "<br>";
+                $product->save();
+            }
+            // echo "product id : " . $product->id;
+            // echo "<br>";
+            // echo "not empty : " . !empty($product->productvariant);
+            // echo "<br>";
+            // echo "not null : " . !is_null($product->productvariant);
+            // echo "<br>";
+            // echo "count : " . count($product->productvariant);
+            // echo "<br>";
+            if (count($product->productvariant) > 0) {
+                // echo ('ada product variant');
+                // echo "<br>";
+                $product->stock = $product->productvariant->sum('stock');
+                $product->sold = $product->productvariant->sum('sold');
+                $product->save();
+            }
+            // dd($request);
+        }
         $order->order_status = 'pesanan dibatalkan';
         $order->save();
         if ($order->save()) {
@@ -714,5 +768,100 @@ class AdminOrderController extends Controller
             );
             return redirect()->route('adminorder.index')->with('success', 'Berhasil mengonfirmasi pembatalan pesanan.');
         }
+    }
+
+    public function cancelOrder(Request $request)
+    {   
+        // dd($request);
+        $this->expiredCheck();
+        $order = Order::where('id', '=', $request->order_id)->first();
+
+        $cancel_order_detail = '';
+        if(!is_null($request->cancel_order_detail)){
+            $cancel_order_detail = $request->cancel_order_detail;
+        }
+
+        $stockVariant = 0;
+        $soldVariant = 0;
+        foreach ($order->orderitem as $orderitem) {
+            $product = Product::where('id', '=', $orderitem->product_id)->first();
+            if (!empty($orderitem->product_variant_id)) {
+                $productVariantId = ProductVariant::where('id', '=', $orderitem->product_variant_id)->first();
+                
+                $productVariantId->stock = (int)$productVariantId->stock + (int)$orderitem->quantity;
+                $productVariantId->sold = (int)$productVariantId->sold - (int)$orderitem->quantity;
+                
+                $stockVariant += $productVariantId->stock;
+                $soldVariant += $productVariantId->sold;
+                $productVariantId->save();
+
+            } else {
+                $product->stock = (int)$product->stock + (int)$orderitem->quantity;
+                $product->sold = (int)$product->sold - (int)$orderitem->quantity;
+                
+                $product->save();
+            }
+           
+            if (count($product->productvariant) > 0) {
+                $product->stock = $product->productvariant->sum('stock');
+                $product->sold = $product->productvariant->sum('sold');
+                $product->save();
+            }
+        }
+
+        $order->order_status = 'pesanan dibatalkan';
+        $order->save();
+        if ($order->save()) {
+            foreach ($order->orderitem as $item) {
+                $item->order_item_status = 'pesanan dibatalkan';
+                $item->save();
+            }
+            $order->delete();
+            $orderStatus = OrderStatusDetail::create(
+                [
+                    'order_id' => $order->id,
+                    'status' => 'Pesanan Dibatalkan',
+                    // 'status_detail' => 'Pembatalan Dikonfirmasi oleh Admin KLIKSPL.',
+                    'status_detail' => 'Pesanan dibatalkan oleh Admin KLIKSPL. Alasan pembatalan: ' . $cancel_order_detail . '. Dana yang sudah dibayarkan akan dikembalikan ke nonor rekening yang digunakan saat melakukan pembayaran',
+                    'status_date' => date('Y-m-d H:i:s')
+                ]
+            );
+            return redirect()->route('adminorder.index')->with('success', 'Berhasil mengonfirmasi pembatalan pesanan.');
+        }
+
+    }
+
+    public function declineCancellationOrder(Request $request)
+    {
+         // dd($request);
+         $this->expiredCheck();
+         // dd($request);
+ 
+         $order = Order::where('id', '=', $request->order_id)->first();
+ 
+         $order->order_status = 'pembayaran dikonfirmasi';
+         $order->save();
+ 
+         if ($order->save()) {
+             foreach ($order->orderitem as $item) {
+                 $item->order_item_status = 'pembayaran dikonfirmasi';
+                 $item->save();
+             }
+         }
+
+         $orderStatus = OrderStatusDetail::create(
+             [
+                 'order_id' => $order->id,
+                 'status' => 'Pengajuan Pembatalan Ditolak',
+                 'status_detail' => 'Pengajuan pembatalan pesanan ditolak oleh Admin KLIKSPL, dengan alasan: ' . $request->cancel_order_detail,
+                 'status_date' => date('Y-m-d H:i:s')
+             ]
+         );
+
+         if ($orderStatus) {
+             return redirect()->back()->with('success', 'Penolakan Pembayaran berhasil, pembeli diberikan waktu 2 x 24 jam untuk mengirimkan bukti pembayaran yang valid');
+         } else {
+             return redirect()->back()->with('failed', 'Terjadi kesalahan dalam pembatalan bukti pembayaran');
+         }
     }
 }

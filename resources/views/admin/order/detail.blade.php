@@ -162,7 +162,7 @@
                                     <div class="row my-3 text-end">
                                         <div class="col-md-12">
                                             <button type="button" class="btn btn-secondary fs-14 mb-2"
-                                                data-bs-toggle="modal" data-bs-target="#cancelConfirm">
+                                                data-bs-toggle="modal" data-bs-target="#cancelConfirmPayment">
                                                 Tolak Pembayaran
                                             </button>
                                             <button type="button" class="btn btn-danger fs-14 mb-2" data-bs-toggle="modal"
@@ -176,44 +176,7 @@
                                 @endif --}}
                             </div>
                         </div>
-                        <div class="modal fade" id="cancelConfirm" tabindex="-1" aria-labelledby="cancelConfirmModal"
-                            aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content border-radius-1-5rem">
-                                    <div class="modal-header border-0 pt-4 px-4">
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <form action="{{ route('decline.payment') }}" method="post" class="d-inline">
-                                        {{-- @method('delete') --}}
-                                        @csrf
-                                        <div class="modal-body text-center py-2 px-5">
-                                            <h5 class="mb-3">Konfirmasi Penolakan Pembayaran Pesanan</h5>
-                                            <p class="fs-14 mb-0">
-                                                Berikan alasan/deskripsi penolakan pembayaran pesanan pembeli
-                                            </p>
-                                            <div class="form-floating mt-3">
-                                                <input type="hidden" name="order_id" value="{{ $orders->id }}">
-                                                <textarea class="form-control fs-14 h-100" placeholder="Tuliskan alasan pembatalan pesanan" id="cancel-order"
-                                                    rows="6" required name="cancel_order_detail"></textarea>
-                                                <label for="cancel-order" class="fs-14">Alasan Penolakan
-                                                    Pembayaran
-                                                    Pesanan
-                                                </label>
-                                                <div class="cancel_order_error_message fs-12 text-danger text-start my-1">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer border-0 d-flex justify-content-center pb-4">
-                                            <button type="button" class="btn btn-outline-secondary fs-14"
-                                                data-bs-dismiss="modal">Tutup</button>
-                                            <button type="submit" class="btn btn-danger fs-14 my-2 shadow-none">Tolak
-                                                Pembayaran</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+
                         <div class="modal fade" id="paymentConfirm" tabindex="-1" aria-labelledby="paymentConfirmModal"
                             aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
@@ -245,36 +208,6 @@
                                                 Pembayaran
                                             </button>
                                         </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card fs-14 border-radius-1-5rem border-0 mb-4 box-shadow">
-                            <div class="card-body p-4">
-                                {{-- @if ($orders->order_status === 'pesanan dibayarkan') --}}
-                                <p class=" fs-14 fw-bold m-0 mb-1">
-                                    Batalkan Pesanan
-                                </p>
-                                <p class="fs-12 m-0 mb-4">
-                                    Batalkan pesanan pembeli
-                                </p>
-                                <div class="row mb-2">
-                                    <div class="col-md-12 col-12">
-                                        Anda dapat membatalkan pesanan pembeli saat status pesanan belum menjadi "pesanan
-                                        dikirm"
-                                    </div>
-                                    {{-- <div class="col-md-3 col-12 text-end">
-                                    </div> --}}
-                                </div>
-
-                                <div class="d-flex justify-content-end">
-                                    <div class="row my-3">
-                                        <div class="col-md-12 col-12">
-                                            <button type="button" class="btn btn-danger fs-14" data-bs-toggle="modal"
-                                                data-bs-target="#cancelConfirm">
-                                                Batalkan Pesanan
-                                            </button>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -432,17 +365,17 @@
                             </div>
                             <div class="modal-footer border-0 px-4 pb-4">
                                 {{-- <div class="d-flex justify-content-end"> --}}
-                                    <div class="row m-0">
-                                        <div class="col-md-12 p-0">
-                                            @if ($orders->order_status === 'pesanan dikirim')
-                                                <button type="button" class="shipping-receipt-btn btn btn-danger fs-14"
-                                                    data-bs-toggle="modal" data-bs-target="#shippingReceiptUpload">
-                                                    {{-- <i class="far fa-save"></i> --}}
-                                                    Selanjutnya
-                                                </button>
-                                            @endif
-                                        </div>
+                                <div class="row m-0">
+                                    <div class="col-md-12 p-0">
+                                        @if ($orders->order_status === 'pesanan dikirim')
+                                            <button type="button" class="shipping-receipt-btn btn btn-danger fs-14"
+                                                data-bs-toggle="modal" data-bs-target="#shippingReceiptUpload">
+                                                {{-- <i class="far fa-save"></i> --}}
+                                                Selanjutnya
+                                            </button>
+                                        @endif
                                     </div>
+                                </div>
                                 {{-- </div> --}}
                             </div>
                         </div>
@@ -562,7 +495,9 @@
                                 </div>
                             </div>
                         </div>
-                    @elseif ($orders->order_status === 'expired' || $orders->order_status == 'belum bayar')
+                    @elseif ($orders->order_status === 'expired' ||
+                        $orders->order_status == 'belum bayar' ||
+                        $orders->order_status == 'pembayaran dikonfirmasi')
                         <div class="card fs-14 border-radius-1-5rem border-0 mb-4 box-shadow">
                             <div class="card-body p-4">
                                 {{-- @if ($orders->order_status === 'pesanan dibayarkan') --}}
@@ -761,36 +696,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card fs-14 border-radius-1-5rem border-0 mb-4 box-shadow">
-                            <div class="card-body p-4">
-                                {{-- @if ($orders->order_status === 'pesanan dibayarkan') --}}
-                                <p class=" fs-14 fw-bold m-0 mb-1">
-                                    Batalkan Pesanan
-                                </p>
-                                <p class="fs-12 m-0 mb-4">
-                                    Batalkan pesanan pembeli
-                                </p>
-                                <div class="row mb-2">
-                                    <div class="col-md-12 col-12">
-                                        Anda dapat membatalkan pesanan pembeli saat status pesanan belum menjadi "pesanan
-                                        dikirm"
-                                    </div>
-                                    {{-- <div class="col-md-3 col-12 text-end">
-                                    </div> --}}
-                                </div>
-
-                                <div class="d-flex justify-content-end">
-                                    <div class="row my-3">
-                                        <div class="col-md-12 col-12">
-                                            <button type="button" class="btn btn-danger fs-14" data-bs-toggle="modal"
-                                                data-bs-target="#cancelConfirm">
-                                                Batalkan Pesanan
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     @elseif($orders->order_status === 'pengajuan pembatalan')
                         <div class="card fs-14 border-radius-1-5rem border-0 mb-4 box-shadow">
                             <div class="card-body p-4">
@@ -841,7 +746,8 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
-                                    <form action="{{ route('decline.payment') }}" method="post" class="d-inline">
+                                    <form action="{{ route('decline.cancellation.order') }}" method="post"
+                                        class="d-inline">
                                         {{-- @method('delete') --}}
                                         @csrf
                                         <div class="modal-body text-center py-2 px-5">
@@ -863,8 +769,9 @@
                                         <div class="modal-footer border-0 d-flex justify-content-center pb-4">
                                             <button type="button" class="btn btn-outline-secondary fs-14"
                                                 data-bs-dismiss="modal">Tutup</button>
-                                            <button type="submit" class="btn btn-danger fs-14 my-2 shadow-none">Tolak
-                                                Pembayaran</button>
+                                            <button type="submit" class="btn btn-danger fs-14 my-2 shadow-none">
+                                                Tolak Pengajuan
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
@@ -891,8 +798,9 @@
                                     <div class="modal-footer border-0 d-flex justify-content-center pb-4">
                                         <button type="button" class="btn btn-outline-secondary fs-14"
                                             data-bs-dismiss="modal">Tutup</button>
-                                        <form class="confirm-cancellation-payment-form" action="{{ route('confirm.cancellation.order') }}"
-                                            method="POST" enctype="multipart/form-data">
+                                        <form class="confirm-cancellation-payment-form"
+                                            action="{{ route('confirm.cancellation.order') }}" method="POST"
+                                            enctype="multipart/form-data">
                                             @csrf
                                             <input type="hidden" name="order_id" value="{{ $orders->id }}">
                                             <button type="submit"
@@ -905,8 +813,118 @@
                             </div>
                         </div>
                     @endif
-                </div>
+                    @if ($orders->order_status != 'pesanan dikirim' &&
+                        $orders->order_status != 'selesai' &&
+                        $orders->order_status != 'expired' &&
+                        $orders->order_status != 'pesanan dibatalkan')
+                        <div class="card fs-14 border-radius-1-5rem border-0 mb-4 box-shadow">
+                            <div class="card-body p-4">
+                                {{-- @if ($orders->order_status === 'pesanan dibayarkan') --}}
+                                <p class=" fs-14 fw-bold m-0 mb-1">
+                                    Batalkan Pesanan
+                                </p>
+                                <p class="fs-12 m-0 mb-4">
+                                    Batalkan pesanan pembeli
+                                </p>
+                                <div class="row mb-2">
+                                    <div class="col-md-12 col-12">
+                                        Anda dapat membatalkan pesanan pembeli saat status pesanan belum menjadi "pesanan
+                                        dikirm"
+                                    </div>
+                                    {{-- <div class="col-md-3 col-12 text-end">
+                                </div> --}}
+                                </div>
 
+                                <div class="d-flex justify-content-end">
+                                    <div class="row my-3">
+                                        <div class="col-md-12 col-12">
+                                            <button type="button" class="btn btn-danger fs-14" data-bs-toggle="modal"
+                                                data-bs-target="#cancelConfirm">
+                                                Batalkan Pesanan
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+                <div class="modal fade" id="cancelConfirmPayment" tabindex="-1" aria-labelledby="cancelConfirmPaymentModal"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-radius-1-5rem">
+                            <div class="modal-header border-0 pt-4 px-4">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <form action="{{ route('decline.payment') }}" method="post" class="d-inline">
+                                {{-- @method('delete') --}}
+                                @csrf
+                                <div class="modal-body text-center py-2 px-5">
+                                    <h5 class="mb-3">Konfirmasi Penolakan Pembayaran Pesanan</h5>
+                                    <p class="fs-14 mb-0">
+                                        Berikan alasan/deskripsi penolakan pembayaran pesanan pembeli
+                                    </p>
+                                    <div class="form-floating mt-3">
+                                        <input type="hidden" name="order_id" value="{{ $orders->id }}">
+                                        <textarea class="form-control fs-14 h-100" placeholder="Tuliskan alasan pembatalan pesanan" id="cancel-order"
+                                            rows="6" required name="cancel_order_detail"></textarea>
+                                        <label for="cancel-order" class="fs-14">Alasan Penolakan
+                                            Pembayaran
+                                            Pesanan
+                                        </label>
+                                        <div class="cancel_order_error_message fs-12 text-danger text-start my-1">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer border-0 d-flex justify-content-center pb-4">
+                                    <button type="button" class="btn btn-outline-secondary fs-14"
+                                        data-bs-dismiss="modal">Tutup</button>
+                                    <button type="submit" class="btn btn-danger fs-14 my-2 shadow-none">Tolak
+                                        Pembayaran</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="cancelConfirm" tabindex="-1" aria-labelledby="cancelConfirmModal"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-radius-1-5rem">
+                            <div class="modal-header border-0 pt-4 px-4">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <form action="{{ route('cancel.order') }}" method="post" class="d-inline">
+                                {{-- @method('delete') --}}
+                                @csrf
+                                <div class="modal-body text-center py-2 px-5">
+                                    <h5 class="mb-3">Konfirmasi Pembatalan Pesanan</h5>
+                                    <p class="fs-14 mb-0">
+                                        Berikan alasan/deskripsi pembatalan pesanan pembeli
+                                    </p>
+                                    <div class="form-floating mt-3">
+                                        <input type="hidden" name="order_id" value="{{ $orders->id }}">
+                                        <textarea class="form-control fs-14 h-100" placeholder="Tuliskan alasan pembatalan pesanan" id="cancel-order"
+                                            rows="6" required name="cancel_order_detail"></textarea>
+                                        <label for="cancel-order" class="fs-14">
+                                            Alasan Pembatalan Pesanan
+                                        </label>
+                                        <div class="cancel_order_error_message fs-12 text-danger text-start my-1">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer border-0 d-flex justify-content-center pb-4">
+                                    <button type="button" class="btn btn-outline-secondary fs-14"
+                                        data-bs-dismiss="modal">Tutup</button>
+                                    <button type="submit" class="btn btn-danger fs-14 my-2 shadow-none">
+                                        Batalkan Pesanan
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
                 <div class="col-md-12 col-12">
                     <div class="card fs-14 border-radius-1-5rem border-0 mb-4 box-shadow">
                         <div class="card-body p-4">

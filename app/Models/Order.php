@@ -38,6 +38,17 @@ class Order extends Model
                     // dd($query);
                 });
             });
+        } elseif ($filters['status'] == 'aktif') {
+            // dd($filters['status']);
+            $query->when($filters['status'] ?? false, function ($query, $keyword) {
+                return $query->where(function ($query) use ($keyword) {
+                    // $keyword = 'pesanan dibatalkan';
+                    // dd($keyword);
+                    $query->where('order_status', 'not like', '%expired%')
+                    ->where('order_status', 'not like', '%pesanan dibatalkan%');
+                    // dd($query);
+                });
+            });
         } else {
             // dd($filters['status']);
             $query->when($filters['status'] ?? false, function ($query, $keyword) {
@@ -89,6 +100,14 @@ class Order extends Model
                     $query->where('order_status', 'like', '%' . $keyword . '%')->whereIn('id', function ($query) {
                             $query->select('order_id')->from(with(new OrderItem)->getTable())->where('is_review', '=', '1');
                         });
+                    // dd($query);
+                });
+            } elseif ($keyword == 'aktif') {
+                return $query->where(function ($query) use ($keyword) {
+                    // $keyword = 'pesanan dibatalkan';
+                    // dd($keyword);
+                $query->where('order_status', 'not like', '%expired%')
+                        ->where('order_status', 'not like', '%pesanan dibatalkan%');
                     // dd($query);
                 });
             } else {

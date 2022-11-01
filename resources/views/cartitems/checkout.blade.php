@@ -1200,6 +1200,7 @@
             var productIds = {!! json_encode($productIds) !!};
             var items = {!! json_encode($items) !!};
             console.log(weight + ' g');
+            
             if (weight < 1000) {
                 weight = 1000;
             }

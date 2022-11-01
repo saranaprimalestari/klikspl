@@ -506,7 +506,17 @@ class CartItemUserController extends Controller
     {
         $itemBuyNow = session()->get('itemBuyNow');
         // $unique_code = mt_rand(000,999);
-        // dd($itemBuyNow);
+        // dd($itemBuyNow[0]);
+
+        if (is_null($itemBuyNow)) {
+            return redirect()->route('cart.index')->with('failed', 'Terdapat kesalahan saat melakukan checkout pesanan, silakan coba lagi');
+        }else{
+            $productIds = $itemBuyNow[0]->product_id;
+            $productPromo = ProductPromo::where('product_id', $productIds)->get();
+            $productPromoGroup = $productPromo->groupBy('promo_id');
+            $promos = Promo::where('is_active', '=', 1)->with('productPromo', 'PromoPaymentMethod', 'promoType')->get();
+        }
+
         $paymentMethods = PaymentMethod::where('is_active', '=', 1)->get();
         if (session()) {
             if (!isset($itemBuyNow)) {
@@ -564,6 +574,9 @@ class CartItemUserController extends Controller
             'paymentMethods' => $paymentMethods,
             'senderAddress' => $senderAddress,
             // 'unique_code' => $unique_code
+            'productPromos' => $productPromoGroup,
+            'promos' => $promos,
+            'productIds' => $productIds,
 
         ]);
     }

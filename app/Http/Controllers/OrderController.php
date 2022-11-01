@@ -49,6 +49,8 @@ class OrderController extends Controller
 
         if (request(['status'])['status'] == '') {
             $header = 'Semua Pesanan';
+        } else if (request(['status'])['status'] == 'aktif') {
+            $header = 'Pesanan Aktif';
         } else if (request(['status'])['status'] == 'belum bayar') {
             $header = 'Pesanan Belum Dibayar';
         } else if (request(['status'])['status'] == 'pesanan dibayarkan') {
@@ -1165,7 +1167,7 @@ class OrderController extends Controller
                 $due_date = Carbon::createFromFormat('Y-m-d H:s:i', $userOrder->payment_due_date);
                 // dd($due_date);
                 if ($now > $due_date) {
-                    dd('expired');
+                    // dd('expired');
                     $userOrder->order_status = 'expired';
                     $userOrder->save();
                     if ($userOrder->save()) {

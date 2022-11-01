@@ -461,7 +461,7 @@ class AdminPromoVoucherController extends Controller
         $update = $promovoucher->save();
 
         if ($update) {
-            return redirect()->back()->with('success', 'Berhasil memperbarui promo.');
+            return redirect()->route('promovoucher.index')->with('success', 'Berhasil memperbarui promo.');
         } else {
             return redirect()->back()->with('failed', 'Terdapat kesalahan saat memperbarui promo, mohon pastikan semua form sudah terisi dengan benar');
         }

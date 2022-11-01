@@ -9,35 +9,56 @@
             null
         };
     </script>
+    @if (session()->has('success'))
+        <div class="alert alert-success alert-dismissible fade show alert-notification" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @elseif(session()->has('failed'))
+        <div class="alert alert-danger alert-dismissible fade show alert-notification" role="alert">
+            {{ session('failed') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    @if ($errors->any())
+        {!! implode(
+            '',
+            $errors->all(
+                '<div class="alert alert-danger alert-dismissible fade show" role="alert">:message<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>',
+            ),
+        ) !!}
+    @endif
     <div class="container-fluid breadcrumb-products">
-        {{ Breadcrumbs::render('buy.now') }}
+        {{ Breadcrumbs::render('checkout') }}
     </div>
     {{-- {{ print_r(session()->all()) }} --}}
+    {{-- {{ dd($senderAddress) }} --}}
     {{-- {{ dd($userAddress) }} --}}
     {{-- {{ dd($itemBuyNow) }} --}}
     {{-- {{ is_null($itemBuyNow[0]->id) ? 'null' : $itemBuyNow[0]->id }} --}}
     <div class="container mb-5">
         <div class="checkout my-5">
-
-            {{-- <div class="row my-3">
+            <div class="row my-3">
                 <div class="col-12">
                     <a href="{{ route('cart.index') }}" class="text-decoration-none link-dark">
                         <i class="bi bi-arrow-left"></i>
                         Kembali
                     </a>
                 </div>
-            </div> --}}
+            </div>
 
             <div class="col-12">
-                @if (session()->has('successChangeAddress'))
+                @if (session()->has('successChangeAddress') or session()->has('success'))
                     <div class="alert alert-success alert-dismissible fade show alert-success-cart" role="alert">
                         {{ session('successChangeAddress') }}
+                        {{ session('success') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-                @if (session()->has('failedChangeAddress'))
+                @if (session()->has('failedChangeAddress') or session()->has('failed'))
                     <div class="alert alert-danger alert-dismissible fade show alert-success-cart" role="alert">
                         {{ session('failedChangeAddress') }}
+                        {{ session('failed') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
@@ -99,7 +120,7 @@
                                     <div class="col-md-12">
                                         <div class="product-no-auth-shipment-check">
                                             Kamu belum menambahkan alamat, yuk
-                                            <a href="{{ route('useraddress.index') }}"
+                                            <a href="{{ route('useraddress.index') }}" target="_blank"
                                                 class="text-decoration-none fw-bold login-link">
                                                 Tambahkan Alamat
                                             </a>
@@ -114,7 +135,7 @@
                     <h5 class="my-3">Produk yang dipesan</h5>
                     <div class="mb-4">
                         @foreach ($itemBuyNow as $item)
-                            <div class="card mb-3 checkout-items-card">
+                            <div class="card mb-3 checkout-items-card product-{{ $item->product->id }}">
                                 <div class="card-body p-4">
                                     <div class="row d-flex align-items-center justify-content-center text-center">
                                         <div class="col-md-2 col-4 pe-0">
@@ -123,15 +144,8 @@
                                                     <img class="checkout-items-img"
                                                         src="{{ asset('/storage/' . $item->product->productimage[0]->name) }}"
                                                         alt="" width="70">
-                                                @else
-                                                    <img class="checkout-items-img"
-                                                        src="https://source.unsplash.com/400x400?product--{{ $loop->iteration }}"
-                                                        alt="" width="70">
                                                 @endif
                                             @else
-                                                <img class="checkout-items-img"
-                                                    src="https://source.unsplash.com/400x400?product--{{ $loop->iteration }}"
-                                                    alt="" width="70">
                                             @endif
                                         </div>
                                         <div class="col-md-4 col-8 ps-0">
@@ -216,6 +230,9 @@
                                                 id="subtotal-cart-items-single">
                                                 Rp{{ price_format_rupiah($item->subtotal) }}
                                             </p>
+                                            <p class="subtotal-cart-items-promo-{{ $item->id }} text-danger cart-items-subtotal fw-bold"
+                                                id="subtotal-cart-items-single">
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -226,7 +243,7 @@
                             <input class="total-weight" type="hidden" name="total_weight"
                                 value="{{ array_sum($weight) }}">
                             <input class="total-subtotal" type="hidden" name="total_subtotal"
-                                value="{{ is_null($itemBuyNow[0]->id) ? $itemBuyNow[0]->subtotal : $itemBuyNow->sum('subtotal') }}">
+                                value="{{ is_null($itemBuyNow[0]->id) ? $itemBuyNow[0]->subtotal : $itemBuyNow[0]->sum('subtotal') }}">
                             <input class="courier" type="hidden" name="courier" value="all">
                         </div>
                     </div>
@@ -282,7 +299,7 @@
                     </div>
 
                     <div class="modal fade" id="courierModal" tabindex="-1" aria-labelledby="courierModalLabel"
-                        aria-text="true">
+                        aria-hidden="true">
                         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
                             <div class="modal-content checkout-courier-modal">
                                 <div class="modal-header border-0 p-4">
@@ -299,7 +316,7 @@
                         </div>
                     </div>
                     <div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel"
-                        aria-text="true">
+                        aria-hidden="true">
                         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
                             <div class="modal-content checkout-address-modal">
                                 <div class="modal-header border-0 p-4">
@@ -316,7 +333,7 @@
                                             </p>
                                         </a>
                                     </div>
-                                    @foreach ($userAddress as $address)
+                                    @foreach ($userAddress->sortByDesc('is_active') as $address)
                                         <form action="{{ route('useraddress.change.active') }}" method="post">
                                             @csrf
                                             <div
@@ -404,14 +421,196 @@
                     </div>
                 </div>
 
+                <div class="modal fade" id="promoModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                    tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+                        <div class="modal-content payment-method-modal">
+                            {{-- <form class="payment-form" action="{{ route('order.store') }}" method="POST"
+                                onSubmit="return confirm('Apakah anda yakin Data Pemesanan anda sudah benar (Alamat Pengiriman, Produk Pesanan, dan Kurir Pengiriman)?');"> --}}
+                            {{-- @csrf --}}
+                            <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+
+                            <input type="hidden" class="courier" name="courier" value="">
+                            <input type="hidden" class="courier_package_type" name="courier_package_type"
+                                value="">
+                            <input type="hidden" class="estimation" name="estimation" value="">
+                            <input type="hidden" class="courier_price" name="courier_price" value="">
+                            <input type="hidden" class="sender_address_id" name="sender_address_id" value="">
+
+                            @foreach ($itemBuyNow as $item)
+                                {{-- <input type="hidden" name="cart_ids[{{ $carts->id }}]" value=""> --}}
+                                <input type="hidden" name="cart_ids[{{ $item->id }}]" value="{{ $item->id }}">
+                                <input type="hidden" name="product_ids[{{ $item->product->id }}]"
+                                    value="{{ $item->product->id }}">
+                                {{-- <input type="hidden" name="ids[]" value="{{ $carts->id }}"> --}}
+                            @endforeach
+
+                            <div class="modal-header p-4 border-0">
+                                <h5 class="modal-title m-0" id="addressModalLabel">Pilih Promo yang Tersedia</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body p-4">
+                                <div class="row mb-4 align-items-center">
+                                    <div class="col-md-2 col-5 fs-14 fw-600">
+                                        Cari Promo
+                                    </div>
+                                    <div class="col-md-10 col-7">
+                                        <div class="input-group fs-14">
+                                            <input type="text"
+                                                class="form-control border-radius-075rem fs-14 shadow-none border-end-0"
+                                                id="searchPromoCheckoutModal" placeholder="Cari promo..."
+                                                aria-label="Cari promo..." aria-describedby="search-promo-checkout-modal"
+                                                name="searchPromoCheckoutModal">
+                                            <span
+                                                class="input-group-text border-radius-075rem fs-14 bg-white border-start-0"
+                                                id="search-promo-checkout-modal"><i class="bi bi-search"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="promo-lists">
+                                    {{-- @foreach ($itemBuyNow as $item) --}}
+                                    @foreach ($productPromos as $productPromo)
+                                        {{-- product id : {{ $item->product->id }} --}}
+                                        {{-- <br> - -}}
+                                        {{-- @foreach ($item->product->productpromo as $productPromo) --}}
+                                        {{-- @foreach ($productPromo as $productPromo) --}}
+                                        @if ($itemBuyNow[0]->subtotal >= $productPromo[0]->promo->min_transaction &&
+                                            $productPromo[0]->promo->is_active == 1)
+                                            {{-- prod id on promo : {{ $productPromo[0]->product_id }}
+                                                <br>
+                                                prod promo id : {{ $productPromo[0]->id }}
+                                                <br>
+                                                promo id : {{ $productPromo[0]->promo_id }}
+                                                <br> --}}
+                                            <div
+                                                class="card mb-3 border-radius-075rem box-shadow promo-card-checkout-modal product-promo-{{ $productPromo[0]->id }} promo-{{ $productPromo[0]->promo->id }} 
+                                                @foreach ($productPromo[0]->promo->userPromoUse as $userPromoUse)
+                                                    @if ($userPromoUse->user_id == auth()->user()->id)
+                                                        @if ($userPromoUse->promo_use >= $productPromo[0]->promo->quota)
+                                                            {{ 'd-none exceeding-the-quota-limit' }}
+                                                        @endif
+                                                    @endif @endforeach">
+                                                <div class="card-body p-4">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-md-9 col-12">
+                                                            <div class="row align-items-center">
+                                                                <div class="col-md-2 col-4">
+                                                                    @if (!empty($productPromo[0]->promo->image))
+                                                                        @if (File::exists(public_path($productPromo[0]->promo->image)))
+                                                                            <img src="{{ asset($productPromo[0]->promo->image) }}"
+                                                                                class="img-fluid w-100 border-radius-075rem"
+                                                                                alt="...">
+                                                                        @elseif(Storage::exists($productPromo[0]->promo->image))
+                                                                            <img src="{{ asset('/storage/' . $productPromo[0]->promo->image) }}"
+                                                                                class="img-fluid w-100 border-radius-075rem"
+                                                                                alt="...">
+                                                                        @else
+                                                                            <img src="{{ asset('assets/voucher.png') }}"
+                                                                                class="img-fluid w-100 border-radius-075rem"
+                                                                                alt="...">
+                                                                        @endif
+                                                                    @else
+                                                                        <img src="{{ asset('assets/voucher.png') }}"
+                                                                            class="img-fluid w-100 border-radius-075rem"
+                                                                            alt="...">
+                                                                    @endif
+                                                                </div>
+                                                                <div class="col-md-10 col-12 my-2 ps-md-0">
+                                                                    <p class="m-0 fw-600 pb-1 fs-14">
+                                                                        {{ $productPromo[0]->promo->name }}
+                                                                    </p>
+                                                                    <p class="m-0 fs-14">
+                                                                        @if (count($productPromo[0]->promo->userPromoUse))
+                                                                            @foreach ($productPromo[0]->promo->userPromoUse as $userPromoUse)
+                                                                                @if ($userPromoUse->user_id == auth()->user()->id)
+                                                                                    @if ($userPromoUse->promo_use <= $productPromo[0]->promo->quota)
+                                                                                        {{ $productPromo[0]->promo->quota - $userPromoUse->promo_use }}
+                                                                                    @endif
+                                                                                @endif
+                                                                            @endforeach
+                                                                        @else
+                                                                            {{ $productPromo[0]->promo->quota }}
+                                                                        @endif
+                                                                        Voucher
+                                                                    </p>
+                                                                    <p class="m-0 fs-14">
+                                                                        Min, transaksi
+                                                                        Rp{{ price_format_rupiah($productPromo[0]->promo->min_transaction, 'Rp') }}
+                                                                    </p>
+                                                                    <div class="fs-12 text-truncate">
+                                                                        {{-- {{ count($productPromo) }} --}}
+                                                                        @if (count($productPromo) == 1)
+                                                                            Khusus Produk :
+                                                                            @foreach ($productPromo as $productpromo)
+                                                                                {{ $productpromo->product->name }}
+                                                                            @endforeach
+                                                                        @endif
+                                                                    </div>
+                                                                    <span class="d-md-flex notification-list-created-at">
+                                                                        @if ($productPromo[0]->promo->start_period >= \Carbon\Carbon::now()->toDateTimeString())
+                                                                            <p class="m-0 me-2 fs-12 text-grey">
+                                                                                Baru berlaku mulai
+                                                                                {{ \Carbon\Carbon::parse($productPromo[0]->promo->start_period)->isoFormat('D MMM') }}
+                                                                                -
+                                                                                {{ \Carbon\Carbon::parse($productPromo[0]->promo->end_period)->isoFormat('D MMM Y, HH:mm') }}
+                                                                                WIB
+                                                                            </p>
+                                                                        @else
+                                                                            <p class="m-0 me-2 fs-12 text-danger">
+                                                                                Berlaku hingga
+                                                                                {{ \Carbon\Carbon::parse($productPromo[0]->promo->end_period)->isoFormat('D MMM Y, HH:mm') }}
+                                                                                WIB
+                                                                            </p>
+                                                                        @endif
+
+                                                                    </span>
+                                                                    <div>
+                                                                        <a href="{{ route('promo.show', $productPromo[0]->promo) }}"
+                                                                            target="_blank"
+                                                                            class="text-decoration-none fs-12 text-danger">S&K</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3 col-12 text-end">
+                                                            <button
+                                                                class="btn btn-outline-danger fs-12 promo-use-btn promo-btn-{{ $productPromo[0]->promo->id }}"
+                                                                id="{{ $productPromo[0]->promo->id }}"
+                                                                id="{{ $productPromo[0]->promo->id }}">
+                                                                Pakai Promo
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                        {{-- @endforeach --}}
+                                    @endforeach
+                                </div>
+                            </div>
+                            <div class="modal-footer border-0 p-4">
+                                {{-- <button type="button" class="btn btn-secondary show-payment-modal-button"
+                                        data-bs-dismiss="modal">Kembali</button>
+                                    <button type="submit" class="btn btn-danger show-payment-modal-button">Lanjutkan
+                                        Pembayaran
+                                    </button> --}}
+                                <button class="btn btn-secondary fs-14" data-bs-target="#paymentModal"
+                                    data-bs-toggle="modal">Kembali
+                                </button>
+                            </div>
+                            {{-- </form> --}}
+                        </div>
+                    </div>
+                </div>
+
                 <div class="modal fade" id="paymentModal" data-bs-backdrop="static" data-bs-keyboard="false"
-                    tabindex="-1" aria-labelledby="paymentModalLabel" aria-text="true">
+                    tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
                         <div class="modal-content payment-method-modal">
                             <form class="payment-form" action="{{ route('order.store') }}" method="POST"
                                 onSubmit="return confirm('Apakah anda yakin Data Pemesanan anda sudah benar (Alamat Pengiriman, Produk Pesanan, dan Kurir Pengiriman)?');">
                                 @csrf
-
                                 <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
                                 <input type="hidden" name="product_id" value="{{ $itemBuyNow[0]->product_id }}">
                                 <input type="hidden" name="product_variant_id"
@@ -425,7 +624,18 @@
                                 <input type="hidden" class="estimation" name="estimation" value="">
                                 <input type="hidden" class="courier_price" name="courier_price" value="">
                                 <input type="hidden" class="sender_address_id" name="sender_address_id" value="">
-                                {{-- {{ dd($itemBuyNow) }} --}}
+
+
+                                {{-- <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+
+                                <input type="hidden" class="courier" name="courier" value="">
+                                <input type="hidden" class="courier_package_type" name="courier_package_type"
+                                    value=""> --}}
+                                <input type="hidden" class="estimation" name="estimation" value="">
+                                <input type="hidden" class="courier_price" name="courier_price" value="">
+                                <input type="hidden" class="sender_address_id" name="sender_address_id" value="">
+                                <input type="hidden" class="promo_use_id" name="promo_use_id" value="">
+
                                 @foreach ($itemBuyNow as $item)
                                     {{-- <input type="hidden" name="cart_ids[{{ $carts->id }}]" value=""> --}}
                                     <input type="hidden" name="cart_ids[{{ $item->id }}]"
@@ -493,13 +703,12 @@
                                                 class="col-6 checkout-total-all-val checkout-total-all-val text-end">
                                             </div> --}}
                                                 <div class="col-6 text-end checkout-payment-total-price-val">
-                                                    Rp{{ price_format_rupiah(is_null($itemBuyNow[0]->id) ? $itemBuyNow[0]->subtotal : $itemBuyNow->sum('subtotal')) }}
+                                                    Rp{{ price_format_rupiah(is_null($itemBuyNow[0]->id) ? $itemBuyNow[0]->subtotal : $itemBuyNow[0]->sum('subtotal')) }}
                                                     {{-- Rp{{ price_format_rupiah($itemBuyNow['subtotal']) }} --}}
                                                 </div>
                                                 <input type="hidden" name="checkout_total_prices"
-                                                    value="{{ is_null($itemBuyNow[0]->id) ? $itemBuyNow[0]->subtotal : $itemBuyNow->sum('subtotal') }}">
+                                                    value="{{ is_null($itemBuyNow[0]->id) ? $itemBuyNow[0]->subtotal : $itemBuyNow[0]->sum('subtotal') }}">
                                             </div>
-
                                             <div class="row mb-2">
                                                 <div class="col-7 checkout-payment-weight-text">
                                                     Berat total: <span class="total-weight-checkout"></span>
@@ -512,9 +721,46 @@
                                                 <div class="col-5 checkout-payment-shipment-val text-end">
                                                 </div>
                                             </div>
-
                                             <div class="row mb-2">
                                                 <div class="col-7 checkout-payment-courier-text">
+                                                </div>
+                                            </div>
+
+                                            <div class="row discount-used-row d-none">
+                                                <div class="col-7 discount-text cart-items-total-text pe-0">
+                                                    Diskon Promo
+                                                </div>
+                                                <div class="col-5 discount-val fs-14 m-0 text-end">
+
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2 discount-used-row d-none">
+                                                <div class="col-7 fs-12 discount-used-text">
+                                                </div>
+                                                <div class="col-5 fs-12 m-0 text-end">
+                                                    <div class="text-red-klikspl fw-600 discount-used-cancel-btn"
+                                                        data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                        title="Batalkan penggunaan promo">Batalkan</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row mb-2">
+                                                <div class="col-12">
+                                                    <a class="w-100 btn btn-light border-radius-05rem fs-14 py-2 px-3 show-promo-modal-button"
+                                                        {{-- data-bs-toggle="modal" data-bs-target="#promoModal" --}}>
+                                                        <div class="d-flex">
+                                                            <div class="">
+                                                                <i class="bi bi-percent"></i> Masukkan/Gunakan Kode Promo
+                                                            </div>
+                                                            <div class="ms-auto">
+                                                                <i class="bi bi-chevron-right"></i>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="promo-modal-notification">
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -561,7 +807,150 @@
                 <div class="col-md-4 col-12 mt-4 checkout-total-div d-none d-sm-block">
                     <div class="card mt-3 checkout-total-card sticky-md-top">
                         <div class="card-body">
-                            <form action="{{ route('checkout.payment') }}" onsubmit="return validateCheckout()"
+                            <form action="" onsubmit="return validateCheckout()" method="POST">
+                                @csrf
+
+                                @foreach ($itemBuyNow as $item)
+                                    <input type="hidden" name="product-id[]" value="{{ $item->id }}">
+                                    {{-- <input type="hidden" name="product-qty[]" value="{{ $item->quantity }}">
+                                    <input type="hidden" name="product-subtotal[]" value="{{ $item->subtotal }}"> --}}
+                                @endforeach
+
+                                @foreach ($weight as $weightItem)
+                                    <input type="hidden" name="product-weight[]" value="{{ $weightItem }}">
+                                @endforeach
+
+                                <input type="hidden" name="user-id" value="{{ auth()->user()->id }}">
+
+                                <div class="input-data-shipment">
+
+                                    @foreach ($userAddress as $address)
+                                        @if ($address->is_active == 1)
+                                            <input class="address-id" type="hidden" name="addressId"
+                                                value="{{ $address->id }}">
+                                            <input class="city-origin" type="hidden" name="cityOrigin" value="36">
+                                            <input class="city-destination" type="hidden" name="cityDestination"
+                                                value="{{ $address->city->city_id }}">
+                                        @endif
+                                    @endforeach
+
+                                    <input type="hidden" class="courier-name-choosen" name="courier-name-choosen"
+                                        value="">
+                                    <input type="hidden" class="courier-service-choosen" name="courier-service-choosen"
+                                        value="">
+                                    <input type="hidden" class="courier-etd-choosen" name="courier-etd-choosen"
+                                        value="">
+                                    <input type="hidden" class="courier-price-choosen" name="courier-price-choosen"
+                                        value="">
+                                    <input type="hidden" class="sender-address-id" name="sender_address_id"
+                                        value="">
+                                </div>
+
+                                <div class="input-data-item-detail">
+                                    <input class="csrf-token" type="hidden" name="csrf_token"
+                                        value="{{ csrf_token() }}">
+                                    <input class="total-weight" type="hidden" name="total_weight"
+                                        value="{{ array_sum($weight) }}">
+                                    <input class="total-subtotal" type="hidden" name="total_subtotal"
+                                        value="{{ is_null($itemBuyNow[0]->id) ? $itemBuyNow[0]->subtotal : $itemBuyNow[0]->sum('subtotal') }}">
+                                    <input class="courier" type="hidden" name="courier" value="all">
+                                </div>
+
+                                <h5 class="cart-items-checkout-header cart-items-checkout-header mt-1 mb-4">Ringkasan
+                                    Pesanan</h5>
+                                <div class="row">
+                                    <div class="col-7 checkout-items-total-text cart-items-total-text pe-0">
+                                        Total Harga ({{ count($itemBuyNow) }}) Produk
+                                    </div>
+                                    <div class="col-5 cart-items-total-val text-end">
+                                        Rp{{ price_format_rupiah(is_null($itemBuyNow[0]->id) ? $itemBuyNow[0]->subtotal : $itemBuyNow[0]->sum('subtotal')) }}
+                                        {{-- Rp{{ price_format_rupiah($itemBuyNow['subtotal']) }} --}}
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div
+                                        class="col-7 checkout-items-text cart-items-total-text pe-0 total-weight-checkout-text">
+                                        Berat total: <span class="total-weight-checkout"></span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-7 checkout-shipment-total-text cart-items-total-text pe-0">
+                                    </div>
+                                    <div class="col-5 checkout-shipment-total-val fs-14 m-0 text-end">
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-7 checkout-payment-courier-text">
+                                    </div>
+                                </div>
+
+                                <div class="row discount-used-row d-none">
+                                    <div class="col-7 discount-text cart-items-total-text pe-0">
+                                        Diskon Promo
+                                    </div>
+                                    <div class="col-5 discount-val fs-14 m-0 text-end">
+
+                                    </div>
+                                </div>
+                                <div class="row mb-2 discount-used-row d-none">
+                                    <div class="col-7 fs-12 discount-used-text">
+                                    </div>
+                                    <div class="col-5 fs-12 m-0 text-end">
+                                        <div class="text-red-klikspl fw-600 discount-used-cancel-btn">Batalkan</div>
+                                    </div>
+                                </div>
+
+                                {{-- <div class="row mb-2">
+                                    <div class="col-12">
+                                        <a class="w-100 btn btn-light border-radius-05rem fs-14 py-2 px-3"
+                                            data-bs-toggle="modal" data-bs-target="#promoModal">
+                                            <div class="d-flex">
+                                                <div class="">
+                                                    <i class="bi bi-percent"></i> Masukkan/Gunakan Kode Promo
+                                                </div>
+                                                <div class="ms-auto">
+                                                    <i class="bi bi-chevron-right"></i>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div> --}}
+                                <div class="my-3 border border-1 border-bottom cart-items-checkout-divider">
+                                </div>
+                                <div class="row mb-4">
+                                    <div class="col-6">
+                                        <p class="checkout-total-all-text cart-items-checkout-total-all-text m-0">
+                                            Total Harga</p>
+                                    </div>
+                                    <div class="col-6 checkout-total-all-val cart-items-total-all-val text-end fw-bold">
+                                    </div>
+                                    <input type="hidden" name="checkout_total_price" value="">
+                                </div>
+                                <div class="d-grid">
+                                    {{-- <button type="button"
+                                        class="btn btn-block checkout-button show-payment-modal-button shadow-none">
+                                        Pilih Metode Pembayaran
+                                    </button> --}}
+                                    <button type="button"
+                                        class="btn btn-block checkout-button show-payment-modal-button shadow-none"
+                                        data-bs-toggle="modal" data-bs-target="#paymentModal">
+                                        Pilih Metode Pembayaran
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- checkout card only on small device / smartphone --}}
+                <div class="fixed-bottom col-12 mb-5 p-0 checkout-total-div d-block d-sm-none">
+                    <div class="card my-2 checkout-total-card sticky-md-top">
+                        <div class="card-body">
+                            <a href="#" class="btn active d-block pt-0 expand-checkout-bill shadow-none"
+                                role="button" data-bs-toggle="button" aria-pressed="true">
+                                Detail <i class="bi bi-chevron-up mx-2 expand-checkout-bill-chevron"></i>
+                            </a>
+                            <form class="checkout-bill-form d-none" action="" onsubmit="return validateCheckout()"
                                 method="POST">
                                 @csrf
 
@@ -597,6 +986,8 @@
                                         value="">
                                     <input type="hidden" class="courier-price-choosen" name="courier-price-choosen"
                                         value="">
+                                    <input type="hidden" class="sender-address-id" name="sender_address_id"
+                                        value="">
                                 </div>
 
                                 <div class="input-data-item-detail">
@@ -605,13 +996,12 @@
                                     <input class="total-weight" type="hidden" name="total_weight"
                                         value="{{ array_sum($weight) }}">
                                     <input class="total-subtotal" type="hidden" name="total_subtotal"
-                                        value="{{ is_null($itemBuyNow[0]->id) ? $itemBuyNow[0]->subtotal : $itemBuyNow->sum('subtotal') }}">
+                                        value="{{ is_null($itemBuyNow[0]->id) ? $itemBuyNow[0]->subtotal : $itemBuyNow[0]->sum('subtotal') }}">
                                     <input class="courier" type="hidden" name="courier" value="all">
                                 </div>
 
-                                <h5 class="cart-items-checkout-header cart-items-checkout-header mt-1 mb-4">
-                                    Ringkasan Pesanan
-                                </h5>
+                                <h5 class="cart-items-checkout-header cart-items-checkout-header mt-1 mb-4">Ringkasan
+                                    Pesanan</h5>
                                 <div class="row">
                                     <div class="col-7 checkout-items-total-text cart-items-total-text pe-0">
                                         Total Harga ({{ count($itemBuyNow) }}) Produk
@@ -627,13 +1017,49 @@
                                         Berat total: <span class="total-weight-checkout"></span>
                                     </div>
                                 </div>
-                                <div class="row mb-2">
+                                <div class="row">
                                     <div class="col-7 checkout-shipment-total-text cart-items-total-text pe-0">
                                     </div>
-                                    <div class="col-5 checkout-shipment-total-val cart-items-total-val text-end">
+                                    <div class="col-5 checkout-shipment-total-val fs-14 m-0 text-end">
                                     </div>
                                 </div>
-                                <div class="my-4 border border-1 border-bottom cart-items-checkout-divider">
+                                <div class="row mb-2">
+                                    <div class="col-7 checkout-payment-courier-text">
+                                    </div>
+                                </div>
+
+                                <div class="row discount-used-row d-none">
+                                    <div class="col-7 discount-text cart-items-total-text pe-0">
+                                        Diskon Promo
+                                    </div>
+                                    <div class="col-5 discount-val fs-14 m-0 text-end">
+
+                                    </div>
+                                </div>
+                                <div class="row mb-2 discount-used-row d-none">
+                                    <div class="col-7 fs-12 discount-used-text">
+                                    </div>
+                                    <div class="col-5 fs-12 m-0 text-end">
+                                        <div class="text-red-klikspl fw-600 discount-used-cancel-btn">Batalkan</div>
+                                    </div>
+                                </div>
+
+                                {{-- <div class="row mb-2">
+                                    <div class="col-12">
+                                        <a class="w-100 btn btn-light border-radius-05rem fs-14 py-2 px-3"
+                                            data-bs-toggle="modal" data-bs-target="#promoModal">
+                                            <div class="d-flex">
+                                                <div class="">
+                                                    <i class="bi bi-percent"></i> Masukkan/Gunakan Kode Promo
+                                                </div>
+                                                <div class="ms-auto">
+                                                    <i class="bi bi-chevron-right"></i>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div> --}}
+                                <div class="my-3 border border-1 border-bottom cart-items-checkout-divider">
                                 </div>
                                 <div class="row mb-4">
                                     <div class="col-6">
@@ -659,120 +1085,127 @@
                         </div>
                     </div>
                 </div>
-
-                {{-- checkout card only on small device / smartphone --}}
-                <div class="fixed-bottom col-12 mb-5 p-0 checkout-total-div d-block d-sm-none">
-                    <div class="card my-2 checkout-total-card sticky-md-top">
-                        <div class="card-body">
-                            <a href="#" class="btn active d-block pt-0 expand-checkout-bill shadow-none"
-                                role="button" data-bs-toggle="button" aria-pressed="true">
-                                Detail <i class="bi bi-chevron-up mx-2 expand-checkout-bill-chevron"></i>
-                            </a>
-                            <form class="checkout-bill-form d-none" action="{{ route('checkout.payment') }}"
-                                onsubmit="return validateCheckout()" method="POST">
-                                @csrf
-                                @foreach ($itemBuyNow as $item)
-                                    <input type="hidden" name="product-id[]" value="{{ $item->id }}">
-                                    {{-- <input type="hidden" name="product-qty[]" value="{{ $item->quantity }}">
-                                    <input type="hidden" name="product-subtotal[]" value="{{ $item->subtotal }}"> --}}
-                                @endforeach
-
-                                @foreach ($weight as $weightItem)
-                                    <input type="hidden" name="product-weight[]" value="{{ $weightItem }}">
-                                @endforeach
-
-                                <input type="hidden" name="user-id" value="{{ auth()->user()->id }}">
-
-                                <div class="input-data-shipment">
-
-                                    @foreach ($userAddress as $address)
-                                        @if ($address->is_active == 1)
-                                            <input class="address-id" type="hidden" name="addressId"
-                                                value="{{ $address->id }}">
-                                            <input class="city-origin" type="hidden" name="cityOrigin" value="36">
-                                            <input class="city-destination" type="hidden" name="cityDestination"
-                                                value="{{ $address->city->city_id }}">
-                                        @endif
-                                    @endforeach
-
-                                    <input type="hidden" class="courier-name-choosen" name="courier-name-choosen"
-                                        value="">
-                                    <input type="hidden" class="courier-service-choosen" name="courier-service-choosen"
-                                        value="">
-                                    <input type="hidden" class="courier-etd-choosen" name="courier-etd-choosen"
-                                        value="">
-                                    <input type="hidden" class="courier-price-choosen" name="courier-price-choosen"
-                                        value="">
-                                </div>
-
-                                <div class="input-data-item-detail">
-                                    <input class="csrf-token" type="hidden" name="csrf_token"
-                                        value="{{ csrf_token() }}">
-                                    <input class="total-weight" type="hidden" name="total_weight"
-                                        value="{{ array_sum($weight) }}">
-                                    <input class="total-subtotal" type="hidden" name="total_subtotal"
-                                        value="{{ is_null($itemBuyNow[0]->id) ? $itemBuyNow[0]->subtotal : $itemBuyNow->sum('subtotal') }}">
-                                    <input class="courier" type="hidden" name="courier" value="all">
-                                </div>
-
-                                <h5 class="cart-items-checkout-header cart-items-checkout-header mt-1 mb-4">Ringkasan
-                                    Pesanan</h5>
-                                <div class="row">
-                                    <div class="col-7 checkout-items-total-text cart-items-total-text pe-0">
-                                        Total Harga ({{ count($itemBuyNow) }}) Produk
-                                    </div>
-                                    <div class="col-5 cart-items-total-val text-end">
-                                        Rp{{ price_format_rupiah(is_null($itemBuyNow[0]->id) ? $itemBuyNow[0]->subtotal : $itemBuyNow->sum('subtotal')) }}
-                                        {{-- Rp{{ price_format_rupiah($itemBuyNow['subtotal']) }} --}}
-                                    </div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div
-                                        class="col-7 checkout-items-text cart-items-total-text pe-0 total-weight-checkout">
-                                        Berat total: <span class="total-weight-checkout"></span>
-                                    </div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-7 checkout-shipment-total-text cart-items-total-text pe-0">
-                                    </div>
-                                    <div class="col-5 checkout-shipment-total-val cart-items-total-val text-end">
-                                    </div>
-                                </div>
-                                <div class="my-4 border border-1 border-bottom cart-items-checkout-divider">
-                                </div>
-                                <div class="row">
-                                    <div class="col-6">
-                                        <p class="checkout-total-all-text cart-items-checkout-total-all-text mt-1 mb-4">
-                                            Total harga</p>
-                                    </div>
-                                    <div class="col-6 checkout-total-all-val cart-items-total-all-val text-end fw-bold">
-                                    </div>
-                                    <input type="hidden" name="checkout_total_price" value="">
-                                </div>
-                                <div class="d-grid">
-                                    {{-- <button type="button"
-                                        class="btn btn-block checkout-button show-payment-modal-button shadow-none">
-                                        Pilih Metode Pembayaran
-                                    </button> --}}
-                                    <button type="button"
-                                        class="btn btn-block checkout-button show-payment-modal-button shadow-none"
-                                        data-bs-toggle="modal" data-bs-target="#paymentModal">
-                                        Pilih Metode Pembayaran
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
-    <script>
-        // $(window).focus(function() {
-        //     window.location.reload();
-        // });
+    <div class="promo-lists d-none">
+        {{-- @foreach ($itemBuyNow as $item) --}}
+        @foreach ($productPromos as $productPromo)
+            {{-- product id : {{ $item->product->id }} --}}
+            {{-- <br> - -}}
+            {{-- @foreach ($item->product->productpromo as $productPromo) --}}
+            {{-- @foreach ($productPromo as $productPromo) --}}
+            @if ($itemBuyNow[0]->subtotal >= $productPromo[0]->promo->min_transaction &&
+                $productPromo[0]->promo->is_active == 1)
+                {{-- prod id on promo : {{ $productPromo[0]->product_id }}
+                    <br>
+                    prod promo id : {{ $productPromo[0]->id }}
+                    <br>
+                    promo id : {{ $productPromo[0]->promo_id }}
+                    <br> --}}
+                @if (count($productPromo[0]->promo->userPromoUse) > 0)
+                @else
+                @endif
 
+                <div
+                    class="card mb-3 border-radius-075rem box-shadow promo-card-checkout-modal product-promo-{{ $productPromo[0]->id }} promo-{{ $productPromo[0]->promo->id }}  @foreach ($productPromo[0]->promo->userPromoUse as $userPromoUse)
+                    @if ($userPromoUse->user_id == auth()->user()->id)
+                        @if ($userPromoUse->promo_use >= $productPromo[0]->promo->quota)
+                            {{ 'd-none exceeding-the-quota-limit' }}
+                        @endif
+                    @endif @endforeach">
+                    <div class="card-body p-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-9 col-12">
+                                <div class="row align-items-center">
+                                    <div class="col-md-2 col-4">
+                                        @if (!empty($productPromo[0]->promo->image))
+                                            @if (File::exists(public_path($productPromo[0]->promo->image)))
+                                                <img src="{{ asset($productPromo[0]->promo->image) }}"
+                                                    class="img-fluid w-100 border-radius-075rem" alt="...">
+                                            @elseif(Storage::exists($productPromo[0]->promo->image))
+                                                <img src="{{ asset('/storage/' . $productPromo[0]->promo->image) }}"
+                                                    class="img-fluid w-100 border-radius-075rem" alt="...">
+                                            @else
+                                                <img src="{{ asset('assets/voucher.png') }}"
+                                                    class="img-fluid w-100 border-radius-075rem" alt="...">
+                                            @endif
+                                        @else
+                                            <img src="{{ asset('assets/voucher.png') }}"
+                                                class="img-fluid w-100 border-radius-075rem" alt="...">
+                                        @endif
+                                    </div>
+                                    <div class="col-md-10 col-12 my-2 ps-md-0">
+                                        <p class="m-0 fw-600 pb-1 fs-14">
+                                            {{ $productPromo[0]->promo->name }}
+                                        </p>
+                                        <p class="m-0 fs-14">
+                                            @if (count($productPromo[0]->promo->userPromoUse))
+                                                @foreach ($productPromo[0]->promo->userPromoUse as $userPromoUse)
+                                                    @if ($userPromoUse->user_id == auth()->user()->id)
+                                                        @if ($userPromoUse->promo_use <= $productPromo[0]->promo->quota)
+                                                            {{ $productPromo[0]->promo->quota - $userPromoUse->promo_use }}
+                                                        @endif
+                                                    @endif
+                                                @endforeach
+                                            @else
+                                                {{ $productPromo[0]->promo->quota }}
+                                            @endif
+                                            Voucher
+                                        </p>
+                                        <p class="m-0 fs-14">
+                                            Min, transaksi
+                                            Rp{{ price_format_rupiah($productPromo[0]->promo->min_transaction, 'Rp') }}
+                                        </p>
+                                        <div class="fs-12 text-truncate">
+                                            {{-- {{ count($productPromo) }} --}}
+                                            @if (count($productPromo) == 1)
+                                                Khusus Produk :
+                                                @foreach ($productPromo as $productpromo)
+                                                    {{ $productpromo->product->name }}
+                                                @endforeach
+                                            @endif
+                                        </div>
+                                        <span class="d-md-flex notification-list-created-at">
+                                            @if ($productPromo[0]->promo->start_period >= \Carbon\Carbon::now()->toDateTimeString())
+                                                <p class="m-0 me-2 fs-12 text-grey">
+                                                    Baru berlaku mulai
+                                                    {{ \Carbon\Carbon::parse($productPromo[0]->promo->start_period)->isoFormat('D MMM') }}
+                                                    -
+                                                    {{ \Carbon\Carbon::parse($productPromo[0]->promo->end_period)->isoFormat('D MMM Y, HH:mm') }}
+                                                    WIB
+                                                </p>
+                                            @else
+                                                <p class="m-0 me-2 fs-12 text-danger">
+                                                    Berlaku hingga
+                                                    {{ \Carbon\Carbon::parse($productPromo[0]->promo->end_period)->isoFormat('D MMM Y, HH:mm') }}
+                                                    WIB
+                                                </p>
+                                            @endif
+
+                                        </span>
+                                        <div>
+                                            <a href="{{ route('promo.show', $productPromo[0]->promo) }}" target="_blank"
+                                                class="text-decoration-none fs-12 text-danger">S&K</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-12 text-end">
+                                <button
+                                    class="btn btn-outline-danger fs-12 promo-use-btn promo-btn-{{ $productPromo[0]->promo->id }}"
+                                    id="{{ $productPromo[0]->promo->id }}" id="{{ $productPromo[0]->promo->id }}">
+                                    Pakai Promo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+            {{-- @endforeach --}}
+        @endforeach
+    </div>
+    <script>
         function validateCheckout() {
 
             if (courierName == '' || courierService == '' || courierETD == '' || courierPrice == '') {
@@ -787,12 +1220,17 @@
             var city_origin = $('.city-origin').val();
             var city_destination = $('.city-destination').val();
             var weight = $('.total-weight').val();
+            var productPromos = {!! json_encode($productPromos) !!};
+            var promos = {!! json_encode($promos) !!};
+            var productIds = {!! json_encode($productIds) !!};
+            var items = {!! json_encode($itemBuyNow) !!};
             console.log(weight + ' g');
+
             if (weight < 1000) {
                 weight = 1000;
             }
-            $('.total-weight-checkout').text(Math.round(parseInt(weight) / 1000) + ' kg');
-            // $('.total-weight-checkout').text((parseInt(weight)/1000) +' kg');
+            // $('.total-weight-checkout').text(Math.round(parseInt(weight) / 1000) + ' kg');
+            $('.total-weight-checkout').text((parseInt(weight) / 1000) + ' kg');
             var courier = $('.courier').val();
 
             console.log(token);
@@ -800,11 +1238,271 @@
             console.log(city_destination);
             console.log(courier);
             console.log(weight);
-
+            console.log(productPromos);
+            console.log(promos);
+            console.log(productIds);
+            console.log(items);
             // $.fn.shipment_cost_checkout(token, city_origin, city_destination, courier, weight);
         });
 
         $(document).ready(function() {
+            var paymentMethodArr = [];
+            var isInArray = 0;
+            // var paymentMethodId = 4;
+            var productPromos = {!! json_encode($productPromos) !!};
+            var promos = {!! json_encode($promos) !!};
+            var items = {!! json_encode($itemBuyNow) !!};
+            // $.each(productPromos, function(keys, values) {
+            //     console.log(productPromos[keys]);
+            //     $.each(productPromos[keys], function(key, value) {
+            //         console.log(productPromos[keys][key]['promo']);
+            //     });
+            // });
+            $('body').on('change', 'input:radio[name="payment_method_id"]', function(e) {
+                console.log('e : ');
+                console.log(e.currentTarget.value);
+                paymentMethodArr = [];
+                window.paymentMethodId = e.currentTarget.value;
+                // window.paymentMethodId = $('input:radio[name="payment_method_id"]').val();
+                console.log('payment method id change id : ' + paymentMethodId);
+                $.each(promos, function(keys, values) {
+                    console.log('promos[' + keys + '] : ');
+                    console.log(promos[keys]);
+                    $.each(promos[keys]['promo_payment_method'], function(key, value) {
+                        console.log('- promos[' + keys + '][id] : ' + promos[keys]['id']);
+                        console.log('- value[payment_method_id] : ' + value[
+                            'payment_method_id']);
+                        promoPaymentMethodId = value['payment_method_id'];
+                        console.log('- promoPaymentMethodId : ' + promoPaymentMethodId);
+                        console.log('- paymentMethodId : ' + paymentMethodId);
+                        if (paymentMethodId == promoPaymentMethodId) {
+                            console.log('-- promoPaymentMethodId : ' +
+                            promoPaymentMethodId);
+                            paymentMethodArr.push(promos[keys]['id']);
+                        }
+                    });
+                    console.log('paymentMethodArr : ' + paymentMethodArr);
+                    console.log('promos[keys][id] : ' + promos[keys]['id']);
+                });
+                $.each(productPromos, function(keys, values) {
+                    $.each(promos, function(key, val) {
+                        // console.log('key : '+key);
+                        // console.log('is in array : ' + jQuery.inArray(promos[key]['id'], paymentMethodArr));
+                        isInArray = jQuery.inArray(promos[key]['id'], paymentMethodArr);
+                        console.log('* is in arry : ' + isInArray);
+                        if (isInArray != -1) {
+                            if (!$('.promo-' + promos[key]['id']).hasClass(
+                                    "exceeding-the-quota-limit")) {
+                                $('.promo-' + promos[key]['id']).hasClass("d-none");
+                                $('.promo-' + promos[key]['id']).removeClass("d-none");
+                                $('.promo-btn-' + promos[key]['id']).prop("disabled",
+                                false);
+                                console.log('** promo key-' + key + ' id-' + promos[key][
+                                    'id'
+                                ]);
+                            }
+
+                        } else {
+                            if (!$('.promo-' + promos[key]['id']).hasClass(
+                                    "exceeding-the-quota-limit")) {
+                                console.log('++ cannot be used promo key-' + key + ' id-' +
+                                    promos[key]['id']);
+                                console.log('++ promo btn' + promos[key]['id'] + ' : ' + $(
+                                    '.promo-btn-' + promos[key]['id']).attr('id'));
+                                $('.promo-btn-' + promos[key]['id']).prop("disabled", true);
+                                $('.promo-' + promos[key]['id']).addClass("d-none");
+                            }
+                        }
+                    });
+                });
+            });
+
+            $('body').on('click', '.promo-use-btn', function(e) {
+                var promo_id = e.currentTarget.id;
+                var subtotalWithDiscount = 0;
+                var discountedPrice = 0;
+                console.log('promo id : ' + promo_id);
+
+                $('.promo-use-btn').text('Pakai Promo');
+                $('.promo-use-btn').prop('disabled', false);
+
+                // $('#promoModal').modal('hide');
+                $.each(productPromos, function(keys, values) {
+                    console.log('keys : ' + keys);
+                    if (promo_id == keys) {
+                        console.log('productPromos-' + keys + ' : ');
+                        console.log(productPromos[keys]);
+                        console.log('keys inside if : ' + keys);
+                        $.each(productPromos[keys], function(key, value) {
+                            console.log('key : ' + key);
+                            console.log(productPromos[keys][0]['promo']);
+                            console.log(value);
+                            $('input[name="promo_use_id"]').val(promo_id);
+                            window.productPromo = productPromos[keys][0]['promo'];
+                            window.promoTypeId = (productPromo['promo_type_id']);
+                            window.promoProductId = (value['product_id']);
+                            window.discount = 0;
+                            window.discountName = '';
+                            discount = productPromo['discount'];
+                            discountName = productPromo['name'];
+                            $('.discount-used-row').hasClass('d-none') ? $(
+                                '.discount-used-row').removeClass('d-none') : '';
+                            $.each(items, function(idItem, item) {
+                                $('.subtotal-cart-items-' + item['id']).text(
+                                    formatRupiah(Math.round(item['subtotal']),
+                                        'Rp'));
+
+                                $('.subtotal-cart-items-' + item['id']).hasClass(
+                                        'text-decoration-line-through') ? $(
+                                        '.subtotal-cart-items-' + item['id'])
+                                    .removeClass('text-decoration-line-through') :
+                                    '';
+
+                                if ($('.subtotal-cart-items-' + item['id'])
+                                    .hasClass('text-secondary')) {
+                                    $('.subtotal-cart-items-' + item['id'])
+                                        .removeClass('text-secondary');
+                                    $('.subtotal-cart-items-' + item['id'])
+                                        .addClass('text-danger');
+                                }
+
+                                $('.subtotal-cart-items-promo-' + item['id'])
+                                .empty();
+                                if (promoTypeId == 1 || promoTypeId == 2) {
+                                    if (promoTypeId == 1) {
+                                        if (promoProductId == item['product_id']) {
+                                            discount = Math.round(item['subtotal'] *
+                                                productPromo['discount'] / 100);
+                                            discountedPrice = item['subtotal'] -
+                                                Math.round(item['subtotal'] *
+                                                    productPromo['discount'] / 100);
+                                            console.log('subtotal : ' +
+                                                discountedPrice);
+                                            $('.subtotal-cart-items-' + item['id'])
+                                                .removeClass('text-danger');
+                                            $('.subtotal-cart-items-' + item['id'])
+                                                .addClass('text-secondary');
+                                            $('.subtotal-cart-items-' + item['id'])
+                                                .addClass(
+                                                    'text-decoration-line-through');
+                                            $('.subtotal-cart-items-promo-' + item[
+                                                'id']).text(formatRupiah(
+                                                discountedPrice, "Rp"));
+                                            subtotalWithDiscount += discountedPrice;
+                                        } else {
+                                            subtotalWithDiscount += item[
+                                            'subtotal'];
+                                            console.log(
+                                                'subtotal with discount else : ' +
+                                                subtotalWithDiscount);
+                                        }
+                                        console.log('subtotal with discount : ' +
+                                            subtotalWithDiscount);
+                                    } else if (promoTypeId == 2) {
+                                        if (promoProductId == item['product_id']) {
+                                            discountedPrice = item['subtotal'] -
+                                                productPromo['discount'];
+                                            console.log('subtotal : ' +
+                                                discountedPrice);
+                                            $('.subtotal-cart-items-' + item['id'])
+                                                .removeClass('text-danger');
+                                            $('.subtotal-cart-items-' + item['id'])
+                                                .addClass('text-secondary');
+                                            $('.subtotal-cart-items-' + item['id'])
+                                                .addClass(
+                                                    'text-decoration-line-through');
+                                            $('.subtotal-cart-items-promo-' + item[
+                                                'id']).text(formatRupiah(
+                                                discountedPrice, "Rp"));
+                                            subtotalWithDiscount += discountedPrice;
+                                        } else {
+                                            subtotalWithDiscount += item[
+                                            'subtotal'];
+                                            console.log(
+                                                'subtotal with discount else : ' +
+                                                subtotalWithDiscount);
+                                        }
+                                        console.log('subtotal with discount : ' +
+                                            subtotalWithDiscount);
+                                    }
+                                } else {
+                                    if (key == 0) {
+                                        subtotalWithDiscount += item['subtotal'];
+                                    }
+                                    console.log('subtotal : ' +
+                                        subtotalWithDiscount);
+                                    console.log('item subtotal : ' + item[
+                                        'subtotal']);
+                                    discountName = productPromo['name'];
+                                }
+
+                            });
+                            console.log('product promo key : ' + key);
+                            if (key == 0) {
+                                if (promoTypeId == 3 || promoTypeId == 4) {
+                                    console.log('promo type : ' + promoTypeId);
+                                    if (promoTypeId == 3) {
+                                        discount = Math.round(subtotalWithDiscount *
+                                            productPromo['discount'] / 100);
+                                        subtotalWithDiscount -= discount;
+                                        console.log('discount : ' + discount);
+                                        console.log('subtotal with discount  : ' +
+                                            subtotalWithDiscount);
+                                        // $('.discount-val').text(discount + '%');
+                                    } else if (promoTypeId == 4) {
+                                        subtotalWithDiscount -= discount;
+                                        // $('.discount-val').text(formatRupiah(discount,"Rp"));
+                                    }
+                                }
+                                return false;
+                            }
+                            console.log(productPromo['promo_type_id']);
+                        });
+                        $('.discount-val').text(formatRupiah(discount, "Rp"));
+                        $('.discount-used-text').text(discountName);
+                    }
+                    console.log('discounted price : ' + subtotalWithDiscount);
+                    console.log('shipment price : ' + price);
+
+                    // $('input[name="checkout_total_price"]').val(subtotalWithDiscount + parseInt(price));
+
+                    // $('.cart-items-total-val').text(formatRupiah(subtotalWithDiscount, "Rp"));
+                    // $('.checkout-payment-total-price-val').text(formatRupiah(subtotalWithDiscount, "Rp"));
+                    $('.checkout-payment-total-all-val').text(formatRupiah(subtotalWithDiscount +
+                        parseInt(price), "Rp"));
+                    $('.checkout-total-all-val').text(formatRupiah(subtotalWithDiscount + parseInt(
+                        price), "Rp"));
+
+                    // $('input[name="checkout_payment_total_price"]').val(subtotalWithDiscount + parseInt(price));
+
+                });
+
+                $('.promo-btn-' + promo_id).text('Digunakan');
+                $('.promo-btn-' + promo_id).prop('disabled', true);
+
+                $('#promoModal').modal('hide');
+                $('#paymentModal').modal('show');
+            });
+
+            $('body').on('click', '.discount-used-cancel-btn', function() {
+                var subtotalProductPrice = 0;
+                $.each(items, function(idItem, item) {
+                    subtotalProductPrice += item['subtotal'];
+                });
+
+                $('input[name="promo_use_id"]').val('');
+                $('.discount-used-row').hasClass('d-none') ? '' : $('.discount-used-row').addClass(
+                'd-none');
+                $('.discount-used-text').text('');
+                $('.discount-val').text('');
+                $('.checkout-payment-total-all-val').text(formatRupiah(subtotalProductPrice + parseInt(
+                    price), "Rp"));
+                $('.checkout-total-all-val').text(formatRupiah(subtotalProductPrice + parseInt(price),
+                    "Rp"));
+                $('.promo-use-btn').text('Pakai Promo');
+                $('.promo-use-btn').prop('disabled', false);
+            });
+
             $('body').on('change', 'select[name="sender_city_id"]', function(e) {
                 console.log(e.currentTarget);
                 var sender_city_id = ($("select[name='sender_city_id']").val());
@@ -843,8 +1541,8 @@
                 if (weight < 1000) {
                     weight = 1000;
                 }
-                $('.total-weight-checkout').text(Math.round(parseInt(weight) / 1000) + ' kg');
-                // $('.total-weight-checkout').text((parseInt(weight)/1000) +' kg');
+                // $('.total-weight-checkout').text(Math.round(parseInt(weight) / 1000) + ' kg');
+                $('.total-weight-checkout').text((parseInt(weight) / 1000) + ' kg');
                 var courier = $('.courier').val();
 
                 console.log(token);
@@ -859,10 +1557,10 @@
                 var cart_id = [];
                 $.each($('input:radio[name="checkout-courier-input"]:checked'), function() {
 
-                    var courier = $('input[name="courier-name-' + $(this).val() + '"]').val();
-                    var service = $('input[name="courier-service-' + $(this).val() + '"]').val();
-                    var etd = $('input[name="courier-etd-' + $(this).val() + '"]').val();
-                    var price = $('input[name="courier-price-' + $(this).val() + '"]').val();
+                    window.courier = $('input[name="courier-name-' + $(this).val() + '"]').val();
+                    window.service = $('input[name="courier-service-' + $(this).val() + '"]').val();
+                    window.etd = $('input[name="courier-etd-' + $(this).val() + '"]').val();
+                    window.price = $('input[name="courier-price-' + $(this).val() + '"]').val();
 
                     $('.courier-choice').empty();
 
@@ -897,19 +1595,29 @@
                     console.log($('input[name="courier_price"]').val());
 
                     $('.checkout-shipment-total-text').text('Total Ongkos Kirim');
+
                     $('.checkout-payment-shipment-text').text('Total Ongkos Kirim');
+
                     $('input[name="checkout_total_price"]').val(parseInt($(
                         'input[name="total_subtotal"]').val()) + parseInt(price));
+
                     $('.checkout-shipment-total-val').text(formatRupiah(price, "Rp"));
+
                     $('.checkout-payment-shipment-val').text(formatRupiah(price, "Rp"));
+
                     $('.checkout-total-all-val').text(formatRupiah(parseInt($(
                         'input[name="total_subtotal"]').val()) + parseInt(price), "Rp"));
+
                     $('.checkout-payment-total-all-val').text(formatRupiah(parseInt($(
                         'input[name="total_subtotal"]').val()) + parseInt(price), "Rp"));
+
                     $('#courierModal').modal('toggle');
+
                     $('input[name="checkout_payment_total_price"]').val(parseInt($(
                         'input[name="total_subtotal"]').val()) + parseInt(price));
+
                     $('.courier-error-text').empty();
+
                     $('.checkout-payment-courier-text').text(courier + ' ' + service + ' ' + etd +
                         ' hari');
 
@@ -932,6 +1640,32 @@
                     }
                 }
             });
+            $('body').on('click', '.show-promo-modal-button', function(e) {
+                if ($('.paymentMethods').is(':checked')) {
+                    // $('#promoModal').show();
+                    console.log($(this));
+                    // $('.show-promo-modal-button').attr('data-bs-toggle', 'modal');
+                    // $('.show-promo-modal-button').attr('data-bs-target', '#promoModal');
+                } else {
+                    console.log('belum memilih metode pembayaran');
+                    // console.log($('input[name="courier-name-choosen"]').val());
+                    e.preventDefault();
+                    $('.promo-modal-notification').html(
+                        '<p class="text-danger fs-12 mb-0 mt-2">Pilih Metode Pembayaran terlebih dahulu</p>'
+                    );
+                    // $('.courier-error-text').text('Pilih kurir pengirim terlebih dahulu');
+                    // alert('Pilih metode pembayaran terlebih dahulu');
+                    // $('#promoModal').modal('hide');
+                    // expand();
+
+                }
+            });
+            $('body').on('change', 'input:radio[name="payment_method_id"]', function(e) {
+                $('.promo-modal-notification').empty();
+                $('.show-promo-modal-button').attr('data-bs-toggle', 'modal');
+                $('.show-promo-modal-button').attr('data-bs-target', '#promoModal');
+
+            });
 
             function expand() {
                 console.log($('.checkout-bill-form'));
@@ -953,7 +1687,17 @@
 
             $('.expand-checkout-bill').click(function() {
                 expand();
-            })
+            });
+            $('#searchPromoCheckoutModal').on("keyup", function() {
+                // $('.filter-btn').on("click", function() {
+                // var search = $(this).val().toLowerCase();
+                var search = $('input[name="searchPromoCheckoutModal"]').val().toLowerCase();
+                console.log(search);
+                $(".promo-card-checkout-modal").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(search) > -1);
+                    // });
+                });
+            });
         });
     </script>
 @endsection

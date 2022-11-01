@@ -47,6 +47,13 @@
                     </a>
                 </div>
                 <form class="status-form" action="{{ route('order.index') }}" method="GET">
+                    <input type="hidden" name="status" value="aktif">
+                    <button type="submit"
+                        class="btn text-dark text-decoration-none shadow-none fs-13 btn-order-status btn-outline-danger me-2 my-1 shadow-none border-radius-075rem {{ isset($status) ? ($status == 'aktif' ? 'active-menu border-danger' : '') : '' }}">
+                        Aktif
+                    </button>
+                </form>
+                <form class="status-form" action="{{ route('order.index') }}" method="GET">
                     <input type="hidden" name="status" value="belum bayar">
                     <button type="submit"
                         class="btn text-dark text-decoration-none shadow-none fs-13 btn-order-status btn-outline-danger me-2 my-1 shadow-none border-radius-075rem {{ isset($status) ? ($status == 'belum bayar' ? 'active-menu border-danger' : '') : '' }}">

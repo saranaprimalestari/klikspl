@@ -62,16 +62,22 @@
                         </div>
                         <div class="col-sm-4">
                             <label class="form-label" for="Filter">Urut Berdasarkan</label>
-                            <select class="form-select form-select-sm border-radius-05rem shadow-none" id="Filter" name="orderBy">
+                            <select class="form-select form-select-sm border-radius-05rem shadow-none" id="Filter"
+                                name="orderBy">
                                 <option value="" disabled selected>Filter <i class="bi bi-funnel"></i></option>
-                                <option value="asc" {{ !is_null(request('orderBy')) && request('orderBy') == 'asc' ? 'selected' : '' }}>Pesanan terlama</option>
-                                <option value="desc" {{ !is_null(request('orderBy')) && request('orderBy') == 'desc' ? 'selected' : '' }}>Pesanan terbaru</option>
+                                <option value="asc"
+                                    {{ !is_null(request('orderBy')) && request('orderBy') == 'asc' ? 'selected' : '' }}>
+                                    Pesanan terlama</option>
+                                <option value="desc"
+                                    {{ !is_null(request('orderBy')) && request('orderBy') == 'desc' ? 'selected' : '' }}>
+                                    Pesanan terbaru</option>
                             </select>
                         </div>
                     </div>
                     <div class="row justify-content-end">
                         <div class="col-auto">
-                            <a href="{{ route('adminorder.index') }}" class="btn btn-secondary fs-14 filter-btn">Bersihkan Filter</a>
+                            <a href="{{ route('adminorder.index') }}" class="btn btn-secondary fs-14 filter-btn">Bersihkan
+                                Filter</a>
                             <button type="submit" class="btn btn-danger fs-14 filter-btn ms-1">Tampilkan</button>
                         </div>
                     </div>
@@ -115,89 +121,93 @@
                 <div class="card border-radius-1-5rem fs-14 border-0 card-product-order">
                     {{-- <a href="{{ route('adminorder.show', $order) }}" class="text-decoration-none text-dark"> --}}
                     <div class="card-header bg-transparent px-4 py-3 border-bottom-0">
-                        <div class="row">
-                            <div class="col-md-4 py-2 col-6 fw-600">
-                                @if ($order->order_status === 'expired' || $order->order_status === 'pembayaran ditolak')
-                                    <span class="badge bg-danger">
-                                        {{ ucwords($order->order_status) }}
-                                    </span>
-                                @elseif ($order->order_status === 'pesanan dibatalkan')
-                                    <span class="badge bg-danger">
-                                        {{ ucwords($order->order_status) }}
-                                    </span>
-                                @elseif($order->order_status === 'pesanan dibayarkan' ||
-                                    $order->order_status === 'pembayaran dikonfirmasi' ||
-                                    $order->order_status === 'upload ulang bukti pembayaran' ||
-                                    $order->order_status === 'pesanan disiapkan' ||
-                                    $order->order_status === 'pesanan dikirim')
-                                    <span class="badge bg-warning ">
-                                        {{ ucwords($order->order_status) }}
-                                    </span>
-                                @elseif ($order->order_status === 'selesai')
-                                    <span class="badge bg-success">
-                                        {{ ucwords($order->order_status) }}
-                                    </span>
-                                @else
-                                    <span class="badge bg-secondary ">
-                                        {{ ucwords($order->order_status) }}
-                                    </span>
-                                @endif
-                            </div>
-                            <div class="col-md-8 fs-13 py-2 col-6 text-end">
-                                <span class="">
-                                    {{-- {{ isset($order->invoice_no) }} --}}
-                                    @if (isset($order->invoice_no))
-                                        {{ $order->invoice_no }}
+                        <a href="{{ route('adminorder.show', $order) }}" class="text-decoration-none text-dark">
+                            <div class="row">
+                                <div class="col-md-4 py-2 col-6 fw-600">
+                                    @if ($order->order_status === 'expired' || $order->order_status === 'pembayaran ditolak')
+                                        <span class="badge bg-danger">
+                                            {{ ucwords($order->order_status) }}
+                                        </span>
+                                    @elseif ($order->order_status === 'pesanan dibatalkan')
+                                        <span class="badge bg-danger">
+                                            {{ ucwords($order->order_status) }}
+                                        </span>
+                                    @elseif($order->order_status === 'pesanan dibayarkan' ||
+                                        $order->order_status === 'pembayaran dikonfirmasi' ||
+                                        $order->order_status === 'upload ulang bukti pembayaran' ||
+                                        $order->order_status === 'pesanan disiapkan' ||
+                                        $order->order_status === 'pesanan dikirim')
+                                        <span class="badge bg-warning ">
+                                            {{ ucwords($order->order_status) }}
+                                        </span>
+                                    @elseif ($order->order_status === 'selesai')
+                                        <span class="badge bg-success">
+                                            {{ ucwords($order->order_status) }}
+                                        </span>
                                     @else
-                                        No Inv belum terbit
+                                        <span class="badge bg-secondary ">
+                                            {{ ucwords($order->order_status) }}
+                                        </span>
                                     @endif
-                                </span>
-                                <span class="mx-1">
-                                    /
-                                </span>
-                                <span class="">
-                                    {{ $order->orderaddress->name }}
-                                </span>
-                                <span class="mx-1">
-                                    /
-                                </span>
-                                <span class="">
-                                    {{ \Carbon\Carbon::parse($order->created_at)->isoFormat('D MMM Y, HH:mm') }} WIB
-                                </span>
+                                </div>
+                                <div class="col-md-8 fs-13 py-2 col-6 text-end">
+                                    <span class="">
+                                        {{-- {{ isset($order->invoice_no) }} --}}
+                                        @if (isset($order->invoice_no))
+                                            {{ $order->invoice_no }}
+                                        @else
+                                            No Inv belum terbit
+                                        @endif
+                                    </span>
+                                    <span class="mx-1">
+                                        /
+                                    </span>
+                                    <span class="">
+                                        {{ $order->orderaddress->name }}
+                                    </span>
+                                    <span class="mx-1">
+                                        /
+                                    </span>
+                                    <span class="">
+                                        {{ \Carbon\Carbon::parse($order->created_at)->isoFormat('D MMM Y, HH:mm') }} WIB
+                                    </span>
+                                </div>
+                                <input type="hidden" name="order_date"
+                                    value="{{ \Carbon\Carbon::parse($order->created_at)->isoFormat('Y-MM-D') }}">
                             </div>
-                            <input type="hidden" name="order_date"
-                                value="{{ \Carbon\Carbon::parse($order->created_at)->isoFormat('Y-MM-D') }}">
-                        </div>
-                        <div class="created-date d-none">
-                            {{ \Carbon\Carbon::parse($order->created_at)->isoFormat('Y-MM-D') }}
-                        </div>
+                            <div class="created-date d-none">
+                                {{ \Carbon\Carbon::parse($order->created_at)->isoFormat('Y-MM-D') }}
+                            </div>
+                        </a>
                     </div>
                     <div class="card-body px-4 py-2">
                         <div class="row">
                             <div class="col-md-5">
-                                <div class="row">
-                                    <div class="col-md-2 col-3 pe-0">
-                                        @if (!is_null($order->orderitem[0]->orderproduct->orderproductimage->first()))
-                                            <img src="{{ asset('/storage/' . $order->orderitem[0]->orderproduct->orderproductimage->first()->name) }}"
-                                                class="w-100 border-radius-5px {{ $order->order_status == 'pesanan dibatalkan' || $order->order_status == 'expired' ? 'grayscale-filter' : '' }}"
-                                                alt="">
-                                        @endif
+                                <a href="{{ route('adminorder.show', $order) }}" class="text-decoration-none text-dark">
+                                    <div class="row">
+                                        <div class="col-md-2 col-3 pe-0">
+                                            @if (!is_null($order->orderitem[0]->orderproduct->orderproductimage->first()))
+                                                <img src="{{ asset('/storage/' . $order->orderitem[0]->orderproduct->orderproductimage->first()->name) }}"
+                                                    class="w-100 border-radius-5px {{ $order->order_status == 'pesanan dibatalkan' || $order->order_status == 'expired' ? 'grayscale-filter' : '' }}"
+                                                    alt="">
+                                            @endif
+                                        </div>
+                                        <div class="col-md-10 col-9">
+                                            <div class=" order-items-product-name fw-600">
+                                                {{ $order->orderitem[0]->orderproduct->name }}
+                                            </div>
+                                            <div class="text-truncate order-items-product-variant text-grey fs-12">
+                                                Varian:
+                                                {{ !is_null($order->orderitem[0]->orderproduct->variant_name) ? $order->orderitem[0]->orderproduct->variant_name : 'Tidak ada Varian' }}
+                                            </div>
+                                            <div
+                                                class="text-truncate order-items-product-price-qty text-grey text-end text-md-start fs-12">
+                                                {{ $order->orderitem[0]->quantity }} x
+                                                Rp{{ price_format_rupiah($order->orderitem[0]->orderproduct->price) }}
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-md-10 col-9">
-                                        <div class=" order-items-product-name fw-600">
-                                            {{ $order->orderitem[0]->orderproduct->name }}
-                                        </div>
-                                        <div class="text-truncate order-items-product-variant text-grey fs-12">
-                                            Varian:
-                                            {{ !is_null($order->orderitem[0]->orderproduct->variant_name) ? $order->orderitem[0]->orderproduct->variant_name : 'Tidak ada Varian' }}
-                                        </div>
-                                        <div
-                                            class="text-truncate order-items-product-price-qty text-grey text-end text-md-start fs-12">
-                                            {{ $order->orderitem[0]->quantity }} x
-                                            Rp{{ price_format_rupiah($order->orderitem[0]->orderproduct->price) }}
-                                        </div>
-                                    </div>
-                                </div>
+                                </a>
                                 <div class="row">
                                     <div class="col-12">
                                         @if (count($order->orderitem) > 1)
@@ -214,99 +224,107 @@
                                                             Lihat {{ count($order->orderitem) - 1 }} produk lainnya
                                                         </button>
                                                     </h2>
-                                                    <div id="accordion-product-order-{{ $loop->iteration }}"
-                                                        class="accordion-collapse collapse"
-                                                        aria-labelledby="flush-headingOne"
-                                                        data-bs-parent="#accordionAdminProduct-{{ $loop->iteration }}">
-                                                        <div class="accordion-body p-0 py-3">
-                                                            @foreach ($order->orderitem->skip(1) as $item)
-                                                                <div class="row py-2">
-                                                                    <div class="col-md-2 col-3 pe-0">
-                                                                        @if (!is_null($item->orderproduct->orderproductimage->first()))
-                                                                            <img src="{{ asset('/storage/' . $item->orderproduct->orderproductimage->first()->name) }}"
-                                                                                class="w-100 border-radius-5px {{ $order->order_status == 'pesanan dibatalkan' || $order->order_status == 'expired' ? 'grayscale-filter' : '' }}"
-                                                                                alt="">
-                                                                        @endif
+                                                    <a href="{{ route('adminorder.show', $order) }}"
+                                                        class="text-decoration-none text-dark">
+                                                        <div id="accordion-product-order-{{ $loop->iteration }}"
+                                                            class="accordion-collapse collapse"
+                                                            aria-labelledby="flush-headingOne"
+                                                            data-bs-parent="#accordionAdminProduct-{{ $loop->iteration }}">
+                                                            <div class="accordion-body p-0 py-3">
+                                                                @foreach ($order->orderitem->skip(1) as $item)
+                                                                    <div class="row py-2">
+                                                                        <div class="col-md-2 col-3 pe-0">
+                                                                            @if (!is_null($item->orderproduct->orderproductimage->first()))
+                                                                                <img src="{{ asset('/storage/' . $item->orderproduct->orderproductimage->first()->name) }}"
+                                                                                    class="w-100 border-radius-5px {{ $order->order_status == 'pesanan dibatalkan' || $order->order_status == 'expired' ? 'grayscale-filter' : '' }}"
+                                                                                    alt="">
+                                                                            @endif
+                                                                        </div>
+                                                                        <div class="col-md-10 col-9">
+                                                                            <div class=" order-items-product-name fw-600">
+                                                                                {{ $item->orderproduct->name }}
+                                                                            </div>
+                                                                            <div
+                                                                                class="text-truncate order-items-product-variant text-grey fs-12">
+                                                                                Varian:
+                                                                                {{ !is_null($item->orderproduct->variant_name) ? $item->orderproduct->variant_name : 'Tidak ada Varian' }}
+                                                                            </div>
+                                                                            <div
+                                                                                class="text-truncate order-items-product-price-qty text-grey text-end text-md-start fs-12">
+                                                                                {{ $item->quantity }} x
+                                                                                Rp{{ price_format_rupiah($item->orderproduct->price) }}
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
-                                                                    <div class="col-md-10 col-9">
-                                                                        <div class=" order-items-product-name fw-600">
-                                                                            {{ $item->orderproduct->name }}
-                                                                        </div>
-                                                                        <div
-                                                                            class="text-truncate order-items-product-variant text-grey fs-12">
-                                                                            Varian:
-                                                                            {{ !is_null($item->orderproduct->variant_name) ? $item->orderproduct->variant_name : 'Tidak ada Varian' }}
-                                                                        </div>
-                                                                        <div
-                                                                            class="text-truncate order-items-product-price-qty text-grey text-end text-md-start fs-12">
-                                                                            {{ $item->quantity }} x
-                                                                            Rp{{ price_format_rupiah($item->orderproduct->price) }}
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            @endforeach
+                                                                @endforeach
+                                                            </div>
                                                         </div>
-                                                    </div>
+                                                    </a>
                                                 </div>
                                             </div>
                                         @else
                                         @endif
                                     </div>
                                 </div>
-
                             </div>
                             <div class="col-md-3">
-                                <div>
-                                    <div class="fw-600">
-                                        Alamat
+                                <a href="{{ route('adminorder.show', $order) }}" class="text-decoration-none text-dark">
+                                    <div>
+                                        <div class="fw-600">
+                                            Alamat
+                                        </div>
+                                        <div class="fs-12">
+                                            {{ $order->orderaddress->name }}
+                                        </div>
+                                        <div class="fs-12">
+                                            {{ $order->orderaddress->address }}
+                                        </div>
+                                        <div class="fs-12">
+                                            {{ $order->orderaddress->telp_no }}
+                                        </div>
                                     </div>
-                                    <div class="fs-12">
-                                        {{ $order->orderaddress->name }}
+                                </a>
+                                <a href="{{ route('adminorder.show', $order) }}" class="text-decoration-none text-dark">
+                                    <div class="pt-2">
+                                        <div class="fw-600">
+                                            Pengirim
+                                        </div>
+                                        <div class="fs-12">
+                                            {{ $order->senderAddress->name }}
+                                        </div>
+                                        <div class="fs-12">
+                                            {{ $order->senderAddress->address }}
+                                        </div>
+                                        <div class="fs-12">
+                                            {{ $order->senderAddress->telp_no }}
+                                        </div>
                                     </div>
-                                    <div class="fs-12">
-                                        {{ $order->orderaddress->address }}
-                                    </div>
-                                    <div class="fs-12">
-                                        {{ $order->orderaddress->telp_no }}
-                                    </div>
-                                </div>
-                                <div class="pt-2">
-                                    <div class="fw-600">
-                                        Pengirim
-                                    </div>
-                                    <div class="fs-12">
-                                        {{ $order->senderAddress->name }}
-                                    </div>
-                                    <div class="fs-12">
-                                        {{ $order->senderAddress->address }}
-                                    </div>
-                                    <div class="fs-12">
-                                        {{ $order->senderAddress->telp_no }}
-                                    </div>
-                                </div>
+                                </a>
                             </div>
                             <div class="col-md-2">
-                                <div class="fw-600">
-                                    Kurir
-                                </div>
-                                <div class="fs-12">
-                                    {{ $order->courier }}
-                                    {{ $order->courier_package_type }}
-                                </div>
-                                <div class="fs-12">
-                                    Perkiraan tiba dalam {{ $order->estimation_day }} hari /
-                                    {{ \Carbon\Carbon::parse($order->estimation_date)->isoFormat('dddd,D MMMM Y') }}
-                                </div>
-                                <div class="fw-600 pt-2">
-                                    No Resi
-                                </div>
-                                <div class="fs-12">
-                                    @if (isset($order->resi))
-                                        {{ $order->resi }}
-                                    @else
-                                        belum terbit
-                                    @endif
-                                </div>
+                                <a href="{{ route('adminorder.show', $order) }}" class="text-decoration-none text-dark">
+                                    <div class="fw-600">
+                                        Kurir
+                                    </div>
+                                    <div class="fs-12">
+                                        {{ $order->courier }}
+                                        {{ $order->courier_package_type }}
+                                    </div>
+                                    <div class="fs-12">
+                                        Perkiraan tiba dalam {{ $order->estimation_day }} hari /
+                                        {{ \Carbon\Carbon::parse($order->estimation_date)->isoFormat('dddd,D MMMM Y') }}
+                                    </div>
+                                    <div class="fw-600 pt-2">
+                                        No Resi
+                                    </div>
+                                    <div class="fs-12">
+                                        @if (isset($order->resi))
+                                            {{ $order->resi }}
+                                        @else
+                                            belum terbit
+                                        @endif
+                                    </div>
+                                </a>
                             </div>
                             {{-- <div class="col-md-2 text-center">
                                 <div class="fw-600">
@@ -324,15 +342,17 @@
                                     @else
                                         {{ ucwords($order->order_status) }}
                                     @endif
-                                </div>
-                            </div> --}}
+                                    </div>
+                                </div> --}}
                             <div class="col-md-2 text-end">
-                                <div class="fw-600">
-                                    Total Pesanan
-                                </div>
-                                <div class="fs-14 text-red-klikspl">
-                                    Rp{{ price_format_rupiah($order->courier_price + $order->total_price + $order->unique_code - $order->discount) }}
-                                </div>
+                                <a href="{{ route('adminorder.show', $order) }}" class="text-decoration-none text-dark">
+                                    <div class="fw-600">
+                                        Total Pesanan
+                                    </div>
+                                    <div class="fs-14 text-red-klikspl">
+                                        Rp{{ price_format_rupiah($order->courier_price + $order->total_price + $order->unique_code - $order->discount) }}
+                                    </div>
+                                </a>
                             </div>
                         </div>
                         @if ($order->order_status === 'pesanan dibatalkan')
@@ -365,24 +385,24 @@
                     </div>
                     <div class="card-footer bg-transparent px-4 py-3 border-top-0">
                         {{-- <div class="d-flex justify-content-end"> --}}
-                            <div class="row">
-                                <div class="col-md-6 col-7">
-                                    @if (auth()->guard('adminMiddle')->user()->admon_type == 1)
-                                        {{ $order->senderaddress->name }}
-                                    @endif
-                                </div>
-                                <div class="col-md-6 col-5 text-end">
-                                    {{-- <a href="{{ route('order.show', $order) }}" class="btn btn-danger fs-13 my-1 mx-1"> --}}
-                                    {{-- <a href="{{ route('order.show', $order) }}" class="text-red-klikspl fs-14 py-2 fw-600 text-decoration-none">
+                        <div class="row">
+                            <div class="col-md-6 col-7">
+                                @if (auth()->guard('adminMiddle')->user()->admon_type == 1)
+                                    {{ $order->senderaddress->name }}
+                                @endif
+                            </div>
+                            <div class="col-md-6 col-5 text-end">
+                                {{-- <a href="{{ route('order.show', $order) }}" class="btn btn-danger fs-13 my-1 mx-1"> --}}
+                                {{-- <a href="{{ route('order.show', $order) }}" class="text-red-klikspl fs-14 py-2 fw-600 text-decoration-none">
                                             <i class="bi bi-receipt"></i> Detail Pesanan
                                         </a> --}}
-                                    <a href="{{ route('adminorder.show', $order) }}"
-                                        class="text-danger fs-13 my-1 mx-1 me-2 text-decoration-none fw-bold">
-                                        <i class="bi bi-receipt"></i> Detail Pesanan
-                                    </a>
-                                    {{-- </a> --}}
-                                </div>
+                                <a href="{{ route('adminorder.show', $order) }}"
+                                    class="text-danger fs-13 my-1 mx-1 me-2 text-decoration-none fw-bold">
+                                    <i class="bi bi-receipt"></i> Detail Pesanan
+                                </a>
+                                {{-- </a> --}}
                             </div>
+                        </div>
                         {{-- </div> --}}
                     </div>
                     {{-- </a> --}}

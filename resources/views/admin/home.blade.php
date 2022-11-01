@@ -220,7 +220,7 @@
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
                             <a class="text-decoration-none link-dark color-red-klikspl-hover"
-                                href="{{ route('promovoucher.index') }}">
+                                href="{{ route('promobanner.index') }}">
                                 <div class="card admin-card-dashboard border-radius-075rem box-shadow">
                                     <div class="card-body px-4">
                                         <i class="bi bi-megaphone fs-3"></i>
