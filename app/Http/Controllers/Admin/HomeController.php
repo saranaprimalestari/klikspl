@@ -11,6 +11,7 @@ use App\Models\CartItem;
 use App\Models\OrderItem;
 use App\Models\PromoBanner;
 use Illuminate\Http\Request;
+use App\Models\ProductComment;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -51,74 +52,87 @@ class HomeController extends Controller
             $finish = Order::where('order_status', '=', 'selesai')->whereIn('id', function ($query) {
                 $query->select('order_id')->from(with(new OrderItem)->getTable())->where('is_review', '=', '1');
             })->get();
-            $canceled = Order::withTrashed()->where('order_status', '=', 'expired')->orWhere('order_status', '=', 
-            'pesanan dibatalkan')->get();
+            $canceled = Order::withTrashed()->where('order_status', '=', 'expired')->orWhere(
+                'order_status',
+                '=',
+                'pesanan dibatalkan'
+            )->get();
             $outStock = Product::with(['productvariant' => fn ($query) => $query->where('stock', '=', '0')])
-            ->whereHas(
-                'productvariant',
-                fn ($query) =>
-                $query->where('stock', '=', '0')
-            )->orWhere('stock', '=', '0')
-            ->get();
+                ->whereHas(
+                    'productvariant',
+                    fn ($query) =>
+                    $query->where('stock', '=', '0')
+                )->orWhere('stock', '=', '0')
+                ->get();
             $activedPromo = Promo::where('is_active', '=', 1)->get();
             $activedBannerPromo = PromoBanner::where('is_active', '=', 1)->get();
+            $productComments = ProductComment::whereNotNull('product_comments.user_id')
+                ->join('orders', function ($join) {
+                    $join->on('product_comments.order_id', '=', 'orders.id');
+                })
+                ->join('admin_sender_addresses', function ($join) {
+                    $join->on('admin_sender_addresses.sender_address_id', '=', 'orders.sender_address_id');
+                })
+                ->join("admins", function ($join) {
+                    $join->on("admins.id", "=", "admin_sender_addresses.admin_id");
+                })->get('product_comments.*');
         } else {
-            $waitingPayment =  Order::where('order_status', '=', 'belum bayar')->where(['sender_address_id' => function($query){
+            $waitingPayment =  Order::where('order_status', '=', 'belum bayar')->where(['sender_address_id' => function ($query) {
                 $query->select('sender_address_id')
-                ->from('admin_sender_addresses')
-                ->whereColumn('sender_address_id', 'orders.sender_address_id')
-                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+                    ->from('admin_sender_addresses')
+                    ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                    ->where('admin_id', '=', auth()->guard('adminMiddle')->user()->id);
             }])->get();
-    
-            $confirmPayment = Order::where('order_status', '=', 'pesanan dibayarkan')->where(['sender_address_id' => function($query){
+
+            $confirmPayment = Order::where('order_status', '=', 'pesanan dibayarkan')->where(['sender_address_id' => function ($query) {
                 $query->select('sender_address_id')
-                ->from('admin_sender_addresses')
-                ->whereColumn('sender_address_id', 'orders.sender_address_id')
-                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+                    ->from('admin_sender_addresses')
+                    ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                    ->where('admin_id', '=', auth()->guard('adminMiddle')->user()->id);
             }])->get();
-    
-            $mustBeProcess = Order::where('order_status', '=', 'pembayaran dikonfirmasi')->where(['sender_address_id' => function($query){
+
+            $mustBeProcess = Order::where('order_status', '=', 'pembayaran dikonfirmasi')->where(['sender_address_id' => function ($query) {
                 $query->select('sender_address_id')
-                ->from('admin_sender_addresses')
-                ->whereColumn('sender_address_id', 'orders.sender_address_id')
-                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+                    ->from('admin_sender_addresses')
+                    ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                    ->where('admin_id', '=', auth()->guard('adminMiddle')->user()->id);
             }])->get();
-    
-            $mustBeSent = Order::where('order_status', '=', 'pesanan disiapkan')->where(['sender_address_id' => function($query){
+
+            $mustBeSent = Order::where('order_status', '=', 'pesanan disiapkan')->where(['sender_address_id' => function ($query) {
                 $query->select('sender_address_id')
-                ->from('admin_sender_addresses')
-                ->whereColumn('sender_address_id', 'orders.sender_address_id')
-                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+                    ->from('admin_sender_addresses')
+                    ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                    ->where('admin_id', '=', auth()->guard('adminMiddle')->user()->id);
             }])->get();
-    
-            $onDelivery = Order::where('order_status', '=', 'pesanan dikirim')->where(['sender_address_id' => function($query){
+
+            $onDelivery = Order::where('order_status', '=', 'pesanan dikirim')->where(['sender_address_id' => function ($query) {
                 $query->select('sender_address_id')
-                ->from('admin_sender_addresses')
-                ->whereColumn('sender_address_id', 'orders.sender_address_id')
-                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+                    ->from('admin_sender_addresses')
+                    ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                    ->where('admin_id', '=', auth()->guard('adminMiddle')->user()->id);
             }])->get();
-    
-            $arrived = Order::where('order_status', '=', 'selesai')->where(['sender_address_id' => function($query){
+
+            $arrived = Order::where('order_status', '=', 'selesai')->where(['sender_address_id' => function ($query) {
                 $query->select('sender_address_id')
-                ->from('admin_sender_addresses')
-                ->whereColumn('sender_address_id', 'orders.sender_address_id')
-                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+                    ->from('admin_sender_addresses')
+                    ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                    ->where('admin_id', '=', auth()->guard('adminMiddle')->user()->id);
             }])->get();
-    
-            $finish = Order::where('order_status', '=', 'selesai')->where(['sender_address_id' => function($query){
+
+            $finish = Order::where('order_status', '=', 'selesai')->where(['sender_address_id' => function ($query) {
                 $query->select('sender_address_id')
-                ->from('admin_sender_addresses')
-                ->whereColumn('sender_address_id', 'orders.sender_address_id')
-                ->where('admin_id','=', auth()->guard('adminMiddle')->user()->id);
+                    ->from('admin_sender_addresses')
+                    ->whereColumn('sender_address_id', 'orders.sender_address_id')
+                    ->where('admin_id', '=', auth()->guard('adminMiddle')->user()->id);
             }])->whereIn('id', function ($query) {
                 $query->select('order_id')->from(with(new OrderItem)->getTable())->where('is_review', '=', '1');
             })->get();
-            
-            $canceled = Order::withTrashed()->join('admin_sender_addresses',function($join) {
-                    $join->on('orders.sender_address_id','=','admin_sender_addresses.sender_address_id')
-                    ->where('admin_sender_addresses.admin_id','=',auth()->guard('adminMiddle')->user()->id);
-                })->where('orders.order_status','=','expired')
-                ->orWhere('orders.order_status','=','pesanan dibatalkan')
+
+            $canceled = Order::withTrashed()->join('admin_sender_addresses', function ($join) {
+                $join->on('orders.sender_address_id', '=', 'admin_sender_addresses.sender_address_id')
+                    ->where('admin_sender_addresses.admin_id', '=', auth()->guard('adminMiddle')->user()->id);
+            })->where('orders.order_status', '=', 'expired')
+                ->orWhere('orders.order_status', '=', 'pesanan dibatalkan')
                 ->get();
             // $canceled = DB::table('orders')
             // ->select('*')
@@ -139,23 +153,46 @@ class HomeController extends Controller
             // 'pesanan dibatalkan')->get();
 
             $outStock = Product::where('company_id', '=', auth()->guard('adminMiddle')->user()->company_id)->with(['productvariant' => fn ($query) => $query->where('stock', '=', '0')])
-            ->whereHas(
-                'productvariant',
-                fn ($query) =>
-                $query->where('stock', '=', '0')
-            )->orWhere('stock', '=', '0')
-            ->get();
+                ->whereHas(
+                    'productvariant',
+                    fn ($query) =>
+                    $query->where('stock', '=', '0')
+                )->orWhere('stock', '=', '0')
+                ->get();
 
             $activedPromo = Promo::where('company_id', '=', auth()->guard('adminMiddle')->user()->company_id)->where('is_active', '=', 1)->get();
-            
+
             $activedBannerPromo = PromoBanner::where('company_id', '=', auth()->guard('adminMiddle')->user()->company_id)->where('is_active', '=', 1)->get();
+
+            $productComments = ProductComment::whereNotNull('product_comments.user_id')
+                ->join('orders', function ($join) {
+                    $join->on('product_comments.order_id', '=', 'orders.id');
+                })
+                ->join('admin_sender_addresses', function ($join) {
+                    $join->on('admin_sender_addresses.sender_address_id', '=', 'orders.sender_address_id');
+                })
+                ->join("admins", function ($join) {
+                    $join->on("admins.id", "=", "admin_sender_addresses.admin_id")
+                        ->where('admins.id', '=', auth()->guard('adminMiddle')->user()->id);
+                })->get('product_comments.*');
         }
 
+        $incomeValues = Order::where('order_status', 'like', '%selesai%')->select(DB::raw('sum(courier_price + total_price + unique_code - discount) as total_income'))->first()->total_income;
+
+        $incomeThisMonth = Order::where('order_status', 'like', '%selesai%')->whereYear('updated_at', '=', date('Y'))->whereMonth('updated_at', '=', date('m'))->select(DB::raw('sum(courier_price + total_price + unique_code - discount) as total_income'))->first()->total_income;
+
+        $productCommentsCount = 0;
+        foreach ($productComments as $comment) {
+            if (count($comment->children) <= 0) {
+                $productCommentsCount += 1;
+            }
+        }
+        // dd($productComments->children);
         return view('admin.home', [
             'title' => 'Admin Dashboard',
             'active' => 'dashboard',
             'cartItems' => CartItem::all(),
-            'waitingPayment' =>$waitingPayment,
+            'waitingPayment' => $waitingPayment,
             'confirmPayment' => $confirmPayment,
             'mustBeProcess' => $mustBeProcess,
             'mustBeSent' => $mustBeSent,
@@ -166,6 +203,9 @@ class HomeController extends Controller
             'outStock' => $outStock,
             'activedPromo' => $activedPromo,
             'activedBannerPromo' => $activedBannerPromo,
+            'incomeValues' => $incomeValues,
+            'incomeThisMonth' => $incomeThisMonth,
+            'productCommentsCount' => $productCommentsCount,
             'orderStatistics' => Order::all(),
         ]);
     }
@@ -209,7 +249,7 @@ class HomeController extends Controller
             abort(403);
         }
     }
-    
+
     public function promoBannerExpiredCheck()
     {
         $expiredCheck = PromoBanner::all();

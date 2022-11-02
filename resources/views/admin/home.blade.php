@@ -16,238 +16,310 @@
     </div>
 
     {{-- <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas> --}}
-    <div class="container p-0 mb-5">
-        <div class="card admin-card-dashboard border-radius-1-5rem">
-            <div class="card-body p-4">
-                <h5>Menu Cepat Pesanan</h5>
-                <div class="row pt-2 pb-2 fs-14">
-                    @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2)
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
-                            <a class="text-decoration-none link-dark color-red-klikspl-hover"
-                                href="{{ route('adminorder.index') }}">
-                                <div class="card admin-card-dashboard border-radius-075rem box-shadow">
-                                    <div class="card-body px-4">
-                                        <i class="bi bi-cart fs-3"></i>
-                                        <p class="mb-2 mt-1">
-                                            Pesanan Dikeranjang
-                                        </p>
-                                        <h3>
-                                            {{ count($cartItems) }}
-                                        </h3>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
-                            <a class="text-decoration-none link-dark color-red-klikspl-hover"
-                                href="{{ route('adminorder.index', ['status=belum bayar']) }}">
-                                <div class="card admin-card-dashboard border-radius-075rem box-shadow">
-                                    <div class="card-body px-4">
-                                        <i class="bi bi-credit-card admin-card-dashboard fs-3"></i>
-                                        <p class="mb-2 mt-1">
-                                            Menunggu Pembayaran
-                                        </p>
-                                        <h3>
-                                            {{ count($waitingPayment) }}
-                                        </h3>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    @endif
-                    @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2 ||
-                        auth()->guard('adminMiddle')->user()->admin_type == 3)
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
-                            <a class="text-decoration-none link-dark color-red-klikspl-hover"
-                                href="{{ route('adminorder.index', ['status=pesanan dibayarkan']) }}">
-                                <div class="card admin-card-dashboard border-radius-075rem box-shadow">
-                                    <div class="card-body px-4">
-                                        <i class="bi bi-check-square fs-3"></i>
-                                        <p class="mb-2 mt-1">
-                                            Konfirmasi Pembayaran
-                                        </p>
-                                        <h3>
-                                            {{ count($confirmPayment) }}
-                                        </h3>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    @endif
-                    @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2 ||
-                        auth()->guard('adminMiddle')->user()->admin_type == 4)
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
-                            <a class="text-decoration-none link-dark color-red-klikspl-hover"
-                                href="{{ route('adminorder.index', ['status=pembayaran dikonfirmasi']) }}">
-                                <div class="card admin-card-dashboard border-radius-075rem box-shadow">
-                                    <div class="card-body px-4">
-                                        <i class="bi bi-receipt fs-3"></i>
-                                        <p class="mb-2 mt-1">
-                                            Perlu Diproses
-                                        </p>
-                                        <h3>
-                                            {{ count($mustBeProcess) }}
-                                        </h3>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
-                            <a class="text-decoration-none link-dark color-red-klikspl-hover"
-                                href="{{ route('adminorder.index', ['status=pesanan disiapkan']) }}">
-                                <div class="card admin-card-dashboard border-radius-075rem box-shadow">
-                                    <div class="card-body px-4">
-                                        <i class="bi bi-truck fs-3"></i>
-                                        <p class="mb-2 mt-1">
-                                            Perlu Dikirim
-                                        </p>
-                                        <h3>
-                                            {{ count($mustBeSent) }}
-                                        </h3>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
-                            <a class="text-decoration-none link-dark color-red-klikspl-hover"
-                                href="{{ route('adminorder.index', ['status=pesanan dikirim']) }}">
-                                <div class="card admin-card-dashboard border-radius-075rem box-shadow">
-                                    <div class="card-body px-4">
-                                        <i class="bi bi-truck fs-3"></i>
-                                        <p class="mb-2 mt-1">
-                                            Dalam Pengiriman
-                                        </p>
-                                        <h3>
-                                            {{ count($onDelivery) }}
-                                        </h3>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    @endif
-                    @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2)
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
-                            <a class="text-decoration-none link-dark color-red-klikspl-hover"
-                                href="{{ route('adminorder.index', ['status=sampai tujuan']) }}">
-                                <div class="card admin-card-dashboard border-radius-075rem box-shadow">
-                                    <div class="card-body px-4">
-                                        <i class="bi bi-geo-alt fs-3"></i>
-                                        <p class="mb-2 mt-1">
-                                            Sampai Tujuan
-                                        </p>
-                                        <h3>
-                                            {{ count($arrived) }}
-                                        </h3>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
-                            <a class="text-decoration-none link-dark color-red-klikspl-hover"
-                                href="{{ route('adminorder.index', ['status=selesai']) }}">
-                                <div class="card admin-card-dashboard border-radius-075rem box-shadow">
-                                    <div class="card-body px-4">
-                                        <i class="bi bi-cart-check fs-3"></i>
-                                        <p class="mb-2 mt-1">
-                                            Selesai
-                                        </p>
-                                        <h3>
+    <div class="container p-0 row m-0">
 
-                                            {{ count($finish) }}
-                                        </h3>
+        <div class="col-md-12 col-12 mb-4">
+            <div class="card border-0 h-100 border-radius-1-5rem fs-14">
+                <div class="card-body p-4">
+                    <h4 class="fw-600 mb-3">
+                        Informasi Penghasilan
+                    </h4>
+                    <div class="row">
+                        <div class="col-md-12 col-12">
+                            <div class="row">
+                                <div class="col-md-6 col-12">
+                                    <div class="card h-100 border-radius-075rem box-shadows border-0">
+                                        <div class="card-body p-4">
+                                            <div class="row align-items-center">
+                                                <div class="col-2">
+                                                    <i class="bi bi-wallet fs-1 text-red-klikspl"></i>
+                                                </div>
+                                                <div class="col-9">
+                                                    <p class="mb-1">
+                                                        Total Penghasilan Saya
+                                                    </p>
+                                                    <h2 class="fw-bold text-red-klikspl">
+                                                        Rp{{ price_format_rupiah($incomeValues) }}
+                                                    </h2>
+                                                </div>
+                                            </div>
+
+                                        </div>
                                     </div>
                                 </div>
-                            </a>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
-                            <a class="text-decoration-none link-dark color-red-klikspl-hover"
-                                href="{{ route('adminorder.index', ['status=expired']) }}">
-                                <div class="card admin-card-dashboard border-radius-075rem box-shadow">
-                                    <div class="card-body px-4">
-                                        <i class="bi bi-x-square fs-3"></i>
-                                        <p class="mb-2 mt-1">
-                                            Dibatalkan
-                                        </p>
-                                        <h3>
-                                            {{ count($canceled) }}
-                                        </h3>
-                                    </div>
+                                <div class="col-md-6 col-12 py-4">
+                                    <p class="mb-1">
+                                        Penghasilan Bulan ini
+                                    </p>
+                                    <h3 class="fw-bold">
+                                        Rp{{ price_format_rupiah($incomeThisMonth) }}
+                                    </h3>
                                 </div>
-                            </a>
+                            </div>
                         </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
-                            <a class="text-decoration-none link-dark color-red-klikspl-hover"
-                                href="{{ route('admin.product.out.stock') }}">
-                                <div class="card admin-card-dashboard border-radius-075rem box-shadow">
-                                    <div class="card-body px-4">
-                                        <i class="bi bi-archive fs-3"></i>
-                                        <p class="mb-2 mt-1">
-                                            Produk Habis
-                                        </p>
-                                        <h3>
-                                            {{ count($outStock) }}
-                                        </h3>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    @endif
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="container p-0 mb-3">
-        <div class="card admin-card-dashboard border-radius-1-5rem">
-            <div class="card-body p-4">
-                <h5>Menu Cepat Promo</h5>
-                <div class="row pt-2 pb-2 fs-14">
-                    @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2)
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
-                            <a class="text-decoration-none link-dark color-red-klikspl-hover"
-                                href="{{ route('promovoucher.index') }}">
-                                <div class="card admin-card-dashboard border-radius-075rem box-shadow">
-                                    <div class="card-body px-4">
-                                        <i class="bi bi-percent fs-3"></i>
-                                        <p class="mb-2 mt-1">
-                                            Promo Aktif
-                                        </p>
-                                        <h3>
-                                            {{ count($activedPromo) }}
-                                        </h3>
+        <div class="col-12 mb-4">
+            <div class="card admin-card-dashboard border-radius-1-5rem">
+                <div class="card-body p-4">
+                    <h4>Menu Cepat Pesanan</h4>
+                    <div class="row pt-2 pb-2 fs-14">
+                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2)
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
+                                <a class="text-decoration-none link-dark color-red-klikspl-hover"
+                                    href="{{ route('adminorder.index') }}">
+                                    <div class="card admin-card-dashboard border-radius-075rem box-shadow">
+                                        <div class="card-body px-4">
+                                            <i class="bi bi-cart fs-3"></i>
+                                            <p class="mb-2 mt-1">
+                                                Pesanan Dikeranjang
+                                            </p>
+                                            <h3>
+                                                {{ count($cartItems) }}
+                                            </h3>
+                                        </div>
                                     </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
-                            <a class="text-decoration-none link-dark color-red-klikspl-hover"
-                                href="{{ route('promobanner.index') }}">
-                                <div class="card admin-card-dashboard border-radius-075rem box-shadow">
-                                    <div class="card-body px-4">
-                                        <i class="bi bi-megaphone fs-3"></i>
-                                        <p class="mb-2 mt-1">
-                                            Promo Banner Aktif
-                                        </p>
-                                        <h3>
-                                            {{ count($activedBannerPromo) }}
-                                        </h3>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
+                                <a class="text-decoration-none link-dark color-red-klikspl-hover"
+                                    href="{{ route('adminorder.index', ['status=belum bayar']) }}">
+                                    <div class="card admin-card-dashboard border-radius-075rem box-shadow">
+                                        <div class="card-body px-4">
+                                            <i class="bi bi-credit-card admin-card-dashboard fs-3"></i>
+                                            <p class="mb-2 mt-1">
+                                                Menunggu Pembayaran
+                                            </p>
+                                            <h3>
+                                                {{ count($waitingPayment) }}
+                                            </h3>
+                                        </div>
                                     </div>
-                                </div>
-                            </a>
-                        </div>
-                    @endif
+                                </a>
+                            </div>
+                        @endif
+                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2 ||
+                            auth()->guard('adminMiddle')->user()->admin_type == 3)
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
+                                <a class="text-decoration-none link-dark color-red-klikspl-hover"
+                                    href="{{ route('adminorder.index', ['status=pesanan dibayarkan']) }}">
+                                    <div class="card admin-card-dashboard border-radius-075rem box-shadow">
+                                        <div class="card-body px-4">
+                                            <i class="bi bi-check-square fs-3"></i>
+                                            <p class="mb-2 mt-1">
+                                                Konfirmasi Pembayaran
+                                            </p>
+                                            <h3>
+                                                {{ count($confirmPayment) }}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        @endif
+                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2 ||
+                            auth()->guard('adminMiddle')->user()->admin_type == 4)
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
+                                <a class="text-decoration-none link-dark color-red-klikspl-hover"
+                                    href="{{ route('adminorder.index', ['status=pembayaran dikonfirmasi']) }}">
+                                    <div class="card admin-card-dashboard border-radius-075rem box-shadow">
+                                        <div class="card-body px-4">
+                                            <i class="bi bi-receipt fs-3"></i>
+                                            <p class="mb-2 mt-1">
+                                                Perlu Diproses
+                                            </p>
+                                            <h3>
+                                                {{ count($mustBeProcess) }}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
+                                <a class="text-decoration-none link-dark color-red-klikspl-hover"
+                                    href="{{ route('adminorder.index', ['status=pesanan disiapkan']) }}">
+                                    <div class="card admin-card-dashboard border-radius-075rem box-shadow">
+                                        <div class="card-body px-4">
+                                            <i class="bi bi-truck fs-3"></i>
+                                            <p class="mb-2 mt-1">
+                                                Perlu Dikirim
+                                            </p>
+                                            <h3>
+                                                {{ count($mustBeSent) }}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
+                                <a class="text-decoration-none link-dark color-red-klikspl-hover"
+                                    href="{{ route('adminorder.index', ['status=pesanan dikirim']) }}">
+                                    <div class="card admin-card-dashboard border-radius-075rem box-shadow">
+                                        <div class="card-body px-4">
+                                            <i class="bi bi-truck fs-3"></i>
+                                            <p class="mb-2 mt-1">
+                                                Dalam Pengiriman
+                                            </p>
+                                            <h3>
+                                                {{ count($onDelivery) }}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        @endif
+                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2)
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
+                                <a class="text-decoration-none link-dark color-red-klikspl-hover"
+                                    href="{{ route('adminorder.index', ['status=sampai tujuan']) }}">
+                                    <div class="card admin-card-dashboard border-radius-075rem box-shadow">
+                                        <div class="card-body px-4">
+                                            <i class="bi bi-geo-alt fs-3"></i>
+                                            <p class="mb-2 mt-1">
+                                                Sampai Tujuan
+                                            </p>
+                                            <h3>
+                                                {{ count($arrived) }}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
+                                <a class="text-decoration-none link-dark color-red-klikspl-hover"
+                                    href="{{ route('adminorder.index', ['status=selesai']) }}">
+                                    <div class="card admin-card-dashboard border-radius-075rem box-shadow">
+                                        <div class="card-body px-4">
+                                            <i class="bi bi-cart-check fs-3"></i>
+                                            <p class="mb-2 mt-1">
+                                                Selesai
+                                            </p>
+                                            <h3>
+    
+                                                {{ count($finish) }}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
+                                <a class="text-decoration-none link-dark color-red-klikspl-hover"
+                                    href="{{ route('adminorder.index', ['status=expired']) }}">
+                                    <div class="card admin-card-dashboard border-radius-075rem box-shadow">
+                                        <div class="card-body px-4">
+                                            <i class="bi bi-x-square fs-3"></i>
+                                            <p class="mb-2 mt-1">
+                                                Dibatalkan
+                                            </p>
+                                            <h3>
+                                                {{ count($canceled) }}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
+                                <a class="text-decoration-none link-dark color-red-klikspl-hover"
+                                    href="{{ route('admin.product.out.stock') }}">
+                                    <div class="card admin-card-dashboard border-radius-075rem box-shadow">
+                                        <div class="card-body px-4">
+                                            <i class="bi bi-archive fs-3"></i>
+                                            <p class="mb-2 mt-1">
+                                                Produk Habis
+                                            </p>
+                                            <h3>
+                                                {{ count($outStock) }}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1">
-    </div>
-    <div class="card border-radius-1-5rem admin-card-dashboard">
-        <div class="card-body p-4">
-            <h5>Statistik Penjualan</h5>
-            <div class="row">
-                <div class="col-12">
-                    <canvas class="my-4 w-100" id="myChart" width="900" height="180"></canvas>
+        <div class="col-6 mb-4">
+            <div class="card admin-card-dashboard border-radius-1-5rem">
+                <div class="card-body p-4">
+                    <h4>Menu Cepat Promo</h4>
+                    <div class="row pt-2 pb-2 fs-14">
+                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2)
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-12 px-2 py-2">
+                                <a class="text-decoration-none link-dark color-red-klikspl-hover"
+                                    href="{{ route('promovoucher.index') }}">
+                                    <div class="card admin-card-dashboard border-radius-075rem box-shadow">
+                                        <div class="card-body px-4">
+                                            <i class="bi bi-percent fs-3"></i>
+                                            <p class="mb-2 mt-1">
+                                                Promo Aktif
+                                            </p>
+                                            <h3>
+                                                {{ count($activedPromo) }}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-12 px-2 py-2">
+                                <a class="text-decoration-none link-dark color-red-klikspl-hover"
+                                    href="{{ route('promobanner.index') }}">
+                                    <div class="card admin-card-dashboard border-radius-075rem box-shadow">
+                                        <div class="card-body px-4">
+                                            <i class="bi bi-megaphone fs-3"></i>
+                                            <p class="mb-2 mt-1">
+                                                Promo Banner Aktif
+                                            </p>
+                                            <h3>
+                                                {{ count($activedBannerPromo) }}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 mb-4">
+            <div class="card admin-card-dashboard border-radius-1-5rem">
+                <div class="card-body p-4">
+                    <h4>Menu Cepat Komentar</h4>
+                    <div class="row pt-2 pb-2 fs-14">
+                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2)
+                            <div class="col-lg-7 col-md-7 col-sm-7 col-12 px-2 py-2">
+                                <a class="text-decoration-none link-dark color-red-klikspl-hover"
+                                    href="{{ route('productcomment.index') }}">
+                                    <div class="card admin-card-dashboard border-radius-075rem box-shadow">
+                                        <div class="card-body px-4">
+                                            <i class="bi bi-chat-left-text fs-3"></i>
+                                            <p class="mb-2 mt-1">
+                                                Komentar belum ditanggapi
+                                            </p>
+                                            <h3>
+                                                {{ ($productCommentsCount) }}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="card border-radius-1-5rem admin-card-dashboard">
+                <div class="card-body p-4">
+                    <h4>Statistik Penjualan</h4>
+                    <div class="row">
+                        <div class="col-12">
+                            <canvas class="my-4 w-100" id="myChart" width="900" height="180"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

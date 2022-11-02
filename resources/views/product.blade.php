@@ -157,19 +157,21 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal fade" id="commentImageModal" tabindex="-1" aria-labelledby="commentImageModalLabel" aria-hidden="true">
+                <div class="modal fade" id="commentImageModal" tabindex="-1" aria-labelledby="commentImageModalLabel"
+                    aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
-                      <div class="modal-content bg-transparent border-0">
-                        <div class="modal-header border-0">
-                          <h5 class="modal-title" id="commentImageModalLabel"></h5>
-                          <button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="modal-content bg-transparent border-0">
+                            <div class="modal-header border-0">
+                                <h5 class="modal-title" id="commentImageModalLabel"></h5>
+                                <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <img id="commentImagePreview" src="" class="commentImagePreview w-100">
+                            </div>
                         </div>
-                        <div class="modal-body">
-                            <img id="commentImagePreview" src="" class="commentImagePreview w-100">
-                        </div>
-                      </div>
                     </div>
-                  </div>
+                </div>
             </div>
             <div class="col-md-7 col-12">
                 {{-- <form action="{{ route('cart.store') }}" method="POST" enctype="multipart/form-data"
@@ -996,7 +998,7 @@
                                             <i class="bi bi-star text-warning"></i>
                                         @endfor
                                     </p>
-                                    <h5 class="comment-text">{{ $comment->user->username }}
+                                    <h5 class="comment-text mb-1">{{ $comment->user->username }}
                                         <small class="text-muted comment-text fw-light ms-1">
                                             <i>Diposting
                                                 {{ $comment->created_at->diffForHumans() }}
@@ -1012,7 +1014,8 @@
                                         {!! $comment->comment !!}
                                     </div>
                                     @if (!is_null($comment->comment_image) && !empty($comment->comment_image) && isset($comment->comment_image))
-                                        <img src="{{ asset($comment->comment_image) }}" class="commentImage" id="commentImage" alt="" width="10%">
+                                        <img src="{{ asset($comment->comment_image) }}" class="commentImage"
+                                            id="commentImage" alt="" width="10%">
                                     @endif
                                 </div>
                             </div>
@@ -1064,16 +1067,20 @@
                                                             <i class="bi bi-star text-warning"></i>
                                                         @endfor
                                                     </p> --}}
-                                                @if (isset($commentChild->user->username))
-                                                    <h5 class="comment-text">{{ $commentChild->user->username }}
+                                                <div>
+
+                                                </div>
+                                                <h5 class="comment-text mb-1">
+                                                    @if (isset($commentChild->user->username))
+                                                        {{ $commentChild->user->username }}
                                                     @elseif (isset($commentChild->admin->username))
-                                                        <h5 class="comment-text">{{ $commentChild->admin->username }}
-                                                @endif
-                                                <small class="text-muted comment-text fw-light ms-1">
-                                                    <i>Diposting
-                                                        {{ $commentChild->created_at->diffForHumans() }}
-                                                    </i>
-                                                </small>
+                                                        {{ $commentChild->admin->username }}
+                                                    @endif
+                                                    <small class="text-muted comment-text fw-light ms-1">
+                                                        <i>Diposting
+                                                            {{ $commentChild->created_at->diffForHumans() }}
+                                                        </i>
+                                                    </small>
                                                 </h5>
                                                 <div class="comment-text">{!! $commentChild->comment !!}</div>
                                             </div>
@@ -1136,7 +1143,7 @@
 
             });
             $(document).ready(function() {
-                $('body').on('click','#commentImage',  function() {
+                $('body').on('click', '#commentImage', function() {
                     $('.commentImagePreview').attr('src', $(this).attr('src'));
                     $('#commentImageModal').modal('show');
                 });
