@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\SoftDeletes;   
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Order extends Model
 {
@@ -45,7 +45,8 @@ class Order extends Model
                     // $keyword = 'pesanan dibatalkan';
                     // dd($keyword);
                     $query->where('order_status', 'not like', '%expired%')
-                    ->where('order_status', 'not like', '%pesanan dibatalkan%');
+                        ->where('order_status', 'not like', '%pesanan dibatalkan%')
+                        ->where('order_status', 'not like', '%selesai%');
                     // dd($query);
                 });
             });
@@ -80,7 +81,7 @@ class Order extends Model
                 return $query->where(function ($query) use ($keyword) {
                     // $keyword = 'pesanan dibatalkan';
                     // dd($keyword);
-                $query->where('order_status', 'like', '%' . $keyword . '%')
+                    $query->where('order_status', 'like', '%' . $keyword . '%')
                         ->orwhere('order_status', 'like', '%upload ulang bukti pembayaran%');
                     // dd($query);
                 });
@@ -98,16 +99,17 @@ class Order extends Model
                 return $query->where(function ($query) use ($keyword) {
                     // dd($keyword);
                     $query->where('order_status', 'like', '%' . $keyword . '%')->whereIn('id', function ($query) {
-                            $query->select('order_id')->from(with(new OrderItem)->getTable())->where('is_review', '=', '1');
-                        });
+                        $query->select('order_id')->from(with(new OrderItem)->getTable())->where('is_review', '=', '1');
+                    });
                     // dd($query);
                 });
             } elseif ($keyword == 'aktif') {
                 return $query->where(function ($query) use ($keyword) {
                     // $keyword = 'pesanan dibatalkan';
                     // dd($keyword);
-                $query->where('order_status', 'not like', '%expired%')
-                        ->where('order_status', 'not like', '%pesanan dibatalkan%');
+                    $query->where('order_status', 'not like', '%expired%')
+                        ->where('order_status', 'not like', '%pesanan dibatalkan%')
+                        ->where('order_status', 'not like', '%selesai%');
                     // dd($query);
                 });
             } else {
@@ -240,7 +242,7 @@ class Order extends Model
     {
         return $query->where('user_id', $userId);
     }
-    
+
     public function senderAddress()
     {
         return $this->belongsTo(SenderAddress::class, 'sender_address_id');
@@ -250,5 +252,4 @@ class Order extends Model
     {
         return $this->hasMany(UserPromoOrderUse::class);
     }
-    
 }

@@ -24,7 +24,12 @@
     <div class="alert-notification-wrapper">
     </div>
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-md-3 pt-5 pb-3 mb-1">
-        <h4 class="m-0">Edit Produk</h4>
+        <h4 class="m-0">
+            <a href="{{ route('management.index') }}" class="text-decoration-none link-dark">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            Edit Produk
+        </h4>
         <a class="btn btn-secondary fs-14" href="{{ route('product.show', $product) }}" target="_blank"><i
                 class="bi bi-eye"></i> Preview produk</a>
     </div>

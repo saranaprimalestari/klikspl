@@ -40,7 +40,7 @@ class AdminOrderController extends Controller
             if (request(['status'])['status'] == '') {
                 $header = 'Semua Pesanan';
             } else if (request(['status'])['status'] == 'aktif') {
-                $header = 'Menunggu Pembayaran';
+                $header = 'Pesanan Aktif';
             } else if (request(['status'])['status'] == 'belum bayar') {
                 $header = 'Menunggu Pembayaran';
             } else if (request(['status'])['status'] == 'pesanan dibayarkan') {

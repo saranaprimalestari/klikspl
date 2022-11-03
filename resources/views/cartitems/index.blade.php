@@ -11,13 +11,13 @@
     <div class="container my-5">
         <div class="col-12">
             @if (session()->has('success'))
-                <div class="alert alert-success alert-dismissible fade show alert-success-cart" role="alert">
+                <div class="alert alert-success alert-dismissible fade show alert-notification" role="alert">
                     {{ session('success') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
             @if (session()->has('failed'))
-                <div class="alert alert-danger alert-dismissible fade show alert-success-cart" role="alert">
+                <div class="alert alert-danger alert-dismissible fade show alert-notification" role="alert">
                     {{ session('failed') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>

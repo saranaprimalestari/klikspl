@@ -25,9 +25,14 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
-    <h5 class="mb-4">
-        Penilaian Produk
-    </h5>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-md-3 pt-5 mb-1">
+        <h4 class="m-0">
+            <a href="{{ route('productcomment.index') }}" class="text-decoration-none link-dark">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            Penilaian Produk
+        </h4>
+    </div>
     <div class="card mb-3 border-radius-1-5rem fs-14">
         <div class="card-body p-4">
             <form action="{{ route('productcomment.store') }}" method="POST" enctype="multipart/form-data">

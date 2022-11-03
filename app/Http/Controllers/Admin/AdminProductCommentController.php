@@ -17,15 +17,28 @@ class AdminProductCommentController extends Controller
     public function index()
     {  
         // $productComments = ProductComment::whereNotNull('user_id')->get();
-        $productComments = ProductComment::whereNotNull('product_comments.user_id')
-        ->join('orders', function($join){
-            $join->on('product_comments.order_id','=','orders.id');})
-        ->join('admin_sender_addresses', function($join){
-            $join->on('admin_sender_addresses.sender_address_id', '=', 'orders.sender_address_id');})
-        ->join("admins", function($join){
-            $join->on("admins.id", "=", "admin_sender_addresses.admin_id")
-            ->where('admins.id', '=', auth()->guard('adminMiddle')->user()->id);
-        })->get('product_comments.*');
+        if(auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2){
+            $productComments = ProductComment::whereNotNull('product_comments.user_id')
+            ->join('orders', function($join){
+                $join->on('product_comments.order_id','=','orders.id');})
+            ->join('admin_sender_addresses', function($join){
+                $join->on('admin_sender_addresses.sender_address_id', '=', 'orders.sender_address_id');})
+            ->join("admins", function($join){
+                $join->on("admins.id", "=", "admin_sender_addresses.admin_id");
+            })->groupBy('product_comments.id')->get('product_comments.*');
+        }else{
+            $productComments = ProductComment::whereNotNull('product_comments.user_id')
+            ->join('orders', function($join){
+                $join->on('product_comments.order_id','=','orders.id');})
+            ->join('admin_sender_addresses', function($join){
+                $join->on('admin_sender_addresses.sender_address_id', '=', 'orders.sender_address_id');})
+            ->join("admins", function($join){
+                $join->on("admins.id", "=", "admin_sender_addresses.admin_id")
+                ->where('admins.id', '=', auth()->guard('adminMiddle')->user()->id);
+            })->get('product_comments.*');
+
+        }
+
         // dd($productComments);
         return view('admin.productComment.index',[
             'title' => 'Komentar Produk',

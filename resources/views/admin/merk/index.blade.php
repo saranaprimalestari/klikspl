@@ -158,9 +158,9 @@
                                                     src="{{ asset($merk->image) }}" class="img-fluid" alt="..."
                                                     width="12%" height="12%">
                                             @else
-                                                <img id="main-image" class=""
+                                                {{-- <img id="main-image" class=""
                                                     src="https://source.unsplash.com/400x400?product-1" class="img-fluid"
-                                                    alt="..." width="60">
+                                                    alt="..." width="60"> --}}
                                             @endif
                                             <div class="">
                                                 <p class="ps-2 m-0 fw-500">

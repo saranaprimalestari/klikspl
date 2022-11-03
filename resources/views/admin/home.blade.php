@@ -17,56 +17,61 @@
 
     {{-- <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas> --}}
     <div class="container p-0 row m-0">
-
-        <div class="col-md-12 col-12 mb-4">
-            <div class="card border-0 h-100 border-radius-1-5rem fs-14">
-                <div class="card-body p-4">
-                    <h4 class="fw-600 mb-3">
-                        Informasi Penghasilan
-                    </h4>
-                    <div class="row">
-                        <div class="col-md-12 col-12">
+        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+            auth()->guard('adminMiddle')->user()->admin_type == 2)
+            <div class="col-md-12 col-12 mb-4">
+                <a href="{{ route('admin.income') }}" class="text-decoration-none text-dark">
+                    <div class="card border-0 h-100 border-radius-1-5rem fs-14 box-shadow">
+                        <div class="card-body p-4">
+                            <h4 class="fw-600 mb-3">
+                                Informasi Penghasilan
+                            </h4>
                             <div class="row">
-                                <div class="col-md-6 col-12">
-                                    <div class="card h-100 border-radius-075rem box-shadows border-0">
-                                        <div class="card-body p-4">
-                                            <div class="row align-items-center">
-                                                <div class="col-2">
-                                                    <i class="bi bi-wallet fs-1 text-red-klikspl"></i>
-                                                </div>
-                                                <div class="col-9">
-                                                    <p class="mb-1">
-                                                        Total Penghasilan Saya
-                                                    </p>
-                                                    <h2 class="fw-bold text-red-klikspl">
-                                                        Rp{{ price_format_rupiah($incomeValues) }}
-                                                    </h2>
+                                <div class="col-md-12 col-12">
+                                    <div class="row">
+                                        <div class="col-md-6 col-12">
+                                            <div class="card h-100 border-radius-075rem box-shadows border-0">
+                                                <div class="card-body p-4">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-2">
+                                                            <i class="bi bi-wallet fs-1 text-red-klikspl"></i>
+                                                        </div>
+                                                        <div class="col-9">
+                                                            <p class="mb-1">
+                                                                Total Penghasilan Saya
+                                                            </p>
+                                                            <h2 class="fw-bold text-red-klikspl">
+                                                                Rp{{ price_format_rupiah($incomeValues) }}
+                                                            </h2>
+                                                        </div>
+                                                    </div>
+
                                                 </div>
                                             </div>
-
+                                        </div>
+                                        <div class="col-md-6 col-12 py-4">
+                                            <p class="mb-1">
+                                                Penghasilan Bulan ini
+                                            </p>
+                                            <h3 class="fw-bold">
+                                                Rp{{ price_format_rupiah($incomeThisMonth) }}
+                                            </h3>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-6 col-12 py-4">
-                                    <p class="mb-1">
-                                        Penghasilan Bulan ini
-                                    </p>
-                                    <h3 class="fw-bold">
-                                        Rp{{ price_format_rupiah($incomeThisMonth) }}
-                                    </h3>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
-        </div>
+        @endif
         <div class="col-12 mb-4">
-            <div class="card admin-card-dashboard border-radius-1-5rem">
+            <div class="card admin-card-dashboard border-radius-1-5rem box-shadow">
                 <div class="card-body p-4">
                     <h4>Menu Cepat Pesanan</h4>
                     <div class="row pt-2 pb-2 fs-14">
-                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2)
+                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+                            auth()->guard('adminMiddle')->user()->admin_type == 2)
                             <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
                                 <a class="text-decoration-none link-dark color-red-klikspl-hover"
                                     href="{{ route('adminorder.index') }}">
@@ -100,7 +105,8 @@
                                 </a>
                             </div>
                         @endif
-                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2 ||
+                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+                            auth()->guard('adminMiddle')->user()->admin_type == 2 ||
                             auth()->guard('adminMiddle')->user()->admin_type == 3)
                             <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
                                 <a class="text-decoration-none link-dark color-red-klikspl-hover"
@@ -119,7 +125,8 @@
                                 </a>
                             </div>
                         @endif
-                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2 ||
+                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+                            auth()->guard('adminMiddle')->user()->admin_type == 2 ||
                             auth()->guard('adminMiddle')->user()->admin_type == 4)
                             <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
                                 <a class="text-decoration-none link-dark color-red-klikspl-hover"
@@ -170,7 +177,8 @@
                                 </a>
                             </div>
                         @endif
-                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2)
+                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+                            auth()->guard('adminMiddle')->user()->admin_type == 2)
                             <div class="col-lg-3 col-md-4 col-sm-6 col-6 px-2 py-2">
                                 <a class="text-decoration-none link-dark color-red-klikspl-hover"
                                     href="{{ route('adminorder.index', ['status=sampai tujuan']) }}">
@@ -197,7 +205,7 @@
                                                 Selesai
                                             </p>
                                             <h3>
-    
+
                                                 {{ count($finish) }}
                                             </h3>
                                         </div>
@@ -241,12 +249,13 @@
                 </div>
             </div>
         </div>
-        <div class="col-6 mb-4">
-            <div class="card admin-card-dashboard border-radius-1-5rem">
-                <div class="card-body p-4">
-                    <h4>Menu Cepat Promo</h4>
-                    <div class="row pt-2 pb-2 fs-14">
-                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2)
+        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+            auth()->guard('adminMiddle')->user()->admin_type == 2)
+            <div class="col-6 mb-4">
+                <div class="card admin-card-dashboard border-radius-1-5rem box-shadow">
+                    <div class="card-body p-4">
+                        <h4>Menu Cepat Promo</h4>
+                        <div class="row pt-2 pb-2 fs-14">
                             <div class="col-lg-6 col-md-6 col-sm-6 col-12 px-2 py-2">
                                 <a class="text-decoration-none link-dark color-red-klikspl-hover"
                                     href="{{ route('promovoucher.index') }}">
@@ -279,17 +288,15 @@
                                     </div>
                                 </a>
                             </div>
-                        @endif
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-6 mb-4">
-            <div class="card admin-card-dashboard border-radius-1-5rem">
-                <div class="card-body p-4">
-                    <h4>Menu Cepat Komentar</h4>
-                    <div class="row pt-2 pb-2 fs-14">
-                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2)
+            <div class="col-6 mb-4">
+                <div class="card admin-card-dashboard border-radius-1-5rem box-shadow">
+                    <div class="card-body p-4">
+                        <h4>Menu Cepat Komentar</h4>
+                        <div class="row pt-2 pb-2 fs-14">
                             <div class="col-lg-7 col-md-7 col-sm-7 col-12 px-2 py-2">
                                 <a class="text-decoration-none link-dark color-red-klikspl-hover"
                                     href="{{ route('productcomment.index') }}">
@@ -300,19 +307,19 @@
                                                 Komentar belum ditanggapi
                                             </p>
                                             <h3>
-                                                {{ ($productCommentsCount) }}
+                                                {{ $productCommentsCount }}
                                             </h3>
                                         </div>
                                     </div>
                                 </a>
                             </div>
-                        @endif
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        @endif
         <div class="col-12">
-            <div class="card border-radius-1-5rem admin-card-dashboard">
+            <div class="card border-radius-1-5rem admin-card-dashboard box-shadow">
                 <div class="card-body p-4">
                     <h4>Statistik Penjualan</h4>
                     <div class="row">

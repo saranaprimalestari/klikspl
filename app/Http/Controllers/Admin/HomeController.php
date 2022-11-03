@@ -117,7 +117,12 @@ class HomeController extends Controller
                     ->from('admin_sender_addresses')
                     ->whereColumn('sender_address_id', 'orders.sender_address_id')
                     ->where('admin_id', '=', auth()->guard('adminMiddle')->user()->id);
-            }])->get();
+            }])
+            ->join('order_items', function($join){
+                $join->on('orders.id','=','order_items.order_id')
+                ->where('order_items.is_review','=', '0');
+            })
+            ->get();
 
             $finish = Order::where('order_status', '=', 'selesai')->where(['sender_address_id' => function ($query) {
                 $query->select('sender_address_id')

@@ -231,7 +231,7 @@
                     <h5 class="my-3">Pengiriman</h5>
                     <div class="m-0 sender-address-div mb-2">
                         <div class="header mb-2">
-                            <p class="fs-14 fw-500 m-0">Alamat Pengirim</p>
+                            <h6 class="m-0">Alamat Pengirim</h6>
                             <p class="fs-12 text-grey m-0">
                                 Pilih darimana produk kamu akan dikirimkan
                             </p>
@@ -254,7 +254,7 @@
                             @endif
                         </select>
                     </div>
-                    <p class="fs-14 fw-500 m-0 mb-2">Kurir</p>
+                    <h6 class="m-0 mb-2">Kurir</h6>
                     <div class="courier-choice" id="courier-choice">
                         <div class="card mb-3 checkout-courier-card">
                             <div class="card-body p-4">
