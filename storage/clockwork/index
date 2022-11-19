@@ -42,3 +42,5 @@
 1668824625-1985-59833564,1668824625.0344,GET,/administrator/productcomment,"App\Http\Controllers\Admin\AdminProductCommentController@index",200,549.79586601257,request
 1668824630-4307-2112449815,1668824630.063,GET,/administrator,"\App\Http\Controllers\Admin\HomeController@index",200,857.85794258118,request
 1668824648-6936-1572994609,1668824648.5233,GET,/administrator/incomes,"\App\Http\Controllers\Admin\AdminIncomeController@index",200,577.8751373291,request
+1668825485-1027-2078517772,1668825484.836,GET,/administrator/adminproduct,"App\Http\Controllers\Admin\AdminProductController@index",200,740.76509475708,request
+1668825510-1687-232010003,1668825509.9908,GET,/administrator/adminproduct/create,"App\Http\Controllers\Admin\AdminProductController@create",200,503.37600708008,request
