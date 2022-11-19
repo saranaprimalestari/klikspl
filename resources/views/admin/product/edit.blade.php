@@ -25,7 +25,7 @@
     </div>
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-md-3 pt-5 pb-3 mb-1">
         <h4 class="m-0">
-            <a href="{{ route('management.index') }}" class="text-decoration-none link-dark">
+            <a href="{{ route('adminproduct.index') }}" class="text-decoration-none link-dark">
                 <i class="bi bi-arrow-left"></i>
             </a>
             Edit Produk
@@ -469,6 +469,8 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="mb-3 row variant-total-volume-weight-{{ $loop->index }}">
+                                    </div>
                                     <div class="mb-3 mt-5 row">
                                         <p class="m-0 fw-600">Lokasi Pengiriman Produk</p>
                                         <p class="text-grey fs-13 m-0">Pilih lokasi pengiriman produk</p>
@@ -642,6 +644,12 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="product-total-volume-weight">
+                                <div class="fs-12 text-danger my-2">
+                                    Ongkir akan dihitung menggunakan Berat Volume jika Berat Volume lebih besar dari berat
+                                    produk aktual
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -741,7 +749,8 @@
                                     <option value="" class="fs-14">Pilih Perusahaan
                                     </option>
                                     @foreach ($companies as $company)
-                                        <option class="fs-14" value="{{ $company->id }}" {{ ($product->company_id == $company->id) ? 'selected' : '' }}>
+                                        <option class="fs-14" value="{{ $company->id }}"
+                                            {{ $product->company_id == $company->id ? 'selected' : '' }}>
                                             {{ $company->name }}</option>
                                     @endforeach
                                 </select>
@@ -756,7 +765,7 @@
         @else
             <input type="hidden" name="company_id" value="{{ auth()->guard('adminMiddle')->user()->company_id }}">
         @endif
-        
+
         <div class="container p-0 mb-5 pb-5">
             <div class="row">
                 <div class="col-12 text-end">
@@ -958,6 +967,8 @@
                 product_variant_no + ']" placeholder="Contoh: 1800000">' +
                 '<div id="variantPrice" class="form-text">Harga varian menggunakan mata uang Rupiah (Rp)</div>' +
                 '</div>' +
+                '</div>' +
+                '<div class="mb-3 row variant-total-volume-weight-' + product_variant_no + '">' +
                 '</div>' +
                 '<div class="mb-3 mt-5 row">' +
                 '<p class="m-0 fw-600">Lokasi Pengiriman Produk</p>' +
@@ -1225,6 +1236,70 @@
                     $('.product-stock-notification').text('Tidak Aktif');
                     $('input[name="stock_notification"]').val(0);
                 }
+            });
+            $('#productWeight').add('#productLong').add('#productWidth').add('#productHeight').change(function(e) {
+                // console.log(e.currentTarget.value);
+                // var targetId = e.currentTarget.id;
+                // console.log(targetId);
+                // window.variantId = targetId.replace(/[^\d.]/g, '');
+                // console.log(variantId);
+                var weight = $('#productWeight').val();
+                var long = $('#productLong').val();
+                var width = $('#productWidth').val();
+                var height = $('#productHeight').val();
+
+                var volume_weight = (long * width * height) / 6000;
+                console.log(volume_weight);
+                console.log(weight / 1000);
+                if (volume_weight > weight / 1000) {
+                    console.log('lebih berat volume weight');
+                    $('.product-total-volume-weight').empty();
+                    $('.product-total-volume-weight').html(
+                        '<div class="fs-12 text-danger my-2">Ongkir akan dihitung menggunakan Berat Volume ' +
+                        Math.round(volume_weight * 1000 * 100) / 100 + 'gr (' + Math.round(
+                            volume_weight * 100) / 100 +
+                        'kg) karena Berat Volume lebih besar dari berat produk aktual </div>'
+                    );
+                } else {
+                    console.log('lebih berat product weight');
+                    $('.product-total-volume-weight').empty();
+                }
+                console.log($('#productLong').val());
+                console.log($('#productWidth').val());
+                console.log($('#productHeight').val());
+
+            });
+
+            $('body').on('change', '.variant-weight, .variant-long, .variant-width, .variant-height', function(e) {
+                console.log(e.currentTarget.value);
+                var targetId = e.currentTarget.id;
+                console.log(targetId);
+                window.variantId = targetId.replace(/[^\d.]/g, '');
+                console.log(variantId);
+                var variant_weight = $('#variantWeight_' + variantId).val();
+                var variant_long = $('#variantLong_' + variantId).val();
+                var variant_width = $('#variantWidth_' + variantId).val();
+                var variant_height = $('#variantHeight_' + variantId).val();
+
+                var volume_weight = (variant_long * variant_width * variant_height) / 6000;
+                console.log(volume_weight);
+                console.log(variant_weight / 1000);
+                if (volume_weight > variant_weight / 1000) {
+                    console.log('lebih berat volume');
+                    $('.variant-total-volume-weight-' + variantId).html(
+                        '<div class="fs-12 text-danger my-2">Ongkir akan dihitung menggunakan Berat Volume ' +
+                        Math.round(volume_weight * 1000 * 100) / 100 + 'gr (' + Math.round(
+                            volume_weight * 100) / 100 +
+                        'kg) karena Berat Volume lebih besar dari berat produk varian </div>'
+                    );
+                } else {
+                    console.log('lebih berat weight');
+                    $('.variant-total-volume-weight-' + variantId).empty();
+                }
+                console.log($('#variantLong_' + variantId).val());
+                console.log($('#variantWidth_' + variantId).val());
+                console.log($('#variantHeight_' + variantId).val());
+
             });
 
             $('body').on('click', '.btn-delete-image', function(e) {

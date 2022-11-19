@@ -28,9 +28,25 @@
             </a>
         </div>
     </div>
+    <div class="container p-0 mb-3">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="input-group me-3">
+                        <div class="input-group fs-14">
+                            <input type="text" class="form-control border-radius-1-75rem fs-14 shadow-none border-end-0"
+                                id="searchKeyword" placeholder="Cari alamat..."
+                                aria-label="Cari alamat..." aria-describedby="basic-addon2"
+                                name="search">
+                            <span class="input-group-text border-radius-1-75rem fs-14 bg-white border-start-0"
+                                id="basic-addon2"><i class="bi bi-search"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     @if (count($senderAddresses) > 0)
         @foreach ($senderAddresses as $address)
-            <div class="card mb-4 sender-address-{{ $address->id }} border-radius-1-5rem border-0 fs-14">
+            <div class="card mb-4 card-sender-address sender-address-{{ $address->id }} border-radius-1-5rem border-0 fs-14">
                 <div class="card-body p-0 p-4">
                     <div class="row">
                         <div class="col-md-10 col-10 ">
@@ -162,6 +178,15 @@
                     update_status(token, id, 0);
                 }
             });
+            $('#searchKeyword').on("keyup", function() {
+            // $('.filter-btn').on("click", function() {
+            // var search = $(this).val().toLowerCase();
+            var search = $('input[name="search"]').val().toLowerCase();
+            $(".card-sender-address").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(search) > -1);
+                // });
+            });
+        });
         });
 
         function update_status(csrfToken, senderAddressId, data) {

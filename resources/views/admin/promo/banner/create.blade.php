@@ -96,6 +96,29 @@
                     </div>
                     
                     <div class="mb-3 row">
+                        <label for="promoBannerSlug" class="col-sm-3 col-form-label pb-0">
+                            <p class="fw-600 m-0">
+                                Slug Promo
+                            </p>
+                            {{-- <p class="text-grey fs-12 m-0">
+                            *tidak ditampilkan di halaman pembeli
+                        </p> --}}
+                        </label>
+                        <div class="col-sm-9">
+                            <input required type="text"
+                                class="form-control fs-14 bg-white @error('slug') is-invalid @enderror" id="promoBannerSlug"
+                                name="slug"
+                                value="{{ old('slug') }}"
+                                readonly>
+                            @error('slug')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
                         <label for="promoBannerStartPeriod" class="col-sm-3 col-form-label fw-600">Tanggal/Jam mulai Promo</label>
                         <div class="col-sm-9">
                             <input required type="datetime-local" class="form-control fs-14 @error('start_period') is-invalid @enderror"
@@ -512,6 +535,15 @@
                 });
             });
 
+            const promo_banner_name = document.querySelector('#promoBannerName');
+            const promo_banner_slug = document.querySelector('#promoBannerSlug');
+
+            promo_banner_name.addEventListener('change', function() {
+                console.log(promo_banner_name.value);
+                fetch('/administrator/promovoucher/checkSlug?name=' + promo_banner_name.value)
+                    .then(response => response.json())
+                    .then(data => promo_banner_slug.value = data.slug);
+            });
         });
     </script>
 @endsection

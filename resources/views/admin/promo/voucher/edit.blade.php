@@ -56,7 +56,8 @@
                                         <option value="" class="fs-14">Pilih Perusahaan
                                         </option>
                                         @foreach ($companies as $company)
-                                            <option class="fs-14" value="{{ $company->id }}" {{ ($promo->company_id == $company->id) ? 'selected' : '' }}>
+                                            <option class="fs-14" value="{{ $company->id }}"
+                                                {{ $promo->company_id == $company->id ? 'selected' : '' }}>
                                                 {{ $company->name }}</option>
                                         @endforeach
                                     </select>
@@ -93,6 +94,29 @@
                                     name="name" placeholder="Ketikkan nama promo"
                                     value="{{ !is_null($promo->name) ? (!is_null(old('name')) ? old('name') : $promo->name) : (!is_null(old('name')) ? old('name') : $promo->name) }}">
                                 @error('name')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="mb-3 row">
+                            <label for="promoVoucherName" class="col-sm-3 col-form-label pb-0">
+                                <p class="fw-600 m-0">
+                                    Slug Promo
+                                </p>
+                                {{-- <p class="text-grey fs-12 m-0">
+                                *tidak ditampilkan di halaman pembeli
+                            </p> --}}
+                            </label>
+                            <div class="col-sm-9">
+                                <input required type="text"
+                                    class="form-control fs-14 bg-white @error('slug') is-invalid @enderror" id="promoVoucherSlug"
+                                    name="slug"
+                                    value="{{ !is_null($promo->slug) ? (!is_null(old('slug')) ? old('slug') : $promo->slug) : (!is_null(old('slug')) ? old('slug') : $promo->slug) }}"
+                                    readonly>
+                                @error('slug')
                                     <div class="invalid-feedback">
                                         {{ $message }}
                                     </div>
@@ -963,6 +987,16 @@
                             // });
                         }
                     });
+                });
+
+                const promo_voucher_name = document.querySelector('#promoVoucherName');
+                const promo_voucher_slug = document.querySelector('#promoVoucherSlug');
+
+                promo_voucher_name.addEventListener('change', function() {
+                    console.log(promo_voucher_name.value);
+                    fetch('/administrator/promovoucher/checkSlug?name=' + promo_voucher_name.value)
+                        .then(response => response.json())
+                        .then(data => promo_voucher_slug.value = data.slug);
                 });
 
             });

@@ -16,7 +16,7 @@
     </div>
     @if ($errors->any())
         <div class="alert alert-danger alert-dismissible fade show alert-notification" role="alert">
-            <p><strong>Gagal Menyelesaikan transaksi</strong></p>
+            <p><strong>Gagal</strong></p>
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -115,17 +115,48 @@
                 <div class="card mb-4 border-radius-1-5rem fs-14">
                     <div class="card-body p-4">
                         <label for="commentTextArea" class="form-label fw-600">Berikan Komentar</label>
-                        <textarea class="form-control fs-14" id="commentTextArea" rows="4" name="comment" required placeholder="Ketikkan komentar disini..."></textarea>
+                        <textarea class="form-control fs-14" id="commentTextArea" rows="4" name="comment" required
+                            placeholder="Ketikkan komentar disini...">Terima kasih atas kepercayaannya berbelanja di KLIKSPL.com 😊🙏</textarea>
+                        <div class="row mt-3">
+                            <div class="fw-600 mb-2">Saran Komentar</div>
+                            <div class="col-md-6 col-12 mb-2">
+                                <a href="#commentTextArea"
+                                    class="card text-decoration-none text-dark comment-suggestion border-radius-1-5rem fs-14">
+                                    <div class="card-body px-3 py-1 text-truncate">
+                                        Terima kasih atas kepercayaannya berbelanja di KLIKSPL.com 😊🙏
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-6 col-12 mb-2">
+                                <a href="#commentTextArea"
+                                    class="card text-decoration-none text-dark comment-suggestion border-radius-1-5rem fs-14">
+                                    <div class="card-body px-3 py-1 text-truncate">
+                                        Mohon maaf atas kekurangan dari pelayanan serta produk yang kami jual🙏. Untuk
+                                        tindak lanjutnya kami akan menghubungi anda lewat nomor telepon dan atau email,
+                                        pastikan nomor telepon dan email anda masih aktif dan valid🙏.
+                                    </div>
+                                </a>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-12 text-end">
                         <button type="submit" class="btn btn-danger fs-14">
-                            Kirim
+                            <i class="bi bi-send"></i> Kirim
                         </button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
+    <script>
+        $(document).ready(function() {
+            $('.comment-suggestion').on('click', function(e) {
+                console.log(e);
+                $('#commentTextArea').text(e.target.innerText);
+            });
+        });
+    </script>
 @endsection

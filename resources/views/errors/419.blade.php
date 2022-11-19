@@ -1,5 +1,5 @@
 @extends('errors::minimal')
 
-@section('title', __('Halaman Kadaluwarsa Silakan Kembali ke Halaman Sebelumnya'))
+@section('title', __('Halaman Kedaluwarsa Silakan Kembali ke Halaman Sebelumnya dan coba refresh halaman'))
 @section('code', '419')
-@section('message', __('Halaman Kadaluwarsa Silakan Kembali ke Halaman Sebelumnya'))
+@section('message', __('Halaman Kedaluwarsa Silakan Kembali ke Halaman Sebelumnya dan coba refresh halaman'))

@@ -5318,3 +5318,120 @@ echo "</br>";
         //         }
         //     }
         // }
+
+
+
+
+        
+        $now = Carbon::now();
+
+        $orders = Order::where('user_id', '=', auth()->user()->id)->withTrashed()->orderByDesc('created_at')->get();
+        // print_r($orders);
+        // dd($orders[0]->orderitem[0]->orderproduct->orderproductimage[0]->name);
+        // dd($orders[0]->orderitem->count());
+        foreach ($orders as $userOrder) {
+            echo "order: ";
+            print_r($userOrder->id);
+            echo "<br><br>";
+            // $userOrder->uuid = Hash::make($userOrder->id);
+
+            if (is_null($userOrder->deleted_at) && is_null($userOrder->invoice_no)) {
+                echo "null deleted at dan invoice no";
+                echo "<br><br>";
+
+                $due_date = Carbon::createFromFormat('Y-m-d H:s:i', $userOrder->payment_due_date);
+                // dd($due_date);
+                if ($now > $due_date) {
+                    // dd('expired');
+                    $userOrder->order_status = 'expired';
+                    $userOrder->save();
+                    if ($userOrder->save()) {
+                        foreach ($userOrder->orderitem as $item) {
+                            $item->order_item_status = 'expired';
+                            $item->save();
+                        }
+                    }
+                    $userOrder->delete();
+                }
+            } elseif (!is_null($userOrder->deleted_at) && is_null($userOrder->invoice_no)) {
+                echo "tidak null deleted at dan null invoice no";
+                echo "<br><br>";
+                $deleted_at = Carbon::createFromFormat('Y-m-d H:s:i', $userOrder->deleted_at);
+                $diff_in_hours = $deleted_at->diffInHours($now);
+                echo 'deleted at : ' . $deleted_at;
+                echo "<br><br>";
+                echo 'now : ' . $now;
+                echo "<br><br>";
+                echo 'diff : ' . $diff_in_hours;
+                echo "<br><br>";
+
+                if ($diff_in_hours > 24) {
+                    echo $deleted_at;
+                    echo "<br><br>";
+                    echo $now;
+                    echo "<br><br>";
+                    echo "arr : ";
+                    print_r($diff_in_hours);
+                    echo "<br><br>";
+                    // $userOrder->forceDelete();
+
+                    foreach ($userOrder->orderItem as $orderItem) {
+                        echo "order item : ";
+                        print_r($orderItem);
+                        echo "<br><br>";
+                        echo "order product : ";
+                        print_r($orderItem->orderproduct);
+                        echo "<br><br>";
+                        echo "prod image count : ";
+                        print_r(($orderItem->orderproduct));
+                        // print_r($orderItem->orderproduct->orderproductimage);
+
+                        if ($orderItem->orderproduct->orderproductimage->count()) {
+                            print_r($orderItem->product->productImage);
+                            echo "<br><br>";
+                            foreach ($orderItem->orderProduct->orderProductImage as $orderProductImage) {
+                            }
+                            echo "order item id: " . $orderItem->id;
+                            echo "<br><br>";
+                            echo "order item product id: " . $orderItem->product_id;
+                            echo "<br><br>";
+                            echo "order item product variant id: " . $orderItem->product_variant_id;
+                            echo "<br><br>";
+
+                            $cartItem = CartItem::where([['user_id', '=', auth()->user()->id], ['product_id', '=', $orderItem->product_id], ['product_variant_id', '=', $orderItem->product_variant_id]])->withTrashed()->first();
+                            if (!is_null($cartItem)) {
+                                echo "mengembalikan item ke keranjang dengan id : ";
+                                echo $cartItem->id;
+                                echo "<br><br>";
+                                $cartItem->deleted_at = NULL;
+                                $cartItem->save();
+                            }
+                            $orderProductImage->delete();
+                            $orderItem->orderProduct->delete();
+                            print_r($cartItem);
+                        } else {
+                            print_r('else');
+                            echo "<br><br>";
+
+                            $cartItem = CartItem::where([['user_id', '=', auth()->user()->id], ['product_id', '=', $orderItem->product_id], ['product_variant_id', '=', $orderItem->product_variant_id]])->withTrashed()->first();
+                            if (!is_null($cartItem)) {
+                                $cartItem->deleted_at = NULL;
+                                $cartItem->save();
+                            }
+                            // $orderProductImage->delete();
+                            // $orderItem->orderProduct->delete();
+                        }
+                        // $orderItem->delete();
+                    }
+                    // $userOrder->forceDelete();   
+                    // foreach ($orders->orderItem as $orderItem) {
+                    //     foreach ($orderItem->orderProduct->orderProductImage as $orderProductImage) {
+                    //         $orderProductImage->delete();
+                    //         $orderItem->orderProduct->delete();
+                    //     }
+                    //     $orderItem->delete();
+                    // }
+                    // $orders->forceDelete();
+                }
+            }
+        }

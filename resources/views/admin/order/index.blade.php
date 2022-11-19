@@ -37,30 +37,25 @@
                     @endif
                     <div class="row gx-3 gy-2 align-items-center mb-4">
 
-                        {{-- <div class="col-sm-3">
-                            <label class="form-label" for="Filter">Filter</label>
-                            <select class="form-select form-select-sm border-radius-05rem shadow-none" id="Filter">
-                                <option selected>Filter <i class="bi bi-funnel"></i></option>
-                                <option value="1">Pesanan terbaru</option>
-                                <option value="1">Pesanan terbaru</option>
-                                <option value="1">Pesanan terbaru</option>
-                                <option value="1">Pesanan terbaru</option>
-                                <option value="1">Pesanan terbaru</option>
-                            </select>
-                        </div> --}}
-                        <div class="col-sm-4">
+                        <div class="col-md-3 col-12">
+                            <label class="form-label" for="startDate">Pencarian</label>
+                            <input type="text" class="form-control form-control-sm fs-14 border-radius-05rem shadow-none" id="searchKeyword" placeholder="Cari nama produk, pembeli, nomor resi"
+                            aria-label="Cari nama produk, pembeli, nomor resi" aria-describedby="basic-addon2"
+                            name="search">
+                        </div>
+                        <div class="col-md-3 col-12">
                             <label class="form-label" for="startDate">Tanggal Awal</label>
                             <input type="date" class="form-control form-control-sm fs-14 border-radius-05rem shadow-none"
                                 id="startDate" name="date_start"
                                 value="{{ !is_null(request('date_start')) ? request('date_start') : '' }}">
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-md-3 col-12">
                             <label class="form-label" for="endDate">Tanggal Akhir</label>
                             <input type="date" class="form-control form-control-sm fs-14 border-radius-05rem shadow-none"
                                 id="endDate" name="date_end"
                                 value="{{ !is_null(request('date_end')) ? request('date_end') : '' }}">
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-md-3 col-12">
                             <label class="form-label" for="Filter">Urut Berdasarkan</label>
                             <select class="form-select form-select-sm border-radius-05rem shadow-none" id="Filter"
                                 name="orderBy">
@@ -99,7 +94,7 @@
     </div> --}}
 
     @if (count($orders) > 0)
-        <div class="container p-0 mb-3">
+        {{-- <div class="container p-0 mb-3">
             <div class="row">
                 <div class="col-md-4">
                     <div class="input-group me-3">
@@ -114,7 +109,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         @foreach ($orders as $order)
             <div class="container p-0 mb-3">
@@ -319,7 +314,9 @@
                                     </div>
                                     <div class="fs-12">
                                         @if (isset($order->resi))
+                                        <div class="badge bg-secondary">
                                             {{ $order->resi }}
+                                        </div>
                                         @else
                                             belum terbit
                                         @endif

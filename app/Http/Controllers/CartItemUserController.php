@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\City;
 use App\Models\Promo;
 use App\Models\Product;
@@ -581,21 +582,27 @@ class CartItemUserController extends Controller
         ]);
     }
 
-    public function checkoutPromoPost(Request $request)
+    public function expiredCheck()
     {
-        dd($request);
-    }
+        $now = Carbon::now();
 
-    public function payment(Request $request)
-    {
-        dd($request);
-
-        // session()->put('$checkOutItems', $request);
-        // return redirect()->route('checkout.payment.view');
+        $cartItems = CartItem::where('user_id', '=', auth()->user()->id)->onlyTrashed()->orderByDesc('created_at')->get();
     }
+    // public function checkoutPromoPost(Request $request)
+    // {
+    //     dd($request);
+    // }
 
-    public function paymentView(Request $request)
-    {
-        dd($request);
-    }
+    // public function payment(Request $request)
+    // {
+    //     dd($request);
+
+    //     // session()->put('$checkOutItems', $request);
+    //     // return redirect()->route('checkout.payment.view');
+    // }
+
+    // public function paymentView(Request $request)
+    // {
+    //     dd($request);
+    // }
 }

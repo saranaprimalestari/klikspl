@@ -26,10 +26,13 @@ use App\Models\UserNotification;
 use App\Models\OrderProductImage;
 use App\Models\OrderStatusDetail;
 use App\Models\UserPromoOrderUse;
+use Barryvdh\DomPDF\PDF as DomPDFPDF;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Crypt;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
+// use Pdf;
 
 class OrderController extends Controller
 {
@@ -345,14 +348,14 @@ class OrderController extends Controller
             // cek apakah item terdapat varian
             if ($item->product_variant_id == 0) {
                 $orderProduct['stock'] = $item->product->stock;
-                $orderProduct['weight'] = $item->product->weight;
+                $orderProduct['weight'] = $item->product->weight_used;
                 $orderProduct['price'] = $item->product->price;
             } else {
                 $orderProduct['variant_name'] = $item->productvariant->variant_name;
                 $orderProduct['variant_value'] = $item->productvariant->variant_name;
                 $orderProduct['variant_code'] = $item->productvariant->variant_code;
                 $orderProduct['stock'] = $item->productvariant->stock;
-                $orderProduct['weight'] = $item->productvariant->weight;
+                $orderProduct['weight'] = $item->productvariant->weight_used;
                 $orderProduct['price'] = $item->productvariant->price;
             }
 
@@ -493,7 +496,7 @@ class OrderController extends Controller
                                 if ($promo->promo_type_id == 1) {
                                     $discount = $orderItems->total_price_item * $promo->discount / 100;
                                 } elseif ($promo->promo_type_id == 2) {
-                                    $discount = $promo->discount;
+                                    $discount = $orderItems->quantity * $promo->discount;
                                 }
                                 $orderItems->discount = $discount;
                                 $order->discount = $discount;
@@ -543,18 +546,22 @@ class OrderController extends Controller
         // menghapus cart item menggunakan fitur soft deletes agar dapat di retrieve kembali jika orde tidak dibayarkan
         foreach ($request->cart_ids as $ids) {
             $deleteCartItem = CartItem::where('id', $ids)->delete();
+            // $deleteCartItem = CartItem::where('id', $ids)->forceDelete();
             // dd($ids);
             // dd($deleteCartItem);
         }
 
         $description = '';
+        // $orderProductImageFirst = OrderProductImage::where('order_product_id', '=', $orderProductIds[0])->first();
+        $shopBag = 'assets\shop-bag-success.png';
         $notifications = [
             'user_id' => auth()->user()->id,
             'slug' => auth()->user()->username . '-' . Crypt::encryptString($order->id) . '-pesanan-berhasil-dibuat',
             'type' => 'Pesanan',
             'description' => '<p>Pesanan kamu berhasil dibuat. Produk yang kamu pesan berjumlah ' . $order->orderitem->count() . ' item.</p>',
             'excerpt' => 'Pesanan kamu berhasil dibuat',
-            'image' => 'storage/' . $orderProductImage->name,
+            'image' => $shopBag,
+            // 'image' => 'storage/' . $orderProductImageFirst->name,
             'is_read' => 0
         ];
         // membuat notifikasi pembuatan pesanan untuk user
@@ -810,6 +817,7 @@ class OrderController extends Controller
         );
     }
 
+
     public function paymentCompleted(Request $request)
     {
         $this->expiredCheck();
@@ -1046,7 +1054,7 @@ class OrderController extends Controller
 
         $order = Order::where('id', $id)->with(['orderitem', 'orderstatusdetail'])->first();
         // dd($order->orderitem[0]->product);
-        if(!is_null($order)){
+        if (!is_null($order)) {
             if (!is_null($order->invoice_no)) {
                 return redirect()->route('order.index');
             }
@@ -1065,13 +1073,13 @@ class OrderController extends Controller
             $orders = Order::where('id', $order->id)->with(['orderitem', 'orderstatusdetail', 'paymentmethod', 'orderaddress'])->get();
             $orderItems = $order->orderitem;
             $orderProducts = OrderProduct::whereIn('id', $orderProductIds)->with(['orderitem', 'orderproductimage'])->get();
-    
+
             $weightGr = 0;
             foreach ($orderItems as $item) {
                 $weightGr += ($item->quantity * $item->orderproduct->weight);
             }
             $weight = round(($weightGr / 1000), 2);
-    
+
             return view(
                 'order.payment',
                 [
@@ -1083,7 +1091,81 @@ class OrderController extends Controller
                     'weight' => $weight,
                 ]
             );
-        }else{
+        } else {
+            return redirect()->route('order.index')->with(['failed' => 'pesanan sudah kedaluwarsa']);
+        }
+    }
+
+    public function paymentOrderBindPDF($id)
+    {
+        // dd(public_path());
+        $id = Crypt::decrypt($id);
+
+        $order = Order::where('id', $id)->with(['orderitem', 'orderstatusdetail'])->first();
+        // dd($order->orderitem[0]->product);
+        $promoUse = UserPromoOrderUse::where('order_id', '=', $order->id)->first();
+        if (!is_null($order)) {
+            if (!is_null($order->invoice_no)) {
+                return redirect()->route('order.index');
+            }
+            // $now = Carbon::now();
+            // echo $now;
+            // echo "<br><br>";
+            // $due_date = Carbon::createFromFormat('Y-m-d H:s:i', $order->payment_due_date);
+            // echo $due_date;
+            // echo "<br><br>";
+            // if ($due_date > $now) {
+            //     dd('telat');
+            // }
+            foreach ($order->orderitem as $item) {
+                $orderProductIds[] = $item->orderproduct->id;
+            }
+            $orders = Order::where('id', $order->id)->with(['orderitem', 'orderstatusdetail', 'paymentmethod', 'orderaddress'])->get();
+            $orderItems = $order->orderitem;
+            $orderProducts = OrderProduct::whereIn('id', $orderProductIds)->with(['orderitem', 'orderproductimage'])->get();
+
+            $weightGr = 0;
+            foreach ($orderItems as $item) {
+                $weightGr += ($item->quantity * $item->orderproduct->weight);
+            }
+            $weight = round(($weightGr / 1000), 2);
+            // $image = $order->paymentmethod->logo;
+            // $getContent = \Illuminate\Support\Facades\File::get(public_path() . $image);
+            // // dd($data);
+            // // $getContent = $image->getContent();
+            // dd($getContent);
+            // $imageData = base64_encode($getContent);
+            // $src = 'data:' . mime_content_type($getContent) . ';base64' . $imageData; 
+            // return view(
+            //     'order.invoice-pdf',
+            //     [
+            //         'title' => 'Pembayaran',
+            //         'active' => 'order',
+            //         'orders' => $orders,
+            //         'orderItems' => $orderItems,
+            //         'orderProducts' => $orderProducts,
+            //         'weight' => $weight,
+            //     ]
+            // );
+            // $dompdf = new Pdf();
+            // $dompdf->setOptions('defaultFont', 'Helvetica');
+            // $dompdf->setOptions('enable_php', true);
+            // $dompdf->setOptions('enable_remote', true);
+            // $dompdf->setPaper('A4');
+            // $dompdf->set_protocol('klikspl.test');
+            // $dompdf->load_html();
+            // $dompdf->render();
+            // echo $dompdf->stream('invoice-pdf', ['order' => $order], ['Attachment' => false]);
+            // Pdf::setOption(['dpi' => 150, 'defaultFont' => 'sans-serif']);
+            $pdf = PDF::setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true])->loadview('order.invoice-pdf', [
+                'order' => $order,
+            ]);
+            return $pdf->stream('invoice-pembayaran pesanan-'.auth()->user()->username.'-'.$orderProducts[0]->slug.'.pdf');
+            // return view('order.invoice-pdf',[
+            //     'order' => $order,
+            //     'promoUse' => $promoUse,
+            // ]);
+        } else {
             return redirect()->route('order.index')->with(['failed' => 'pesanan sudah kedaluwarsa']);
         }
     }
@@ -1200,8 +1282,8 @@ class OrderController extends Controller
                         if ($orderItem->orderproduct->orderproductimage->count()) {
                             // print_r($orderItem->product->productImage->id);
                             // echo "<br><br>";
-                            foreach ($orderItem->orderProduct->orderProductImage as $orderProductImage) {
-                            }
+                            // foreach ($orderItem->orderProduct->orderProductImage as $orderProductImage) {
+                            // }
                             // echo "order item id: " . $orderItem->id;
                             // echo "<br><br>";
                             // echo "order item product id: " . $orderItem->product_id;
@@ -1209,7 +1291,7 @@ class OrderController extends Controller
                             // echo "order item product variant id: " . $orderItem->product_variant_id;
                             // echo "<br><br>";
 
-                            $cartItem = CartItem::where([['user_id', '=', auth()->user()->id], ['product_id', '=', $orderItem->product_id], ['product_variant_id', '=', $orderItem->product_variant_id]])->withTrashed()->first();
+                            $cartItem = CartItem::where([['user_id', '=', auth()->user()->id], ['product_id', '=', $orderItem->product_id], ['product_variant_id', '=', $orderItem->product_variant_id], ['quantity', '=', $orderItem->quantity], ['subtotal', '=', $orderItem->total_price_item], ['deleted_at', 'like', '%' . Carbon::parse($orderItem->created_at)->format('Y-m-d H:i') . '%'], ['updated_at', 'like', '%' . Carbon::parse($orderItem->created_at)->format('Y-m-d H:i') . '%']])->withTrashed()->first();
                             if (!is_null($cartItem)) {
                                 $cartItem->deleted_at = NULL;
                                 $cartItem->save();
@@ -1218,8 +1300,7 @@ class OrderController extends Controller
                             // $orderItem->orderProduct->delete();
                             // print_r($cartItem);
                         } else {
-
-                            $cartItem = CartItem::where([['user_id', '=', auth()->user()->id], ['product_id', '=', $orderItem->product_id], ['product_variant_id', '=', $orderItem->product_variant_id]])->withTrashed()->first();
+                            $cartItem = CartItem::where([['user_id', '=', auth()->user()->id], ['product_id', '=', $orderItem->product_id], ['product_variant_id', '=', $orderItem->product_variant_id], ['quantity', '=', $orderItem->quantity], ['subtotal', '=', $orderItem->total_price_item], ['deleted_at', 'like', '%' . Carbon::parse($orderItem->created_at)->format('Y-m-d H:i') . '%'], ['updated_at', 'like', '%' . Carbon::parse($orderItem->created_at)->format('Y-m-d H:i') . '%']])->withTrashed()->first();
                             if (!is_null($cartItem)) {
                                 $cartItem->deleted_at = NULL;
                                 $cartItem->save();
@@ -1314,11 +1395,14 @@ class OrderController extends Controller
         // $orderProduct->productorigin->with('senderAddress')->unique('sender_address_id');
         $senderAddress = SenderAddress::where('is_active', '=', 1)->with('city')->get();
         // dd($senderAddress);
+        $orderProductImages = OrderproductImage::where('name', 'like', 'user/'.auth()->user()->username.'/order/'.$order->id.'/'.$orderProduct->id.'%')->get();
+        // dd($orderProductImages);
         return view('order.orderProduct', [
             'title' => $orderProduct->name,
             // "product" => $orderProduct,
             'active' => 'products',
             "orderProduct" => $orderProduct,
+            "orderProductImages" => $orderProductImages,
             "product" => $product,
             "stock" => $stock,
         ]);

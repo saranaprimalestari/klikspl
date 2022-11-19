@@ -15,14 +15,18 @@
         </div>
         <div class="row">
             <div class="col-md-8 col-12 mx-auto">
-                @if (File::exists(public_path($notification->image)))
-                    <img id="" class="user-notification-show-img" src="{{ asset($notification->image) }}"
-                        class="img-fluid" alt="..." width="100%">
-                @else
-                    <img id="" class="user-notification-show-img"
-                        src="https://source.unsplash.com/1000x400?notification" class="img-fluid" alt="..."
-                        width="100%">
-                @endif
+                <div class="row">
+                    <div class="col-md-3 col-12">
+                        @if (File::exists(public_path($notification->image)))
+                            <img id="" class="user-notification-show-img" src="{{ asset($notification->image) }}"
+                                class="img-fluid" alt="..." width="100%">
+                        @else
+                            <img id="" class="user-notification-show-img"
+                                src="https://source.unsplash.com/1000x400?notification" class="img-fluid" alt="..."
+                                width="100%">
+                        @endif
+                    </div>
+                </div>
             </div>
             <div class="col-md-8 col-12 mx-auto mt-3 mb-5">
                 <h5>{{ $notification->type }}</h5>

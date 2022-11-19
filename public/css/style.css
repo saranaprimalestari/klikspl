@@ -351,6 +351,14 @@ input[type=number]::-webkit-outer-spin-button {
 
 /* index */
 
+.carousel-indicator-banners button {
+    width: 10px !important;
+    height: 10px !important;
+    border-radius: 100% !important;
+    margin-left: 5px !important;
+    margin-right: 5px !important;
+}
+
 
 /* .index-category>.row {
     overflow-x: auto;

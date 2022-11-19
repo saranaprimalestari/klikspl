@@ -173,16 +173,16 @@
                                             <p class="m-0 checkout-items-weight-val">
                                                 <input type="hidden" name="price-checkout-items-val-{{ $item->id }}"
                                                     class="price-checkout-items-val-{{ $item->id }}"
-                                                    value="{{ isset($item->productVariant) ? $item->productVariant->weight : $item->product->weight }}">
+                                                    value="{{ isset($item->productVariant) ? $item->productVariant->weight_used : $item->product->weight_used }}">
                                                 @if (isset($item->productVariant))
-                                                    {{ $item->productVariant->weight }}
+                                                    {{ $item->productVariant->weight_used }}
                                                     @php
-                                                        $weight[] = $item->productVariant->weight * $item->quantity;
+                                                        $weight[] = $item->productVariant->weight_used * $item->quantity;
                                                     @endphp
                                                 @else
-                                                    {{ $item->product->weight }}
+                                                    {{ $item->product->weight_used }}
                                                     @php
-                                                        $weight[] = $item->product->weight * $item->quantity;
+                                                        $weight[] = $item->product->weight_used * $item->quantity;
                                                     @endphp
                                                 @endif
                                                 (gr)
@@ -1227,6 +1227,9 @@
             var productPromos = {!! json_encode($productPromos) !!};
             var promos = {!! json_encode($promos) !!};
             var items = {!! json_encode($items) !!};
+            console.log(productPromos);
+            console.log(promos);
+            console.log(items);
             // $.each(productPromos, function(keys, values) {
             //     console.log(productPromos[keys]);
             //     $.each(productPromos[keys], function(key, value) {
@@ -1342,7 +1345,8 @@
                                         console.log('subtotal with discount : '+subtotalWithDiscount);
                                     } else if (promoTypeId == 2) {
                                         if (promoProductId == item['product_id']) {
-                                            discountedPrice = item['subtotal'] - productPromo['discount'];
+                                            discount = item['quantity']*productPromo['discount'];
+                                            discountedPrice = item['subtotal'] - (discount);
                                             console.log('subtotal : '+ discountedPrice); 
                                             $('.subtotal-cart-items-'+item['id']).removeClass('text-danger');
                                             $('.subtotal-cart-items-'+item['id']).addClass('text-secondary');

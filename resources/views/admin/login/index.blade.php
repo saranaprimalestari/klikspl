@@ -10,13 +10,13 @@
             </div>
             <div class="col-md-5 mt-5 ms-5">
                 @if (session()->has('loginError'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <div class="alert alert-danger alert-dismissible fade show alert-notification" role="alert">
                         {{ session('loginError') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
                 @if (session()->has('loginSuccess'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <div class="alert alert-success alert-dismissible fade show alert-notification" role="alert">
                         {{ session('loginSuccess') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>

@@ -105,7 +105,7 @@
                         Potongan / diskon
                     </p>
                     <p class="m-0">
-                        @if ($promo->promo_type_id == 1)
+                        @if ($promo->promo_type_id == 1 || $promo->promo_type_id == 3)
                             {{ $promo->discount }}%
                         @else
                             Rp{{ price_format_rupiah($promo->discount, 'Rp') }}
@@ -133,6 +133,25 @@
                     </p>
                     <p class="m-0">
                         {!! $promo->description !!}
+                    </p>
+                </div>
+                <div class="mb-3">
+                    <p class="m-0 fw-600">
+                        Quota Voucher
+                    </p>
+                    <p class="m-0">
+                        @if (count($promo->userPromoUse))
+                        @foreach ($promo->userPromoUse as $userPromoUse)
+                            @if ($userPromoUse->user_id == auth()->user()->id)
+                                @if($userPromoUse->promo_use <= $promo->quota)
+                                    {{ $promo->quota - $userPromoUse->promo_use }}
+                                @endif
+                            @endif
+                        @endforeach
+                    @else
+                        {{ $promo->quota }}
+                    @endif
+                    Voucher
                     </p>
                 </div>
             </div>

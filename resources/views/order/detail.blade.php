@@ -142,6 +142,13 @@
                                             <span>
                                                 @if (!is_null($order->invoice_no))
                                                     {{ $order->invoice_no }}
+                                                    @if (!is_null($order->invoice_no))
+                                                        <a href="#" class="pe-auto text-dark"
+                                                            onclick="Copy('{{ $order->invoice_no }}')"><i
+                                                                class="far fa-copy" data-bs-toggle="tooltip"
+                                                                data-bs-placement="bottom" title="Salin no. invoice"></i>
+                                                        </a>
+                                                    @endif
                                                 @else
                                                     -
                                                 @endif
@@ -690,7 +697,6 @@
                             $order->order_status == 'pesanan dibayarkan' ||
                             $order->order_status == 'pembayaran dikonfirmasi' ||
                             $order->order_status == 'pesanan disiapkan')
-                            
                             <div class="modal fade" id="orderCancellationRequest" tabindex="-1"
                                 aria-labelledby="orderCancellationRequestModal" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">

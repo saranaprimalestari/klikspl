@@ -139,9 +139,9 @@
                                                     <p class="text-truncate cart-items-product-variant fs-13">
                                                         Berat Produk:
                                                         @if (!is_null($cart->productvariant))
-                                                            {{ $cart->productvariant->weight }}
+                                                            {{ $cart->productvariant->weight_used }}
                                                         @else
-                                                            {{ $cart->product->weight }}
+                                                            {{ $cart->product->weight_used }}
                                                         @endif
                                                         (gr)
                                                     </p>

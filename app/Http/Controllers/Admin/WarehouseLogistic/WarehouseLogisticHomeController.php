@@ -7,6 +7,7 @@ use App\Models\Promo;
 use App\Models\Product;
 use App\Models\CartItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Admin\AdminOrderController;
 
@@ -23,6 +24,9 @@ class WarehouseLogisticHomeController extends Controller
         // dd(auth()->guard('adminMiddle')->user()->adminsenderaddress);
         // dd(auth()->guard('adminMiddle')->user()->admin_type);
         // dd(Order::where('order_status','=', 'pesanan disiapkan')->get());
+        $incomePerMonth = Order::where('order_status','like','%selesai%')->select("id",DB::raw('sum(courier_price + total_price + unique_code - discount) as total_income_per_month'),DB::raw("(payment_method_id) as payment_method"),DB::raw("DATE_FORMAT(updated_at, '%Y-%m') as month_year_income")
+        )->orderBy('updated_at')->groupBy(DB::raw("DATE_FORMAT(updated_at, '%Y-%m')"))->get();
+
         return view('admin.home',[
             'title' => 'Admin Dashboard',
             'active' => 'dashboard',
@@ -78,6 +82,7 @@ class WarehouseLogisticHomeController extends Controller
             ->get(),
             'activedPromo' => Promo::where('is_active','=',1)->get(),
             'orderStatistics' => Order::all(),
+            'incomePerMonth' => $incomePerMonth,
         ]);
     }
 }

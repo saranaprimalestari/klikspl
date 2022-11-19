@@ -108,7 +108,7 @@
                                         <div class="btn user-account-profile-img-btn btn-secondary">
                                             <i class="bi bi-camera"></i> Pilih Foto
                                             <input class="add-file-photo" type="file" name="comment_image"
-                                                id="commentImage" onchange="previewImageComment()">
+                                                id="commentImage">
                                         </div>
                                     </div>
                                 </div>
@@ -123,7 +123,7 @@
                 <div class="row">
                     <div class="col-12 text-end">
                         <button type="submit" class="btn btn-danger fs-14">
-                            Kirim
+                            <i class="bi bi-send"></i> Kirim
                         </button>
                     </div>
                 </div>
@@ -150,6 +150,43 @@
                 imgPreview.src = OFREvent.target.result;
             }
         }
-        $(document).ready(function() {});
+        $(document).ready(function() {
+            $('.add-file-photo').on('change', function(e) {
+                var files = e.target.files;
+                var done = function(url) {
+                    image.src = url;
+                    console.log(files[0]['name']);
+                    $modal.modal('show');
+                };
+                console.log(files['length']);
+                if (files['length']) {
+                    var reader;
+                    var file;
+                    var url;
+                    var filePath = files[0]['name'];
+                    var fileSize = files[0].size;
+                    console.log(files[0].size);
+
+                    var allowedExtensions =
+                        /(\.jpg|\.jpeg|\.png)$/i;
+                    var allowedSize = 2100000;
+
+                    if (!allowedExtensions.exec(filePath)) {
+                        alert('Format file tidak sesuai! Gunakan gambar dengan format (.jpg, .jpeg, .png)');
+                        return false;
+                    } else if (fileSize > allowedSize) {
+                        alert('Ukuran foto maksimal 2MB');
+                        return false;
+                    } else if (files && files.length > 0) {
+                        previewImageComment();
+                    }
+                    console.log($('.img-preview'));
+                }else{
+                    $('.img-preview').removeAttr('src');
+                    console.log($('.img-preview'));
+                }
+                // Allowing file type
+            })
+        });
     </script>
 @endsection

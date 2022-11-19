@@ -116,7 +116,7 @@ Route::name('read.all.notifications')->post('/user/account/readallnotifications'
 Route::resource('/user/account/notifications', UserNotificationController::class)->middleware('auth');
 
 //user Promo
-Route::resource('/user/account/promo', UserPromoController::class)->except(['edit','update','destroy'])->middleware('auth');
+Route::resource('/user/account/promo', UserPromoController::class)->except(['edit','update','destroy'])->middleware('auth')->parameters(['promo' => 'promo:slug']);;
 
 //user address
 Route::name('useraddress.change.active')->post('/changeaddress', [UserAddressController::class, 'changeAddress'])->middleware('auth');
@@ -194,6 +194,7 @@ Route::name('payment.reupload')->post('/order/payment-reupload', [OrderControlle
 // payment order
 Route::name('payment.order.bind')->get('/order/payment/{id}', [OrderController::class, 'paymentOrderBind'])->middleware('auth');
 Route::name('payment.order')->get('/order/payment', [OrderController::class, 'paymentOrder'])->middleware('auth');
+Route::name('payment.order.bind.pdf')->get('/order/payment/{id}/payment-pdf', [OrderController::class, 'paymentOrderBindPDF'])->middleware('auth');
 // Route::name('order.waiting.payment')->get('/order-waiting-for-payment', [OrderController::class, 'confirmOrder'])->middleware('auth');
 // confirm order
 Route::name('confirm.order')->post('/order/confirm-order', [OrderController::class, 'confirmOrder'])->middleware('auth');
@@ -256,14 +257,15 @@ Route::prefix('administrator')->group(function () {
     Route::resource('/paymentmethod', Admin\AdminPaymentMethodController::class)->middleware('adminMiddle');
     
     Route::name('admin.income')->get('/incomes', [Admin\AdminIncomeController::class, 'index'])->middleware('adminMiddle');
-
-
+    
+    Route::name('admin.promo.banner.check.slug')->get('/promobanner/checkSlug', [Admin\AdminPromoBannerController::class, 'checkSlug']);
     Route::resource('/promobanner', Admin\AdminPromoBannerController::class)->middleware('adminMiddle');
 
     Route::name('admin.promo.voucher.update.status')->post('/promovoucher/updatestatus', [Admin\AdminPromoVoucherController::class, 'updateStatus']);
     Route::name('admin.promo.voucher.code.check')->post('/promovoucher/promocodecheck', [Admin\AdminPromoVoucherController::class, 'PromoCodeCheck']);
     Route::name('admin.promo.voucher.delete.image')->post('/promovoucher/deleteimage', [Admin\AdminPromoVoucherController::class, 'deleteImage']);
-    Route::resource('/promovoucher', Admin\AdminPromoVoucherController::class)->middleware('adminMiddle');
+    Route::name('admin.promo.voucher.check.slug')->get('/promovoucher/checkSlug', [Admin\AdminPromoVoucherController::class, 'checkSlug']);
+    Route::resource('/promovoucher', Admin\AdminPromoVoucherController::class)->middleware('adminMiddle')->parameters(['promovoucher' => 'promovoucher:slug']);;
 
     Route::name('productcomment.reply')->get('/productcomment/reply/{comment}', [Admin\AdminProductCommentController::class, 'commentReply'])->middleware('adminMiddle');
     Route::resource('/productcomment', Admin\AdminProductCommentController::class)->middleware('adminMiddle');
@@ -275,4 +277,9 @@ Route::prefix('administrator')->group(function () {
     Route::prefix('warehouselogistic')->group(function () {
         Route::name('warehouselogistic.home')->get('/', [Admin\WarehouseLogistic\WarehouseLogisticHomeController::class, 'index']);
     });
+
+    Route::name('TEST')->get(
+        '/test',
+        [Admin\AdminTestController::class, 'index']
+    );
 });

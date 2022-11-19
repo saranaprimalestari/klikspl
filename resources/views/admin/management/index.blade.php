@@ -32,7 +32,8 @@
         <div class="card admin-card-dashboard border-radius-1-5rem fs-14">
             <div class="card-body p-5 pt-4">
                 <table id="admin-management"
-                    class="table hover fs-14 nowrap table-borderless table-hover cell-border order-column" style="width:100%">
+                    class="table hover fs-14 nowrap table-borderless table-hover cell-border order-column"
+                    style="width:100%">
                     <thead>
                         <tr>
                             <th class="min-mobile">No</th>
@@ -91,6 +92,8 @@
                                     </ul>
                                 </td>
                                 <td>
+                                    <input type="hidden" name="admin_id_{{ $admin->id }}"
+                                    value="{{ $admin->username }}">
                                     <a href="{{ route('management.edit', $admin) }}"
                                         class="link-dark text-decoration-none mx-1" data-bs-toggle="tooltip"
                                         data-bs-placement="bottom" title="Edit info admin">
@@ -101,7 +104,24 @@
                                         data-bs-placement="bottom" title="Detail admin">
                                         <i class="bi bi-info-circle"></i>
                                     </a>
-                                    
+                                    <a type="button" class="link-dark text-decoration-none mx-1 delete-admin"
+                                        id="admin-{{ $admin->id }}" title="Hapus admin {{ $admin->username }}" data-bs-toggle="modal"
+                                        data-bs-target="#deleteAdminModal" data-bs-toggle="tooltip"
+                                        data-bs-placement="bottom">
+                                        <i class="bi bi-trash3"></i>
+                                    </a>
+                                    {{-- <div class="d-inline-flex">
+                                        <form action="{{ route('management.destroy', $admin) }}" method="POST"
+                                            onSubmit="return confirm('Apakah anda yakin ingin menghapus data admin {{ $admin->username }})?');">
+                                            @csrf
+                                            @method('delete')
+                                            <button type="submit" class="btn bg-transparent mx-1 fs-14 p-0 m-0"
+                                                data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                title="Hapus admin {{ $admin->username }}">
+                                                <i class="bi bi-trash3"></i>
+                                            </button>
+                                        </form>
+                                    </div> --}}
                                 </td>
                             </tr>
                         @endforeach
@@ -110,8 +130,60 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="deleteAdminModal" tabindex="-1" aria-labelledby="deleteAdminModal"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content border-radius-1-5rem fs-14">
+                <div class="modal-header border-0 pb-0">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <form class="admin-form-delete" action="" method="post">
+                        @csrf
+                        <h5 class="modal-title" id="">Konfirmasi Hapus Admin</h5>
+                        <div class="my-3">
+                            <p class="mb-2">
+                                Apakah yakin akan menghapus Data Admin
+                            </p>
+                            <div class="row justify-content-center">
+                                <div class="col-12 ps-md-0">
+                                    <strong>
+                                        <div class="deleted-admin">
+                                        </div>
+                                    </strong>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-secondary fs-14" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-danger fs-14">Hapus</button>
+                    </form>
+                </div>
+                <div class="modal-footer border-0">
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
         $(document).ready(function() {
+            $('body').on('click', '.delete-admin', function(e) {
+                console.log(e.currentTarget.id);
+                console.log('delete clicked');
+                var targetId = e.currentTarget.id;
+                var adminId = targetId.replace(/[^\d.]/g, '');
+                console.log(adminId);
+                var route = "{{ route('management.destroy', ':adminId') }}";
+                route = route.replace(':adminId', adminId);
+                // var route = "http://klikspl.test/administrator/promovoucher/" + adminId;
+                console.log(route);
+
+                $('.deleted-admin').text($('input[name="admin_id_' + adminId +'"]').val());
+                $('.admin-form-delete').attr('action', route);
+                $('.admin-form-delete').append(
+                    '<input name="_method" type="hidden" value="DELETE">');
+                $('.admin-form-delete').append('<input name="admin_id" type="hidden" value="' +
+                    adminId +
+                    '">');
+            });
 
             // $('#admin-management').DataTable({
             //     // select: true

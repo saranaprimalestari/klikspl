@@ -9,6 +9,7 @@ use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use Cviebrock\EloquentSluggable\Services\SlugService;
 
 class AdminPromoBannerController extends Controller
 {
@@ -88,6 +89,7 @@ class AdminPromoBannerController extends Controller
         $validatedData = $request->validate(
             [
                 'name' => 'required',
+                'slug' => 'required',
                 'start_period' => 'required|date',
                 'end_period' => 'required|date',
                 'is_active' => 'required',
@@ -96,6 +98,7 @@ class AdminPromoBannerController extends Controller
             ],
             [
                 'name.required' => 'Nama promo harus diisi!',
+                'slug.required' => 'Slug promo harus diisi!',
                 'start_period.required' => 'Tanggal awal promo harus diisi!',
                 'end_period.required' => 'Tanggal akhir promo harus diisi!',
                 'company_id.required' => 'Perusahaan harus diisi!',
@@ -106,6 +109,7 @@ class AdminPromoBannerController extends Controller
 
         $banner = PromoBanner::create([
             'name' => $validatedData['name'],
+            'slug' => $validatedData['slug'],
             'start_period' => $start_period,
             'end_period' => $end_period,
             'is_active' => $validatedData['is_active'],
@@ -203,6 +207,7 @@ class AdminPromoBannerController extends Controller
         $validatedData = $request->validate(
             [
                 'name' => 'required',
+                'slug' => 'required',
                 'start_period' => 'required|date',
                 'end_period' => 'required|date',
                 'is_active' => 'required',
@@ -211,12 +216,13 @@ class AdminPromoBannerController extends Controller
             ],
             [
                 'name.required' => 'Nama promo harus diisi!',
+                'slug.required' => 'Slug promo harus diisi!',
                 'specification.required' => 'Spesifikasi produk harus diisi!',
                 'description.required' => 'Deskripsi produk harus diisi!',
                 'company_id.required' => 'Perusahaan harus diisi!',
             ]
         );
-
+        // dd($validatedData);
         $start_period = (Carbon::parse($request->start_period)->isoFormat('Y-MM-DD HH:mm'));
         $end_period = (Carbon::parse($request->end_period)->isoFormat('Y-MM-DD HH:mm'));
 
@@ -248,6 +254,7 @@ class AdminPromoBannerController extends Controller
         }
 
         $promobanner->name = $validatedData['name'];
+        $promobanner->slug = $validatedData['slug'];
         $promobanner->start_period = $start_period;
         $promobanner->end_period = $end_period;
         $promobanner->is_active = $validatedData['is_active'];
@@ -274,6 +281,7 @@ class AdminPromoBannerController extends Controller
     {
         // dd($promobanner);
         if (auth()->guard('adminMiddle')->user()->id) {
+            Storage::delete($promobanner->image);
             $delete = $promobanner->delete();
             if ($delete) {
                 return redirect()->back()->with('success', 'Berhasil menghapus Promo.');
@@ -296,5 +304,25 @@ class AdminPromoBannerController extends Controller
                 $banner->save();
             }
         }
+    }
+    
+    public function isAdministrator()
+    {
+        if (auth()->guard('adminMiddle')->user()->admin_type != 1 && auth()->guard('adminMiddle')->user()->admin_type != 2) {
+            abort(403);
+        }
+    }
+
+    public function checkSlug(Request $request)
+    {
+        $this->isAdministrator();
+        $slug = SlugService::createSlug(Product::class, 'slug', $request->name);
+
+        return response()->json(['slug' => $slug]);
+    }
+    
+    public function getRouteKeyName()
+    {
+        return 'slug';
     }
 }

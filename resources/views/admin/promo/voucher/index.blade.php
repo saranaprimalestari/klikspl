@@ -238,38 +238,43 @@
     </div>
     <script>
         $(document).ready(function() {
-
+            var promoVoucher = {!! json_encode($promos) !!};
+            console.log(promoVoucher);
+            
             $('body').on('click', '.delete-promo-voucher', function(e) {
                 console.log(e.currentTarget.id);
-                console.log('delete clicked');
                 var targetId = e.currentTarget.id;
                 var promoVoucherId = targetId.replace(/[^\d.]/g, '');
-                var base_url = window.location.origin;
-                console.log(promoVoucherId);
-                var route = "{{ route('promovoucher.destroy', ':promoVoucherId') }}";
-                route = route.replace(':promoVoucherId', promoVoucherId);
-                // var route = "http://klikspl.test/administrator/promovoucher/" + promoVoucherId;
-                console.log(route);
-                console.log(base_url);
-                console.log(($('input[name="promo_voucher_image_' + promoVoucherId + '"]').val()));
-                if(($('input[name="promo_voucher_image_' + promoVoucherId + '"]').val())){
-                    $('.deleted-promo-voucher-image').html('<img src="'+base_url + '/' + ($(
-                    'input[name="promo_voucher_image_' + promoVoucherId + '"]').val())+'" class="img-fluid w-100 border-radius-05rem" alt="...">');
-                    // $('.deleted-promo-voucher-image').attr('src', base_url + '/' + ($(
-                    // 'input[name="promo_voucher_image_' + promoVoucherId + '"]').val()));
-                }else{
-                    $('.deleted-promo-voucher-image').empty();
-
-                }
-                $('.deleted-promo-voucher').text($('input[name="promo_voucher_name_' + promoVoucherId +
-                        '"]')
-                    .val());
-                $('.promo-voucher-form-delete').attr('action', route);
-                $('.promo-voucher-form-delete').append(
-                    '<input name="_method" type="hidden" value="DELETE">');
-                $('.promo-voucher-form-delete').append('<input name="merk_id" type="hidden" value="' +
-                    promoVoucherId +
-                    '">');
+                $.each(promoVoucher, function(id, val){
+                    if(promoVoucherId == val.id){
+                        var promoSlug = val.slug;
+                        var base_url = window.location.origin;
+                        var route = "{{ route('promovoucher.destroy', ':promoSlug') }}";
+                        route = route.replace(':promoSlug', promoSlug);
+                        // var route = "http://klikspl.test/administrator/promovoucher/" + promoVoucherId;
+                        console.log(route);
+                        console.log(base_url);
+                        console.log(($('input[name="promo_voucher_image_' + promoVoucherId + '"]').val()));
+                        if(($('input[name="promo_voucher_image_' + promoVoucherId + '"]').val())){
+                            $('.deleted-promo-voucher-image').html('<img src="'+base_url + '/' + ($(
+                            'input[name="promo_voucher_image_' + promoVoucherId + '"]').val())+'" class="img-fluid w-100 border-radius-05rem" alt="...">');
+                            // $('.deleted-promo-voucher-image').attr('src', base_url + '/' + ($(
+                            // 'input[name="promo_voucher_image_' + promoVoucherId + '"]').val()));
+                        }else{
+                            $('.deleted-promo-voucher-image').empty();
+        
+                        }
+                        $('.deleted-promo-voucher').text($('input[name="promo_voucher_name_' + promoVoucherId +
+                                '"]')
+                            .val());
+                        $('.promo-voucher-form-delete').attr('action', route);
+                        $('.promo-voucher-form-delete').append(
+                            '<input name="_method" type="hidden" value="DELETE">');
+                        // $('.promo-voucher-form-delete').append('<input name="merk_id" type="hidden" value="' +
+                        //     promoVoucherId +
+                        //     '">');
+                    }
+                });
             });
 
             $('#promo').DataTable({

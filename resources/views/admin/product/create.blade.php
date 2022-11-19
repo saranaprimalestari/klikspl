@@ -370,7 +370,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <input type="number" class="form-control fs-14 @error('width') is-invalid @enderror"
-                                        id="productLong" name="width" placeholder="Lebar produk (cm)"
+                                        id="productWidth" name="width" placeholder="Lebar produk (cm)"
                                         value="{{ old('width') }}">
                                     @error('width')
                                         <p class="text-danger">{{ $message }}</p>
@@ -378,12 +378,15 @@
                                 </div>
                                 <div class="col-md-4">
                                     <input type="number" class="form-control fs-14 @error('height') is-invalid @enderror"
-                                        id="productLong" name="height" placeholder="Tinggi / Tebal produk (cm)"
+                                        id="productHeight" name="height" placeholder="Tinggi / Tebal produk (cm)"
                                         value="{{ old('height') }}">
                                     @error('height')
                                         <p class="text-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
+                            </div>
+                            <div class="product-total-volume-weight">
+
                             </div>
                         </div>
                     </div>
@@ -495,7 +498,7 @@
         @else
             <input type="hidden" name="company_id" value="{{ auth()->guard('adminMiddle')->user()->company_id }}">
         @endif
-        
+
         <div class="container p-0 mb-5 pb-5">
             <div class="row">
                 <div class="col-12 text-end">
@@ -679,6 +682,8 @@
                 '<div id="variantPrice" class="form-text">Harga varian menggunakan mata uang Rupiah (Rp)</div>' +
                 '</div>' +
                 '</div>' +
+                '<div class="mb-3 row variant-total-volume-weight-' + product_variant_no + '">' +
+                '</div>' +
                 '<div class="mb-3 mt-5 row">' +
                 '<p class="m-0 fw-600">Lokasi Pengiriman Produk</p>' +
                 '<p class="text-grey fs-13 m-0">Pilih lokasi pengiriman produk</p>' +
@@ -852,6 +857,60 @@
                     $('.product-status').text('Tidak Aktif');
                     $('input[name="is_active"]').val(0);
                 }
+            });
+
+            $('#productWeight').add('#productLong').add('#productWidth').add('#productHeight').change(function(e) {
+                // console.log(e.currentTarget.value);
+                // var targetId = e.currentTarget.id;
+                // console.log(targetId);
+                // window.variantId = targetId.replace(/[^\d.]/g, '');
+                // console.log(variantId);
+                var weight = $('#productWeight').val();
+                var long = $('#productLong').val();
+                var width = $('#productWidth').val();
+                var height = $('#productHeight').val();
+
+                var volume_weight = (long * width * height) / 6000;
+                console.log(volume_weight);
+                console.log(weight);
+                if (volume_weight > weight/1000) {
+                    $('.product-total-volume-weight').html(
+                        '<div class="fs-12 text-danger my-2">Ongkir akan dihitung menggunakan Berat Volume '+ Math.round(volume_weight * 1000 * 100)/100 +'gr ('+ Math.round(volume_weight * 100)/100 +'kg) karena Berat Volume lebih besar dari berat produk aktual </div>'
+                        );
+                }else{
+                    $('.product-total-volume-weight').empty();
+                }
+                console.log($('#productLong').val());
+                console.log($('#productWidth').val());
+                console.log($('#productHeight').val());
+
+            });
+
+            $('body').on('change', '.variant-weight, .variant-long, .variant-width, .variant-height', function(e) {
+                console.log(e.currentTarget.value);
+                var targetId = e.currentTarget.id;
+                console.log(targetId);
+                window.variantId = targetId.replace(/[^\d.]/g, '');
+                console.log(variantId);
+                var variant_weight = $('#variantWeight_' + variantId).val();
+                var variant_long = $('#variantLong_' + variantId).val();
+                var variant_width = $('#variantWidth_' + variantId).val();
+                var variant_height = $('#variantHeight_' + variantId).val();
+
+                var volume_weight = (variant_long * variant_width * variant_height) / 6000;
+                console.log(volume_weight);
+                console.log(variant_weight);
+                if (volume_weight > variant_weight/1000) {
+                    $('.variant-total-volume-weight-' + variantId).html(
+                        '<div class="fs-12 text-danger my-2">Ongkir akan dihitung menggunakan Berat Volume '+Math.round(volume_weight * 1000 * 100)/100+'gr ('+Math.round(volume_weight * 100)/100+'kg) karena Berat Volume lebih besar dari berat produk varian </div>'
+                        );
+                }else{
+                    $('.variant-total-volume-weight-' + variantId).empty();
+                }
+                console.log($('#variantLong_' + variantId).val());
+                console.log($('#variantWidth_' + variantId).val());
+                console.log($('#variantHeight_' + variantId).val());
+
             });
 
             $('body').on('change', '.variant-name', function(e) {

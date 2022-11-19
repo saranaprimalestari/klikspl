@@ -849,8 +849,8 @@
                         </div>
                     @endif
                 </div>
-                <div class="modal fade" id="cancelConfirmPayment" tabindex="-1" aria-labelledby="cancelConfirmPaymentModal"
-                    aria-hidden="true">
+                <div class="modal fade" id="cancelConfirmPayment" tabindex="-1"
+                    aria-labelledby="cancelConfirmPaymentModal" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content border-radius-1-5rem">
                             <div class="modal-header border-0 pt-4 px-4">
@@ -961,6 +961,13 @@
                                     <span>
                                         @if (!is_null($orders->invoice_no))
                                             {{ $orders->invoice_no }}
+                                            @if (!is_null($orders->invoice_no))
+                                                <a href="#" class="pe-auto text-dark"
+                                                    onclick="Copy('{{ $orders->invoice_no }}')"><i class="far fa-copy"
+                                                        data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                        title="Salin no. invoice"></i>
+                                                </a>
+                                            @endif
                                         @else
                                             -
                                         @endif
@@ -1259,6 +1266,13 @@
                                             </span> --}}
                                     <span>
                                         {{ !is_null($orders->resi) ? $orders->resi : 'No. Resi belum terbit' }}
+                                        @if (!is_null($orders->resi))
+                                            <a href="#" class="pe-auto text-dark"
+                                                onclick="Copy('{{ $orders->resi }}')"><i class="far fa-copy"
+                                                    data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                    title="Salin no. resi"></i>
+                                            </a>
+                                        @endif
                                     </span>
                                 </div>
                             </div>

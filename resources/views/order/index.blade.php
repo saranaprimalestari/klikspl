@@ -452,7 +452,8 @@
                             $('.orderitem-total-payment-confirm-modal-ammount').text(
                                 formatRupiah((parseInt(order['courier_price']) +
                                     parseInt(order['total_price']) + parseInt(order[
-                                        'unique_code'])), "Rp"));
+                                        'unique_code']) - parseInt(order[
+                                        'discount'])), "Rp"));
                         });
                     }
                 });

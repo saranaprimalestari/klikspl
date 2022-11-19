@@ -19,11 +19,85 @@
             Penilaian Produk
         </h1>
     </div>
+    <div class="container p-0 mb-5">
+        <div class="card border-radius-1-5rem fs-14 border-0">
+            <div class="card-header bg-transparent px-4 py-3 pb-1 border-bottom-0">
+                <h5>Filter</h5>
+            </div>
+            <div class="card-body p-4 pt-2">
+                <form class="status-form" action="{{ route('productcomment.index') }}" method="GET">
+                    @csrf
+                    {{-- @if (request('status'))
+                        <input type="hidden" name="status" value="{{ request('status') }}">
+                    @endif --}}
+                    <div class="row gx-3 gy-2 align-items-center mb-4">
+                        <div class="col-md-3 col-12">
+                            <label class="form-label" for="Filter">Pencarian</label>
+                            <input type="text" class="form-control form-control-sm border-radius-05rem fs-14 shadow-none"
+                                id="searchKeyword" placeholder="Cari no invoice, username, komentar"
+                                aria-label="Cari no invoice, username, komentar" aria-describedby="basic-addon2"
+                                name="search">
+                        </div>
+                        <div class="col-md-3 col-12">
+                            <label class="form-label" for="Filter">Penilaian</label>
+                            <select class="form-select form-select-sm border-radius-05rem shadow-none" id="Filter"
+                                name="star">
+                                <option value="" selected>Pilih<i class="bi bi-funnel"></i></option>
+                                <option value="asc"
+                                    {{ !is_null(request('star')) && request('star') == 'asc' ? 'selected' : '' }}>
+                                    Terendah</option>
+                                <option value="desc"
+                                    {{ !is_null(request('star')) && request('star') == 'desc' ? 'selected' : '' }}>
+                                    Tertinggi</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3 col-12">
+                            <label class="form-label" for="Filter">Waktu Komentar</label>
+                            <select class="form-select form-select-sm border-radius-05rem shadow-none" id="Filter"
+                                name="created_at">
+                                <option value="" selected>Pilih<i class="bi bi-funnel"></i></option>
+                                <option value="asc"
+                                    {{ !is_null(request('created_at')) && request('created_at') == 'asc' ? 'selected' : '' }}>
+                                    Terlama</option>
+                                <option value="desc"
+                                    {{ !is_null(request('created_at')) && request('created_at') == 'desc' ? 'selected' : '' }}>
+                                    Terbaru</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3 col-12">
+                            <label class="form-label" for="Filter">Nomor Invoice</label>
+                            <select class="form-select form-select-sm border-radius-05rem shadow-none" id="Filter"
+                                name="invoice_no">
+                                <option value="" selected>Pilih<i class="bi bi-funnel"></i></option>
+                                <option value="asc"
+                                    {{ !is_null(request('invoice_no')) && request('invoice_no') == 'asc' ? 'selected' : '' }}>
+                                    Awal</option>
+                                <option value="desc"
+                                    {{ !is_null(request('invoice_no')) && request('invoice_no') == 'desc' ? 'selected' : '' }}>
+                                    Akhir</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="row justify-content-end">
+                        <div class="col-auto">
+                            <a href="{{ route('productcomment.index') }}" class="btn btn-secondary fs-14 filter-btn">
+                                Bersihkan Filter
+                            </a>
+                            <button type="submit" class="btn btn-danger fs-14 filter-btn ms-1">Tampilkan</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     @if (count($productComments) > 0)
         @foreach ($productComments as $comment)
             @if (count($comment->children) <= 0)
                 <div class="container p-0 mb-3">
-                    <div class="card border-radius-1-5rem fs-14 border-0 card-product-order">
+                    <div class="card border-radius-1-5rem fs-14 border-0 card-product-comment">
                         <div class="card-body p-4">
                             <div class="mb-2 fs-13">
                                 <span class="">No Invoice:
@@ -143,4 +217,15 @@
             </div>
         </div>
     @endif
+    <script>
+        $('#searchKeyword').on("keyup", function() {
+            // $('.filter-btn').on("click", function() {
+            // var search = $(this).val().toLowerCase();
+            var search = $('input[name="search"]').val().toLowerCase();
+            $(".card-product-comment").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(search) > -1);
+                // });
+            });
+        });
+    </script>
 @endsection

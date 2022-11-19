@@ -2,13 +2,28 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ProductComment extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
+
+    public function scopeFilterAdmin($query, array $filters)
+    {
+        // dd($filters);
+        $query->when($filters['star'] ?? false, function ($query, $keyword) {
+            return $query->orderBy('star', $keyword);
+        });
+        $query->when($filters['created_at'] ?? false, function ($query, $keyword) {
+            return $query->orderBy('created_at', $keyword);
+        });
+        $query->when($filters['invoice_no'] ?? false, function ($query, $keyword) {
+            return $query->orderBy('invoice_no', $keyword);
+        });
+    }
 
     public function product()
     {

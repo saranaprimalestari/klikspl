@@ -14,6 +14,7 @@ use App\Models\PaymentMethod;
 use App\Models\PromoPaymentMethod;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use Cviebrock\EloquentSluggable\Services\SlugService;
 
 class AdminPromoVoucherController extends Controller
 {
@@ -106,6 +107,7 @@ class AdminPromoVoucherController extends Controller
         $validatedData = $request->validate(
             [
                 'name' => 'required',
+                'slug' => 'required',
                 'code' => ['required', 'unique:promos', 'string', 'alpha_dash', 'max:12', 'regex:/^(?=.*[0-9])(?=.*[A-Z])([A-Z0-9]+)$/'],
                 'promo_type_id' => 'required',
                 'start_period' => 'required|date',
@@ -143,6 +145,7 @@ class AdminPromoVoucherController extends Controller
 
         $voucher = Promo::create([
             'name' => $validatedData['name'],
+            'slug' => $validatedData['slug'],
             'code' => $validatedData['code'],
             'promo_type_id' => $validatedData['promo_type_id'],
             'start_period' => $start_period,
@@ -281,6 +284,7 @@ class AdminPromoVoucherController extends Controller
         $validatedData = $request->validate(
             [
                 'name' => 'required',
+                'slug' => 'required',
                 'code' => ['required', 'string', 'alpha_dash', 'max:12', 'regex:/^(?=.*[0-9])(?=.*[A-Z])([A-Z0-9]+)$/'],
                 'promo_type_id' => 'required',
                 'start_period' => 'required|date',
@@ -294,6 +298,7 @@ class AdminPromoVoucherController extends Controller
             ],
             [
                 'name.required' => 'Nama promo harus diisi!',
+                'slug.required' => 'Slug promo harus diisi!',
                 'code.required' => 'Kode promo harus diisi!',
                 // 'code.unique' => 'Kode promo sudah digunakan. Kode promo harus unik!',
                 'code.regex' => 'format kode promo tidak valid! Awali dengan huruf, hindari penggunaan angka ditengah kode, jangan gunakan simbol !@#$%^&*()_+|}{":?><',
@@ -448,6 +453,7 @@ class AdminPromoVoucherController extends Controller
 
         $promovoucher->fill([
             'name' => $validatedData['name'],
+            'slug' => $validatedData['slug'],
             'code' => $validatedData['code'],
             'promo_type_id' => $validatedData['promo_type_id'],
             'start_period' => $start_period,
@@ -480,6 +486,7 @@ class AdminPromoVoucherController extends Controller
             foreach($productPromo as $deleteProductPromo){
                 $productPromoDelete = $deleteProductPromo->delete();
             }
+            Storage::delete($promovoucher->image);
             $delete = $promovoucher->delete();
             if ($delete && $productPromoDelete) {
                 return redirect()->back()->with('success', 'Berhasil menghapus Promo.');
@@ -552,6 +559,13 @@ class AdminPromoVoucherController extends Controller
         ]);
     }
     
+    public function isAdministrator()
+    {
+        if (auth()->guard('adminMiddle')->user()->admin_type != 1 && auth()->guard('adminMiddle')->user()->admin_type != 2) {
+            abort(403);
+        }
+    }
+
     public function expiredCheck()
     {
         // dd(auth()->guard('adminMiddle')->user()->company_id);
@@ -562,5 +576,18 @@ class AdminPromoVoucherController extends Controller
                 $voucher->save();
             }
         }
+    }
+    
+    public function checkSlug(Request $request)
+    {
+        $this->isAdministrator();
+        $slug = SlugService::createSlug(Product::class, 'slug', $request->name);
+
+        return response()->json(['slug' => $slug]);
+    }
+    
+    public function getRouteKeyName()
+    {
+        return 'slug';
     }
 }

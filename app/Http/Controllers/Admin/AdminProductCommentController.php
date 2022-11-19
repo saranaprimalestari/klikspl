@@ -14,8 +14,9 @@ class AdminProductCommentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {  
+        // dd($request);
         // $productComments = ProductComment::whereNotNull('user_id')->get();
         if(auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2){
             $productComments = ProductComment::whereNotNull('product_comments.user_id')
@@ -24,8 +25,9 @@ class AdminProductCommentController extends Controller
             ->join('admin_sender_addresses', function($join){
                 $join->on('admin_sender_addresses.sender_address_id', '=', 'orders.sender_address_id');})
             ->join("admins", function($join){
-                $join->on("admins.id", "=", "admin_sender_addresses.admin_id");
-            })->groupBy('product_comments.id')->get('product_comments.*');
+                $join->on("admins.id", "=", "admin_sender_addresses.admin_id")
+                ->where('admins.id', '=', auth()->guard('adminMiddle')->user()->id);
+            })->filterAdmin(request(['invoice_no', 'created_at', 'star']))->get('product_comments.*');
         }else{
             $productComments = ProductComment::whereNotNull('product_comments.user_id')
             ->join('orders', function($join){
@@ -33,10 +35,8 @@ class AdminProductCommentController extends Controller
             ->join('admin_sender_addresses', function($join){
                 $join->on('admin_sender_addresses.sender_address_id', '=', 'orders.sender_address_id');})
             ->join("admins", function($join){
-                $join->on("admins.id", "=", "admin_sender_addresses.admin_id")
-                ->where('admins.id', '=', auth()->guard('adminMiddle')->user()->id);
-            })->get('product_comments.*');
-
+                $join->on("admins.id", "=", "admin_sender_addresses.admin_id");
+            })->groupBy('product_comments.id')->filterAdmin(request(['invoice_no', 'created_at', 'star']))->get('product_comments.*');
         }
 
         // dd($productComments);
@@ -149,13 +149,14 @@ class AdminProductCommentController extends Controller
     }
     public function commentReply(Request $request, ProductComment $comment)
     {
-        // dd($comment);
-        return view('admin.productComment.reply',[
-            'title' => 'Komentar Produk',
-            'active' => 'product-comment',
-            'comment' => $comment,
-        ]);
-        dd($comment);
-        dd($request);
+        if(count($comment->children) == 0 && !is_null($comment->user_id) && !empty($comment->star) && is_null($comment->admin_id)){
+            return view('admin.productComment.reply',[
+                'title' => 'Komentar Produk',
+                'active' => 'product-comment',
+                'comment' => $comment,
+            ]);
+        }else{
+            abort(404);
+        }
     }
 }

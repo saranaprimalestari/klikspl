@@ -5,7 +5,7 @@
                 <h5 class="fs-6 footer-text">LAYANAN PELANGGAN</h5>
                 <ul class="list-unstyled">
                     <li>
-                        <a class="footer-text" href="">Bantuan</a>
+                        <a class="footer-text" href="">Pusat Bantuan</a>
                     </li>
                     <li>
                         <a class="footer-text" href="">Metode Pembayaran</a>

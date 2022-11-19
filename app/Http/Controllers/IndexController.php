@@ -21,13 +21,13 @@ class IndexController extends Controller
         $this->promoBannerExpiredCheck();
         $this->promoVoucherExpiredCheck();
 
-        $productsLatest = Product::where('is_active', '=', 1)->with('productcomment')->addSelect(['star'=> ProductComment::selectRaw('avg(star)')->where('star','!=','0')->whereColumn('product_id','products.id')])->latest()->take(12)->get();
-        $productsBestSeller =  Product::where('is_active', '=', 1)->with('productcomment')->addSelect(['star'=> ProductComment::selectRaw('avg(star)')->where('star','!=','0')->whereColumn('product_id','products.id')])->orderBy('sold', 'desc')->take(12)->get();
-        // Product::where('is_active', '=', 1)->with('productcomment')->orderBy('sold', 'desc')->take(12)->get();
-        $productsStar =  Product::where('is_active', '=', 1)->with('productcomment')->addSelect(['star'=> ProductComment::selectRaw('avg(star)')->where('star','!=','0')->whereColumn('product_id','products.id')])->orderByDesc(ProductComment::selectRaw('avg(star)')->where('star','!=','0')->whereColumn('product_id','products.id'))->take(12)->get();
+        $productsLatest = Product::where('is_active', '=', 1)->with('productcomment')->addSelect(['star'=> ProductComment::selectRaw('avg(star)')->where('star','!=','0')->whereColumn('product_id','products.id')])->latest()->take(24)->get();
+        $productsBestSeller =  Product::where('is_active', '=', 1)->with('productcomment')->addSelect(['star'=> ProductComment::selectRaw('avg(star)')->where('star','!=','0')->whereColumn('product_id','products.id')])->orderBy('sold', 'desc')->take(24)->get();
+        // Product::where('is_active', '=', 1)->with('productcomment')->orderBy('sold', 'desc')->take(24)->get();
+        $productsStar =  Product::where('is_active', '=', 1)->with('productcomment')->addSelect(['star'=> ProductComment::selectRaw('avg(star)')->where('star','!=','0')->whereColumn('product_id','products.id')])->orderByDesc(ProductComment::selectRaw('avg(star)')->where('star','!=','0')->whereColumn('product_id','products.id'))->take(24)->get();
         // $productsStar =  Product::where('is_active', '=', 1)->with('productcomment')->get()->sortByDesc(function ($products) {
         //     return $products->productComment->avg('star');
-        // })->take(12);
+        // })->take(24);
         $promoBanner = PromoBanner::where('is_active', '=', 1)->where('start_period', '<=', Carbon::now())->where('end_period', '>=', Carbon::now())->orderBy("id", "desc")->get();
         // dd($productsBestSeller);
         // dd($productsStar);

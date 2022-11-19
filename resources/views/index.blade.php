@@ -2,12 +2,11 @@
 
 @section('container')
     {{-- {{ dd(auth()->user()->cartitem) }} --}}
-
     <div class="carousel-index">
         <div class="row">
             <div class="col-md-12 col-12">
                 <div id="promoBannerIndicators" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-indicators">
+                    <div class="carousel-indicators carousel-indicator-banners">
                         <button type="button" data-bs-target="#promoBannerIndicators" data-bs-slide-to="0" class="active"
                             aria-current="true" aria-label="Slide 1"></button>
                         @if (count($promoBanner) > 0)
@@ -209,7 +208,7 @@
                                 @foreach ($promosPL as $promoPL)
                                     @if ($promoPL->id == $productLatest->id)
                                         <div
-                                            class="position-absolute px-3 py-2 text-white bg-red-klikspl border-radius-075rem fs-11">
+                                            class="position-absolute px-3 py-2 text-white bg-red-klikspl border-radius-075rem fs-11 box-shadows">
                                             {{ $promoPL->promoActive }} VOUCHER PROMO
                                         </div>
                                     @endif

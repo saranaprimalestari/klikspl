@@ -45,7 +45,16 @@
                 <h5 class="mb-3">Pembayaran</h5>
                 <div class="card fs-14 border-radius-075rem mb-4 box-shadows">
                     <div class="card-header bg-transparent py-3 fw-bold">
-                        Ringkasan Pembayaran
+                        <div class="d-flex align-items-center">
+                            <div class="me-auto">
+                                Ringkasan Pembayaran
+                            </div>
+                            <div>
+                                <a target="_blank" href="{{ route('payment.order.bind.pdf',['id' => Crypt::encrypt($orders[0]->id)]) }}" class="btn btn-danger fs-14">
+                                    <i class="bi bi-file-earmark-pdf"></i> PDF
+                                </a>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-body">
                         @foreach ($orders as $order)
@@ -594,13 +603,14 @@
                                                     <span>
                                                         {{ $item->quantity }} x
                                                     </span>
-                                                    <span class="{{ (!empty($item->discount) ? 'text-decoration-line-through' : '') }}">
+                                                    {{-- <span class="{{ (!empty($item->discount) ? 'text-decoration-line-through' : '') }}">
                                                         Rp{{ price_format_rupiah($item->orderproduct->price) }}
-                                                    </span>
+                                                    </span> --}}
                                                     <span>
-                                                        @if (!empty($item->discount))
-                                                            Rp{{ price_format_rupiah($item->orderproduct->price - $item->discount) }}
-                                                        @endif
+                                                        Rp{{ price_format_rupiah($item->orderproduct->price) }}
+                                                        {{-- @if (!empty($item->discount)) --}}
+                                                            {{-- Rp{{ price_format_rupiah($item->orderproduct->price - $item->discount) }} --}}
+                                                        {{-- @endif --}}
                                                     </span>
                                                 </div>
                                             </div>

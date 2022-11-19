@@ -251,7 +251,7 @@ class AdminOrderController extends Controller
                         if ($orderItem->orderproduct->orderproductimage->count()) {
                             foreach ($orderItem->orderProduct->orderProductImage as $orderProductImage) {
                             }
-                            $cartItem = CartItem::where([['user_id', '=', $orderItem->user_id], ['product_id', '=', $orderItem->product_id], ['product_variant_id', '=', $orderItem->product_variant_id]])->withTrashed()->first();
+                            $cartItem = CartItem::where([['user_id', '=', $orderItem->user_id], ['product_id', '=', $orderItem->product_id], ['product_variant_id', '=', $orderItem->product_variant_id], ['quantity', '=', $orderItem->quantity], ['subtotal','=', $orderItem->total_price_item], ['deleted_at','like','%'.Carbon::parse($orderItem->created_at)->format('Y-m-d H:i').'%'], ['updated_at','like','%'.Carbon::parse($orderItem->created_at)->format('Y-m-d H:i').'%']])->withTrashed()->first();
 
                             // echo "order item id : ";
                             // print_r($orderItem->id);
@@ -292,7 +292,7 @@ class AdminOrderController extends Controller
                             // $orderProductImage->delete();
                             // $orderItem->orderProduct->delete();
                         } else {
-                            $cartItem = CartItem::where([['user_id', '=', $orderItem->user_id], ['product_id', '=', $orderItem->product_id], ['product_variant_id', '=', $orderItem->product_variant_id]])->withTrashed()->first();
+                            $cartItem = CartItem::where([['user_id', '=', $orderItem->user_id], ['product_id', '=', $orderItem->product_id], ['product_variant_id', '=', $orderItem->product_variant_id], ['quantity', '=', $orderItem->quantity], ['subtotal','=', $orderItem->total_price_item], ['deleted_at','like','%'.Carbon::parse($orderItem->created_at)->format('Y-m-d H:i').'%'], ['updated_at','like','%'.Carbon::parse($orderItem->created_at)->format('Y-m-d H:i').'%']])->withTrashed()->first();
                             $cartItem->deleted_at = NULL;
                             $cartItem->save();
                             // $orderItem->orderProduct->delete();
@@ -362,7 +362,7 @@ class AdminOrderController extends Controller
     public function confirmPayment(Request $request)
     {
         $this->expiredCheck();
-
+        // dd($request);
         $validatedData = $request->validate(
             [
                 'proof_of_payment' => 'image|file||mimes:jpeg,png,jpg|max:2048'
@@ -377,7 +377,9 @@ class AdminOrderController extends Controller
         // dd($request);
         // dd($request->session()->get('status'));
         $order = Order::where('id', '=', $request->order_id)->first();
-
+        if(is_null($order)){
+            $order = Order::withTrashed()->where('id', '=', $request->order_id)->first();
+        }
         $stockVariant = 0;
         $soldVariant = 0;
         foreach ($order->orderitem as $orderitem) {
@@ -477,7 +479,7 @@ class AdminOrderController extends Controller
         //commentes
         // dd($request->file('proof_of_payment')->guessExtension());
         if (!is_null($request->file('proof_of_payment')) || $request->file('proof_of_payment')) {
-            $folderPathSave = 'user/' . auth()->user()->username . '/order/' . $request->order_id . '/proof-of-payment';
+            $folderPathSave = 'user/' . $order->users->username . '/order/' . $request->order_id . '/proof-of-payment';
 
             // echo $folderPathSave;
             // echo "<br><br>";

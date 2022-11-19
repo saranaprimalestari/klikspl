@@ -109,7 +109,7 @@
                             </div>
                             <div class="modal-body">
                                 <div class="row">
-                                    <div class="col-md-6 col-12">
+                                    <div class="col-md-7 col-12">
                                         <div class="easyzoom easyzoom--overlay easyzoom--with-thumbnails">
                                             <a id="imagePreviewLink" class="imagepreviewLink w-100">
                                                 <img id="imagePreview" src="" class="imagepreview w-100">
@@ -117,7 +117,7 @@
                                             {{-- <div class="easyzoom easyzoom--overlay"> <a href="https://i.imgur.com/jnxzAN2.jpg"> <img class="mainimage" src="https://i.imgur.com/jnxzAN2.jpg" height="460" /> </a> </div> --}}
                                         </div>
                                     </div>
-                                    <div class="col-md-6 col-12">
+                                    <div class="col-md-5 col-12">
                                         {{-- <div id="imagepreviewZoom" class="img-zoom-result"></div> --}}
                                         <div class="thumbnail my-2 thumbnails-modal">
                                             @foreach ($product->productImage as $productImg)
@@ -240,8 +240,8 @@
                                 value="{{ $variant->variant_slug }}">
 
                             <input type="hidden" class="btn-check" name="variantWeight-{{ $variant->id }}"
-                                id="btn-radio-{{ $variant->weight }}" autocomplete="off"
-                                value="{{ $variant->weight }}">
+                                id="btn-radio-{{ $variant->weight_used }}" autocomplete="off"
+                                value="{{ $variant->weight_used }}">
 
                             <input type="hidden" class="btn-check" name="variantStock-{{ $variant->id }}"
                                 id="btn-radio-{{ $variant->stock }}" autocomplete="off" value="{{ $variant->stock }}">
@@ -595,7 +595,7 @@
                                                                                     aria-controls="shipment-courier-{{ $variant->id }}">
                                                                                     Varian
                                                                                     {{ $variant->variant_name }}
-                                                                                    ({{ $variant->weight }} gram)
+                                                                                    ({{ round($variant->weight_used / 1000, 2) }}kg)
                                                                                 </button>
                                                                             </h2>
                                                                             <div id="shipment-courier-{{ $variant->id }}"
@@ -925,18 +925,18 @@
                             </span>
                             <span>
                                 @if (count($product->productvariant) == 1)
-                                    {{ $product->productvariant->sortBy('weight')->first()->weight / 1000 }}kg
+                                    {{ $product->productvariant->sortBy('weight')->first()->weight_used / 1000 }}kg
                                 @elseif (count($product->productvariant) > 1)
-                                    @if ($product->productvariant->sortBy('weight')->first()->weight ==
-                                        $product->productvariant->sortBy('weight')->last()->weight)
-                                        {{ $product->productvariant->sortBy('weight')->first()->weight / 1000 }}kg
+                                    @if ($product->productvariant->sortBy('weight')->first()->weight_used ==
+                                        $product->productvariant->sortBy('weight')->last()->weight_used)
+                                        {{ round($product->productvariant->sortBy('weight')->first()->weight_used / 1000, 2) }}kg
                                     @else
-                                        {{ $product->productvariant->sortBy('weight')->first()->weight / 1000 }}
+                                        {{ round($product->productvariant->sortBy('weight')->first()->weight_used / 1000, 2) }}
                                         -
-                                        {{ $product->productvariant->sortBy('weight')->last()->weight / 1000 }}kg
+                                        {{ round($product->productvariant->sortBy('weight')->last()->weight_used / 1000, 2) }}kg
                                     @endif
                                 @else
-                                    {{ $product->weight / 1000 }}kg
+                                    {{ $product->weight_used / 1000 }}kg
                                 @endif
                             </span>
                         </li>
@@ -976,7 +976,7 @@
                             is_null($comment->reply_comment_id) ||
                             empty($comment->reply_comment_id) ||
                             !isset($comment->reply_comment_id))
-                            <div class="d-flex mt-3">
+                            <div class="d-flex mt-4">
                                 <div class="flex-shrink-0">
                                     @if (isset($comment->user->profile_image))
                                         <img src="{{ asset($comment->user->profile_image) }}" class="rounded-circle"
@@ -1006,7 +1006,7 @@
                                         </small>
                                     </h5>
                                     @if (isset($comment->productvariant))
-                                        <div class="comment-text text-grey fs-13">
+                                        <div class="comment-text text-grey fs-13 mb-2">
                                             Varian : {{ $comment->productvariant->variant_name }}
                                         </div>
                                     @endif
@@ -1049,9 +1049,12 @@
                                                     <img src="{{ asset($commentChild->user->profile_image) }}"
                                                         class="rounded-circle" alt="user profile image" width="50"
                                                         height="50">
-                                                @elseif (isset($commentChild->admin->profile_image))
-                                                    <img src="{{ asset($commentChild->admin->profile_image) }}"
+                                                @elseif (isset($commentChild->admin))
+                                                    {{-- <img src="{{ asset($commentChild->admin->profile_image) }}"
                                                         class="rounded-circle" alt="admin profile image" width="50"
+                                                        height="50"> --}}
+                                                    <img src="{{ asset('/assets/klikspl-admin-icon.svg') }}"
+                                                        class="rounded-circle" alt="" width="50"
                                                         height="50">
                                                 @else
                                                     <img src="{{ asset('/assets/avatars.svg') }}" class="rounded-circle"
@@ -1074,7 +1077,7 @@
                                                     @if (isset($commentChild->user->username))
                                                         {{ $commentChild->user->username }}
                                                     @elseif (isset($commentChild->admin->username))
-                                                        {{ $commentChild->admin->username }}
+                                                        {{ $commentChild->admin->admintype->admin_type }}
                                                     @endif
                                                     <small class="text-muted comment-text fw-light ms-1">
                                                         <i>Diposting
@@ -1250,7 +1253,7 @@
 
                                     $.when(getShipmentCost(token, city_id, city_destinations,
                                             courier,
-                                            value['weight']))
+                                            value['weight_used']))
                                         .done(
                                             function(response) {
                                                 console.log(response);
@@ -1259,25 +1262,21 @@
                                                     for (let index = 0; index < response
                                                         .length; index++) {
                                                         $.each(response[index][0]['costs'],
-                                                            function(
-                                                                key,
-                                                                value) {
-                                                                $('.shipment-' + variantID)
-                                                                    .append(
-                                                                        '<div class="modal-ongkir row d-flex align-items-center mb-3"><div class="col-1 pe-0 text-center"><i class="bi bi-circle-fill"></i></div><div class="col-8"><p class="m-0 d-inline-block modal-courier-type pe-1">' +
-                                                                        response[index][0].code
-                                                                        .toUpperCase() +
-                                                                        '</p><p class="m-0 d-inline-block modal-courier-package">' +
-                                                                        value.service +
-                                                                        '</p><p class="m-0 modal-courier-etd"> Estimasi ' +
-                                                                        value.cost[0].etd +
-                                                                        ' hari</p></div><div class="col-3"><p class="text-end m-0 modal-courier-price">' +
-                                                                        formatRupiah(value.cost[
-                                                                                0]
-                                                                            .value, "Rp") +
-                                                                        ' </p></div></div>'
-                                                                    )
-                                                            });
+                                                            function(key, value) {
+                                                                if (response[index][0].code !=
+                                                                    'pos') {
+                                                                    $('.shipment-' + variantID)
+                                                                        .append(
+                                                                            '<div class="modal-ongkir row d-flex align-items-center mb-3"><div class="col-1 pe-0 text-center"><i class="bi bi-circle-fill"></i></div><div class="col-8"><p class="m-0 d-inline-block modal-courier-type pe-1">' +
+                                                                            ' hari</p></div><div class="col-3"><p class="text-end m-0 modal-courier-price">' +
+                                                                            formatRupiah(value
+                                                                                .cost[0].value,
+                                                                                "Rp") +
+                                                                            ' </p></div></div>'
+                                                                        );
+                                                                }
+                                                            }
+                                                        );
                                                     }
                                                 } else {
                                                     $('.shipment-' + variantID).empty();
@@ -1309,11 +1308,11 @@
                                 }
                             });
                             var variantID = value['id'];
-                            console.log(value['weight']);
+                            console.log(value['weight_used']);
                         });
                     } else {
                         var productID = product['id'];
-                        var productWeight = product['weight'];
+                        var productWeight = product['weight_used'];
                         console.log(productWeight);
                         window.accordionShipmentId = [];
                         window.city_ids = '';

@@ -15,12 +15,14 @@
                         <tr>
                             <th class="min-mobile">No</th>
                             <th class="min-mobile">Nama Produk</th>
+                            <th class="min-mobile">ID Produk</th>
                             @if (auth()->guard('adminMiddle')->user()->admin_type == 1)
                                 <th class="min-mobile">Perusahaan</th>
                             @endif
                             <th class="not-mobile">Detail</th>
                             <th class="not-mobile">Stok</th>
-                            @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2)
+                            @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+                                auth()->guard('adminMiddle')->user()->admin_type == 2)
                                 <th class="not-mobile">Status</th>
                             @endif
                             <th class="not-mobile">Harga</th>
@@ -58,9 +60,9 @@
                                             <p class="ps-2 m-0">
                                                 {{ $product->name }}
                                             </p>
-                                            <p class="ps-2 m-0 fs-11">
+                                            {{-- <p class="ps-2 m-0 fs-11">
                                                 ID: {{ $product->product_code }}
-                                            </p>
+                                            </p> --}}
                                             <p class="ps-2 m-0 fs-11">
                                                 @if (count($product->productvariant))
                                                     {{ count($product->productvariant) }} varian
@@ -68,6 +70,11 @@
                                             </p>
                                         </div>
                                     </div>
+                                </td>
+                                <td>
+                                    <p class="ps-2 m-0 fs-11">
+                                        {{ $product->product_code }}
+                                    </p>
                                 </td>
                                 @if (auth()->guard('adminMiddle')->user()->admin_type == 1)
                                     <td>
@@ -95,7 +102,8 @@
                                         {{ $product->stock }}
                                     @endif
                                 </td>
-                                @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2)
+                                @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+                                    auth()->guard('adminMiddle')->user()->admin_type == 2)
                                     <td>
                                         {{-- {{ $product->is_active ? 'Aktif' : 'Tidak Aktif' }} --}}
                                         <div class="form-check form-switch mb-0">
@@ -122,7 +130,8 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2)
+                                    @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+                                        auth()->guard('adminMiddle')->user()->admin_type == 2)
                                         <a href="{{ route('adminproduct.edit', $product) }}"
                                             class="link-dark text-decoration-none mx-1" data-bs-toggle="tooltip"
                                             data-bs-placement="bottom" title="Edit Produk">
@@ -134,7 +143,8 @@
                                         data-bs-placement="bottom" title="Detail Produk">
                                         <i class="bi bi-info-circle"></i>
                                     </a>
-                                    @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2)
+                                    @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+                                        auth()->guard('adminMiddle')->user()->admin_type == 2)
                                         <button
                                             class="btn p-0 link-dark text-decoration-none mx-1 product-stock-notification shadow-none"
                                             id="stock-notification-{{ $product->id }}" data-bs-toggle="tooltip"
@@ -162,19 +172,26 @@
     </div>
     <script>
         $(document).ready(function() {
+            // var table = $('#product').DataTable({
+            //     lengthChange: false,
+            //     buttons: ['copy', 'excel', 'pdf', 'colvis']
+            // });
 
+            // table.buttons().container()
+            //     .appendTo('#product_wrapper .col-md-6:eq(0)');
             // $('#product').DataTable({
             //     // select: true
             //     fixedHeader: true,
             // });
             $('#product').DataTable({
                 responsive: true,
+                buttons: [ 'copy', 'excel', 'pdf', 'colvis' ],
                 aLengthMenu: [
                     [10, 25, 50, 100, 200, -1],
                     [10, 25, 50, 100, 200, "All"]
                 ],
                 iDisplayLength: 10
-            });
+            }).buttons().container().appendTo('#product_wrapper .col-md-6:eq(0)');;
             // var table = $('#product').DataTable({
             //     // fixedHeader: true,
             //     responsive: true,
@@ -309,7 +326,7 @@
                         if (response.status == 1) {
                             console.log('berhasil update jadi aktif');
                             if ($("#icon-stock-notification-" + response.id).hasClass(
-                                "bi-bell-slash")) {
+                                    "bi-bell-slash")) {
                                 $("#icon-stock-notification-" + response.id).removeClass(
                                     "bi-bell-slash");
                                 $("#icon-stock-notification-" + response.id).addClass("bi-bell");

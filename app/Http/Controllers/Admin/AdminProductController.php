@@ -128,6 +128,15 @@ class AdminProductController extends Controller
             return redirect()->back()->with(['addProductFailed' => 'Id perusahaan anda tidak match! Coba relogin kembali']);
         }
 
+        $volume_weight = ($request->long * $request->width * $request->height) / 6000 * 1000;
+
+        if ($volume_weight > $request->weight) {
+            $weight_used = $volume_weight;
+        } else {
+            $weight_used = $request->weight;
+        }
+
+        $request->merge(['weight_used' => $weight_used]);
         // dd($request);
         $validatedData = $request->validate(
             [
@@ -146,6 +155,7 @@ class AdminProductController extends Controller
                 'long' => ['required', 'regex:/^(?=.+)(?:[1-9]\d*|0)?(?:\.\d+)?$/'],
                 'width' => ['required', 'regex:/^(?=.+)(?:[1-9]\d*|0)?(?:\.\d+)?$/'],
                 'height' => ['required', 'regex:/^(?=.+)(?:[1-9]\d*|0)?(?:\.\d+)?$/'],
+                'weight_used' => ['required', 'regex:/^(?=.+)(?:[1-9]\d*|0)?(?:\.\d+)?$/'],
                 'price' => 'required|integer',
                 'is_active' => 'required',
                 'stock_notification' => 'required',
@@ -166,6 +176,8 @@ class AdminProductController extends Controller
                 'product_merk_id.required' => 'Merk produk harus diisi',
                 'weight.required' => 'Berat produk harus diisi',
                 'weight.regex' => 'Berat produk harus berupa angka',
+                'weight_used.required' => 'Berat produk harus diisi',
+                'weight_used.regex' => 'Berat produk harus berupa angka',
                 'long.required' => 'Panjang produk harus diisi',
                 'long.regex' => 'Panjang produk harus berupa angka',
                 'width.required' => 'Lebar produk harus diisi',
@@ -225,7 +237,17 @@ class AdminProductController extends Controller
                     'variant_price.*.regex' => 'Harga produk harus berupa angka',
                 ]
             );
+
             for ($i = 0; $i < count($request->variant_name); $i++) {
+
+                $variant_volume_weight = ($request->variant_long[$i] * $request->variant_width[$i] * $request->variant_height[$i]) / 6000 * 1000;
+
+                if ($variant_volume_weight > $request->variant_weight[$i]) {
+                    $variant_weight_used = $variant_volume_weight;
+                } else {
+                    $variant_weight_used = $request->variant_weight[$i];
+                }
+
                 $variant = ProductVariant::create([
                     'product_id' => $product->id,
                     'variant_name' => $request->variant_name[$i],
@@ -238,6 +260,7 @@ class AdminProductController extends Controller
                     'long' => $request->variant_long[$i],
                     'width' => $request->variant_width[$i],
                     'height' => $request->variant_height[$i],
+                    'weight_used' => $variant_weight_used,
                     'price' => $request->variant_price[$i],
                     'promo_id' => $request->promo_id,
                 ]);
@@ -591,6 +614,14 @@ class AdminProductController extends Controller
                 if (isset($request->variant_id[$i])) {
                     $variantUpdate = ProductVariant::where('product_id', $product->id)->where('id', $request->variant_id[$i])->first();
 
+                    $volume_weight[$i] = ($request->variant_long[$i] * $request->variant_width[$i] * $request->variant_height[$i]) / 6000 * 1000;
+
+                    if ($volume_weight[$i] > $request->variant_weight[$i]) {
+                        $variant_weight_used[$i] = $volume_weight[$i];
+                    } else {
+                        $variant_weight_used[$i] = $request->variant_weight[$i];
+                    }
+
                     // query update variant
                     $updateVariant = $variantUpdate->fill([
                         'variant_name' => $request->variant_name[$i],
@@ -603,6 +634,7 @@ class AdminProductController extends Controller
                         'long' => $request->variant_long[$i],
                         'width' => $request->variant_width[$i],
                         'height' => $request->variant_height[$i],
+                        'weight_used' => $variant_weight_used[$i],
                         'price' => $request->variant_price[$i],
                     ]);
 
@@ -659,6 +691,15 @@ class AdminProductController extends Controller
                     if (isset($request->variant_name[$i])) {
                         echo $request->variant_name[$i];
                         echo "<br>";
+
+                        $volume_weight[$i] = ($request->variant_long[$i] * $request->variant_width[$i] * $request->variant_height[$i]) / 6000 * 1000;
+
+                        if ($volume_weight[$i] > $request->variant_weight[$i]) {
+                            $variant_weight_used[$i] = $volume_weight[$i];
+                        } else {
+                            $variant_weight_used[$i] = $request->variant_weight[$i];
+                        }    
+
                         $addVariant = ProductVariant::create([
                             'product_id' => $product->id,
                             'variant_name' => $request->variant_name[$i],
@@ -671,6 +712,7 @@ class AdminProductController extends Controller
                             'long' => $request->variant_long[$i],
                             'width' => $request->variant_width[$i],
                             'height' => $request->variant_height[$i],
+                            'weight_used' => $variant_weight_used[$i],
                             'price' => $request->variant_price[$i],
                             'promo_id' => 0,
                         ]);
@@ -690,6 +732,7 @@ class AdminProductController extends Controller
                     }
                 }
             }
+            
             $updateProduct = $product->fill($validatedDataProduct);
             // dd($updateProduct);
             $updateProductSave = $updateProduct->save();
@@ -744,9 +787,20 @@ class AdminProductController extends Controller
                     'sender.required' => 'Pilih setidaknya satu alamat pengiriman!',
                 ]
             );
+
+
+            $volume_weight = ($request->long * $request->width * $request->height) / 6000 * 1000;
+
+            if ($volume_weight > $request->weight) {
+                $weight_used = $volume_weight;
+            } else {
+                $weight_used = $request->weight;
+            }
+
             $validated = array_merge($validatedDataProduct, $validatedDataProduct2);
             // dd($validated);
             $updateProductOnly = $product->fill($validated);
+            $product->weight_used = $weight_used;
             // dd($updateProductOnly);
             $updateProductSave = $updateProductOnly->save();
 
@@ -764,7 +818,7 @@ class AdminProductController extends Controller
                         foreach ($originDelete as $deleteOrigin) {
                             $deleteOrigins = $deleteOrigin->delete();
                         }
-                        
+
                         // query mencari variant origin yang tidak ada dari DB
                         $originAdd = ProductOrigin::where('product_id', $product->id)->whereIn('sender_address_id', $request->sender_no_variant)->pluck('sender_address_id')->toArray();
                         // dd($originAdd);

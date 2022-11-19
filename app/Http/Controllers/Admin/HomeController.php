@@ -186,12 +186,16 @@ class HomeController extends Controller
 
         $incomeThisMonth = Order::where('order_status', 'like', '%selesai%')->whereYear('updated_at', '=', date('Y'))->whereMonth('updated_at', '=', date('m'))->select(DB::raw('sum(courier_price + total_price + unique_code - discount) as total_income'))->first()->total_income;
 
+        $incomePerMonth = Order::where('order_status','like','%selesai%')->select("id",DB::raw('sum(courier_price + total_price + unique_code - discount) as total_income_per_month'),DB::raw("(payment_method_id) as payment_method"),DB::raw("DATE_FORMAT(updated_at, '%Y-%m') as month_year_income")
+        )->orderBy('updated_at')->groupBy(DB::raw("DATE_FORMAT(updated_at, '%Y-%m')"))->get();
+
         $productCommentsCount = 0;
         foreach ($productComments as $comment) {
             if (count($comment->children) <= 0) {
                 $productCommentsCount += 1;
             }
         }
+
         // dd($productComments->children);
         return view('admin.home', [
             'title' => 'Admin Dashboard',
@@ -210,6 +214,7 @@ class HomeController extends Controller
             'activedBannerPromo' => $activedBannerPromo,
             'incomeValues' => $incomeValues,
             'incomeThisMonth' => $incomeThisMonth,
+            'incomePerMonth' => $incomePerMonth,
             'productCommentsCount' => $productCommentsCount,
             'orderStatistics' => Order::all(),
         ]);

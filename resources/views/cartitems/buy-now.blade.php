@@ -192,16 +192,16 @@
                                             <p class="m-0 checkout-items-weight-val">
                                                 <input type="hidden" name="price-checkout-items-val-{{ $item->id }}"
                                                     class="price-checkout-items-val-{{ $item->id }}"
-                                                    value="{{ isset($item->productVariant) ? $item->productVariant->weight : $item->product->weight }}">
+                                                    value="{{ isset($item->productVariant) ? $item->productVariant->weight_used : $item->product->weight_used }}">
                                                 @if (isset($item->productVariant))
-                                                    {{ $item->productVariant->weight }}
+                                                    {{ $item->productVariant->weight_used }}
                                                     @php
-                                                        $weight[] = $item->productVariant->weight * $item->quantity;
+                                                        $weight[] = $item->productVariant->weight_used * $item->quantity;
                                                     @endphp
                                                 @else
-                                                    {{ $item->product->weight }}
+                                                    {{ $item->product->weight_used }}
                                                     @php
-                                                        $weight[] = $item->product->weight * $item->quantity;
+                                                        $weight[] = $item->product->weight_used * $item->quantity;
                                                     @endphp
                                                 @endif
                                                 (gr)
@@ -1400,8 +1400,10 @@
                                             subtotalWithDiscount);
                                     } else if (promoTypeId == 2) {
                                         if (promoProductId == item['product_id']) {
-                                            discountedPrice = item['subtotal'] -
-                                                productPromo['discount'];
+                                            discount = item['quantity']*productPromo['discount'];
+                                            discountedPrice = item['subtotal'] - (discount);
+                                            // discountedPrice = item['subtotal'] -
+                                            //     productPromo['discount'];
                                             console.log('subtotal : ' +
                                                 discountedPrice);
                                             $('.subtotal-cart-items-' + item['id'])

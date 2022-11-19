@@ -169,6 +169,18 @@ body {
 
 /* product */
 
+button.btn.btn-secondary.buttons-copy.buttons-html5,
+button.btn.btn-secondary.buttons-excel.buttons-html5,
+button.btn.btn-secondary.buttons-pdf.buttons-html5,
+button.btn.btn-secondary.buttons-collection.dropdown-toggle.buttons-colvis {
+    margin-top: 1rem;
+    font-size: 14px !important;
+    background-color: #db162f !important;
+    /* background-color: #f8f9fa !important; */
+    /* color: #212529 !important; */
+    border: 0 !important;
+}
+
 .dataTables_wrapper>.row>.col-sm-12 {
     overflow: auto;
     padding-top: 1rem;

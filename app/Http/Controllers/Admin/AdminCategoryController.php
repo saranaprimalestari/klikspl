@@ -102,7 +102,7 @@ class AdminCategoryController extends Controller
     public function update(Request $request, ProductCategory $category)
     {
         $this->isAdministrator();
-        dd($request); 
+        // dd($request); 
         $validatedData = $request->validate(
             [
                 'name' => 'required|regex:/^[a-zA-Z\s]*$/',

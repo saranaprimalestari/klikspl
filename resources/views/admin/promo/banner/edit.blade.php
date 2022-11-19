@@ -48,9 +48,12 @@
                         <div class="col-md-9 col-6">
                             <div class="row mb-3">
                                 <div class="col-md-12 col-12">
-                                    <input required type="hidden" name="admin_id" value="{{ auth()->guard('adminMiddle')->user()->id }}">
-                                    <input class="form-control form-control-sm promo-banner-image-class mb-3" id="promoBannerImage" type="file" name="promoBannerImage">
-                                    <input required type="hidden" id="promoBannerImageUpload" class="promoBannerImageUpload" name="promoBannerImageUpload">
+                                    <input required type="hidden" name="admin_id"
+                                        value="{{ auth()->guard('adminMiddle')->user()->id }}">
+                                    <input class="form-control form-control-sm promo-banner-image-class mb-3"
+                                        id="promoBannerImage" type="file" name="promoBannerImage">
+                                    <input required type="hidden" id="promoBannerImageUpload"
+                                        class="promoBannerImageUpload" name="promoBannerImageUpload">
                                     {{-- <input required class="form-control form-control-sm promo-banner-image-class" id="promoBannerImageTemp"
                                         type="file" name="promoBannerImageTemp"> --}}
                                     <div id="imageSource"></div>
@@ -101,11 +104,36 @@
                             @enderror
                         </div>
                     </div>
-                    
+
                     <div class="mb-3 row">
-                        <label for="promoBannerStartPeriod" class="col-sm-3 col-form-label fw-600">Tanggal/Jam mulai Promo</label>
+                        <label for="promoBannerSlug" class="col-sm-3 col-form-label pb-0">
+                            <p class="fw-600 m-0">
+                                Slug Promo
+                            </p>
+                            {{-- <p class="text-grey fs-12 m-0">
+                            *tidak ditampilkan di halaman pembeli
+                        </p> --}}
+                        </label>
                         <div class="col-sm-9">
-                            <input required type="datetime-local" class="form-control fs-14 @error('start_period') is-invalid @enderror"
+                            <input required type="text"
+                                class="form-control fs-14 bg-white @error('slug') is-invalid @enderror" id="promoBannerSlug"
+                                name="slug"
+                                value="{{ !is_null($promoBanner->slug) ? (!is_null(old('slug')) ? old('slug') : $promoBanner->slug) : (!is_null(old('slug')) ? old('slug') : $promoBanner->slug) }}"
+                                readonly>
+                            @error('slug')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label for="promoBannerStartPeriod" class="col-sm-3 col-form-label fw-600">Tanggal/Jam mulai
+                            Promo</label>
+                        <div class="col-sm-9">
+                            <input required type="datetime-local"
+                                class="form-control fs-14 @error('start_period') is-invalid @enderror"
                                 id="promoBannerStartPeriod" name="start_period" placeholder="Ketikkan nama Promo"
                                 value="{{ !is_null($promoBanner->start_period) ? (!is_null(old('start_period')) ? old('start_period') : $promoBanner->start_period) : (!is_null(old('start_period')) ? old('start_period') : $promoBanner->start_period) }}">
                             @error('start_period')
@@ -117,9 +145,11 @@
                     </div>
 
                     <div class="mb-3 row">
-                        <label for="promoBannerEndPeriod" class="col-sm-3 col-form-label fw-600">Tanggal/Jam akhir Promo</label>
+                        <label for="promoBannerEndPeriod" class="col-sm-3 col-form-label fw-600">Tanggal/Jam akhir
+                            Promo</label>
                         <div class="col-sm-9">
-                            <input required type="datetime-local" class="form-control fs-14 @error('end_period') is-invalid @enderror"
+                            <input required type="datetime-local"
+                                class="form-control fs-14 @error('end_period') is-invalid @enderror"
                                 id="promoBannerEndPeriod" name="end_period" placeholder="Ketikkan nama Promo"
                                 value="{{ !is_null($promoBanner->end_period) ? (!is_null(old('end_period')) ? old('end_period') : $promoBanner->end_period) : (!is_null(old('end_period')) ? old('end_period') : $promoBanner->end_period) }}">
                             @error('end_period')
@@ -155,7 +185,7 @@
                         <div class="col-sm-9 py-1">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" role="switch" id="promoBannerStatus"
-                                    {{ ($promoBanner->is_active) ? 'checked' : '' }} name="is_active" value="1">
+                                    {{ $promoBanner->is_active ? 'checked' : '' }} name="is_active" value="1">
                                 <label class="form-check-label" for="promoBannerStatus">
                                     <div class="promoBanner-status">
                                         Aktif
@@ -189,7 +219,8 @@
                                     <option value="" class="fs-14">Pilih Perusahaan
                                     </option>
                                     @foreach ($companies as $company)
-                                        <option class="fs-14" value="{{ $company->id }}" {{ $promoBanner->company_id == $company->id ? 'selected' : '' }}>
+                                        <option class="fs-14" value="{{ $company->id }}"
+                                            {{ $promoBanner->company_id == $company->id ? 'selected' : '' }}>
                                             {{ $company->name }}</option>
                                     @endforeach
                                 </select>
@@ -492,7 +523,7 @@
                         $('.img-preview').attr('src', base64data);
                         console.log(admin_id);
                         $('.show-before-upload').html(
-                            ' <button type="button" class="fs-14 btn btn-outline-danger mt-3" id="delete-preview-promo-banner-image"><i class="bi bi-trash3"></i> Hapus Foto </button>' + 
+                            ' <button type="button" class="fs-14 btn btn-outline-danger mt-3" id="delete-preview-promo-banner-image"><i class="bi bi-trash3"></i> Hapus Foto </button>' +
                             '<button type="button" class="mx-1 fs-14 btn btn-danger preview-promo-banner-image-button mt-3" data-bs-toggle="modal" id="preview-modal-promo-banner-image-' +
                             imageId +
                             '" data-bs-target="#upload-promoBanner-img-modal">Lihat Foto </button>'
@@ -522,8 +553,19 @@
                 $('input[name="promoBannerImage"]').val('');
                 console.log($('input[name="promoBannerImage"]').val());
                 $('.show-before-upload').html('');
-                $('.img-preview').attr('src','');
+                $('.img-preview').attr('src', '');
             });
+
+            const promo_banner_name = document.querySelector('#promoBannerName');
+            const promo_banner_slug = document.querySelector('#promoBannerSlug');
+
+            promo_banner_name.addEventListener('change', function() {
+                console.log(promo_banner_name.value);
+                fetch('/administrator/promovoucher/checkSlug?name=' + promo_banner_name.value)
+                    .then(response => response.json())
+                    .then(data => promo_banner_slug.value = data.slug);
+            });
+
         });
     </script>
 @endsection

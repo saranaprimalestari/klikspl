@@ -31,7 +31,7 @@
                     <label for="name" class="form-label">Nama Lengkap</label>
                     <input type="text"
                         class="form-control user-account-input shadow-none @error('name') is-invalid @enderror" id="name"
-                        placeholder="Nama pemilik alamat" name="name" required>
+                        placeholder="Nama pemilik alamat" name="name" required value="{{ old('name') }}">
                     @error('name')
                         <div class="invalid-feedback">
                             {{ $message }}
@@ -42,7 +42,7 @@
                     <label for="telp_no" class="form-label">No Telepon</label>
                     <input type="telp_no"
                         class="form-control user-account-input shadow-none @error('telp_no') is-invalid @enderror"
-                        id="telp_no" placeholder="No Telepon" name="telp_no" required>
+                        id="telp_no" placeholder="No Telepon" name="telp_no" required value="{{ old('telp_no') }}">
                     @error('telp_no')
                         <div class="invalid-feedback">
                             {{ $message }}
@@ -87,7 +87,7 @@
                     <label for="district" class="form-label">Kecamatan</label>
                     <input type="text"
                         class="form-control user-account-input shadow-none @error('district') is-invalid @enderror"
-                        id="district" placeholder="Kecamatan..." name="district" required>
+                        id="district" placeholder="Kecamatan..." name="district" required value="{{ old('district') }}">
                     @error('district')
                         <div class="invalid-feedback">
                             {{ $message }}
@@ -110,7 +110,7 @@
                 <div class="col-12">
                     <label for="address" class="form-label">Alamat</label>
                     <textarea class="form-control user-account-input shadow-none @error('address') is-invalid @enderror"
-                        placeholder="Tuliskan alamat lengkap disertai nomor rumah, gang/blok, RT dan RW untuk memudahakan kurir pengirim menemukan alamat kamu" id="address" name="address" rows="3" required></textarea>
+                        placeholder="Tuliskan alamat lengkap disertai nomor rumah, gang/blok, RT dan RW untuk memudahakan kurir pengirim menemukan alamat kamu" id="address" name="address" rows="3" required> {{ old('address') }}</textarea>
                     @error('address')
                         <div class="invalid-feedback">
                             {{ $message }}
