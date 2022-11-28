@@ -259,12 +259,12 @@
                         </ul>
                     @else
                         <ul class="dropdown-menu notification-dropdown">
-                            <li>
+                            <li></li>
                                 <div class="nofitication-no-auth pt-3 justify-content-center text-center rounded-3 px-3">
                                     <i class="bi bi-bell fs-1 text-secondary"></i>
                                     <p class="text-muted pt-1 px-1">
                                         Tidak ada notifikasi untuk anda saat ini, masuk untuk melihat notifikasi di akun
-                                        membership anda.
+                                        membership anda. 
                                     </p>
                                 </div>
                             </li>
