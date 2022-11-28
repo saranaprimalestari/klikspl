@@ -44,11 +44,11 @@
             </div>
         </div>
         <div class="row justify-content-center mb-5">
-            <div class="col-md-6 d-flex login-left-col">
+            <div class="col-md-6 d-flex login-left-col mt-5 mt-sm-0 mt-md-0 mt-lg-0 mt-xl-0 px-5 px-sm-0 px-md-0 px-lg-0 px-xl-0">
                 <img class="footer-logo w-100" src="/assets/footer-logo.svg" alt="">
                 {{-- <img class="" src="https://source.unsplash.com/500x500?market"> --}}
             </div>
-            <div class="col-md-5 mt-5 col-12">
+            <div class="col-md-5 col-12 mt-md-5 ms-md-5">
                 <div class="card register-card border-0 mt-3">
                     <div class="card-body p-5">
                         {{-- <div class="d-flex justify-content-center mb-3">
@@ -82,7 +82,7 @@
                                     id="emailPhone" aria-describedby="emailHelp" name="emailPhone" required
                                     value="{{ old('email') }}{{ old('telp_no') }}">
 
-                                <div id="emailHelp" class="form-text login-email-help">Contoh: email@klikspl.com /
+                                <div id="emailHelp" class="form-text login-email-help fs-12">Contoh: email@klikspl.com /
                                     081234567890
                                 </div>
                                 @error('email')

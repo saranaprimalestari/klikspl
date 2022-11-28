@@ -1,13 +1,13 @@
 {{-- <nav
     class="navbar navbar-expand-lg navbar-light bg-white shadow-sm p-3 mb-5 bg-body rounded fixed-top d-none d-sm-block navbar-bottom"> --}}
 <nav
-    class="navbar navbar-expand-lg shadow-sm p-3 mb-5 bg-body rounded fixed-top d-none d-sm-block navbar-bottom navbar-main">
+    class="navbar navbar-expand-lg shadow-sm p-3 mb-5 bg-body rounded fixed-top d-none d-lg-block navbar-bottom navbar-main">
     <div class="container-fluid">
         <a class="navbar-brand" href="/"> <img class="w-auto" src=" {{ asset('/assets/logotype2.svg') }}"
                 alt=""> </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+            <span class="navbar-toggler-icon"></span><i class="bi bi-list"></i>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -526,7 +526,7 @@
         </div>
     </div>
 </nav>
-<nav class="navbar navbar-expand-lg mb-4 pt-0 pb-0 fixed-top d-none d-sm-block navbar-top">
+<nav class="navbar navbar-expand-lg mb-4 pt-0 pb-0 fixed-top d-none d-lg-block navbar-top">
     <div class="container-fluid my-0">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">

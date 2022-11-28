@@ -17,7 +17,7 @@
         </div>
 
         <div class="row justify-content-center mb-5">
-            <div class="col-md-5 mt-2 mx-auto">
+            <div class="col-12 col-md-8 col-lg-5 mt-2 mx-auto">
                 @if (session()->has('loginError'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         {{ session('loginError') }}
@@ -59,7 +59,7 @@
                                 <div class="card login-card register-act-login shadow-none">
                                     <div class="card-body">
                                         <div class="row">
-                                            <div class="col-md-9 text-start">
+                                            <div class="col-md-9 col-9 text-start">
                                                 <p>
                                                     <strong>
                                                         kirim
@@ -75,7 +75,7 @@
                                                     {{ $data }}
                                                 </p>
                                             </div>
-                                            <div class="col-md-3 d-flex align-items-center">
+                                            <div class="col-md-3 col-3 d-flex align-items-center">
                                                 @if (Session::get('email') != '')
                                                     <i class="bi bi-envelope fs-1"></i>
                                                 @else

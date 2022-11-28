@@ -30,7 +30,7 @@
     </h5>
     <div class="card mb-3 border-radius-075rem fs-14">
         <div class="card-body p-4">
-            <form action="{{ route('comment.update',$comment) }}" method="POST" enctype="multipart/form-data">
+            <form class="edit-comment-form" action="{{ route('comment.update',$comment) }}" method="POST" enctype="multipart/form-data">
                 @method('PUT')
                 @csrf
                 <input type="hidden" name="id" id="" value="{{ $comment->id }}">
@@ -141,8 +141,8 @@
                 </div>
                 <div class="row">
                     <div class="col-12 text-end">
-                        <button type="submit" class="btn btn-danger fs-14">
-                            Kirim
+                        <button type="submit" class="btn btn-danger fs-14 submit-button">
+                            <i class="bi bi-send"></i> Kirim
                         </button>
                     </div>
                 </div>
@@ -169,6 +169,16 @@
                 imgPreview.src = OFREvent.target.result;
             }
         }
-        $(document).ready(function() {});
+        $(document).ready(function() {
+            $('.edit-comment-form').submit(function(e) {
+                console.log(e);
+                $('.submit-button').append(
+                    '<span class="ms-2 spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+                );
+                $('.submit-button').attr('disabled', true);
+
+                // e.preventDefault();
+            });
+        });
     </script>
 @endsection

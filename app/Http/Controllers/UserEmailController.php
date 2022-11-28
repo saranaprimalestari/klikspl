@@ -221,7 +221,7 @@ class UserEmailController extends Controller
             // $request->session()->forget('email');
 
             return view('user.verify-method', [
-                'title' => 'Tambah Email',
+                'title' => 'Ubah Email',
                 'active' => 'profile',
                 'type' => 'Email',
                 'act' => 'update',
@@ -275,7 +275,7 @@ class UserEmailController extends Controller
                     'verificationCode' => session()->get('verificationCodeEmail'),
                 ]);
                 return view('user.verify-otp', [
-                    'title' => 'Tambah Email',
+                    'title' => 'Ubah Email',
                     'active' => 'profile',
                     'type' => 'Email',
                     'act' => 'update',
@@ -314,7 +314,7 @@ class UserEmailController extends Controller
     {
         if ($request->session()->has('is_verified') && session()->get('is_verified') == 1) {
             return view('user.verified-otp', [
-                'title' => 'Tambah Email',
+                'title' => 'Ubah Email',
                 'active' => 'profile',
                 'type' => 'Email',
                 'act' => 'update',
@@ -332,7 +332,7 @@ class UserEmailController extends Controller
         // dd(session()->all());
         if(session()->has('id') && session()->has('username') && session()->has('email') && session()->has('verificationCodeEmail') && session()->has('is_verified')){
             return view('user.add-phone-email', [
-                'title' => 'Tambah Email',
+                'title' => 'Ubah Email',
                 'active' => 'profile',
                 'type' => 'Email',
                 'act' => 'update',
@@ -341,7 +341,7 @@ class UserEmailController extends Controller
                 'route' => 'profile.add.email.post'
             ]);
         }else{
-            return redirect()->route('profile.update.email')->with(['failed' => 'Terdapat kesalahan silakan masukkan nomor telepon ulang (error: 0xUPFNERROR)']);
+            return redirect()->route('profile.update.email')->with(['failed' => 'Terdapat kesalahan silakan masukkan ulang email (error: 0xEMUPERROR)']);
             
         }
     }

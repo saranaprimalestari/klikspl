@@ -1,5 +1,5 @@
 <nav
-    class="navbar navbar-expand navbar-light bg-white shadow-sm p-0 py-3 mb-5 bg-body rounded fixed-top d-block d-sm-none">
+    class="navbar navbar-expand navbar-light bg-white shadow-sm p-0 py-3 mb-5 bg-body rounded fixed-top d-block d-lg-none">
     <div class="container-fluid">
         <a class="navbar-brand d-none d-sm-block" href="/"> <img class="w-auto" src="/assets/logotype2.svg"
                 alt=""> </a>
@@ -10,7 +10,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto mb-lg-0">
 
-                <li class="nav-item navbar-dropdown dropdown mx-1 d-none d-sm-block">
+                <li class="nav-item navbar-dropdown dropdown mx-1 d-none d-md-block">
                     <a class="nav-link dropdown-toggle navbar-category" href="/categories" id="navbarDropdownMenuLink"
                         role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Kategori
@@ -94,9 +94,10 @@
                             <input type="hidden" name="merk" value="{{ request('merk') }}">
                         @endif
                         <div class="input-group">
-                            <input type="text" class="form-control shadow-none" placeholder="Cari produk..." aria-label="" aria-describedby="" name="keyword" value="{{ request('keyword') }}">
+                            <input type="search" class="form-control shadow-none" placeholder="Cari produk..."
+                                aria-label="" aria-describedby="" name="keyword" value="{{ request('keyword') }}">
                             <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" type="submit">
+                                <button class="btn btn-outline-secondary shadow-none" type="submit">
                                     <i class="bi bi-search"></i>
                                 </button>
                             </div>
@@ -126,7 +127,7 @@
                         @endauth
                     </a>
                     @auth
-                        <ul class="dropdown-menu cart-dropdown cart-dropdown-logged-in">
+                        <ul class="dropdown-menu cart-dropdown-mobile cart-dropdown-logged-in-mobile">
                             <div class="">
                                 <div class="d-flex fixed-top bg-white p-3">
                                     <div class="mx-3">
@@ -146,8 +147,8 @@
                                                     <div class="row align-items-center">
                                                         <div class="col-2">
                                                             {{-- <i class="bi bi-box"></i>&nbsp; --}}
-                                                            <img src="https://source.unsplash.com/400x400?product-2" alt=""
-                                                                width="40">
+                                                            <img src="https://source.unsplash.com/400x400?product-2"
+                                                                alt="" width="40">
                                                             {{-- <img src="/assets/cheetah-adv-army.png" alt="" width="40"> --}}
 
                                                         </div>
@@ -171,7 +172,8 @@
                                         @endforeach
                                     @else
                                         <div class="cart-no-auth pt-3 justify-content-center text-center rounded-3 px-3">
-                                            <img class="cart-img" src="/assets/klikspl-logo.png" alt="" width="100">
+                                            <img class="cart-img" src="/assets/klikspl-logo.png" alt=""
+                                                width="100">
                                             <p class="text-muted pt-1 px-1">
                                                 Keranjang belanjamu kosong, yuk cari produk menarik dan masukkan ke
                                                 keranjangmu
@@ -208,7 +210,7 @@
                         @endauth
                     </a>
                     @auth
-                        <ul class="dropdown-menu cart-dropdown cart-dropdown-logged-in">
+                        <ul class="dropdown-menu notification-dropdown-mobile notification-dropdown-logged-in-mobile">
                             <div class="">
                                 <div class="d-flex fixed-top bg-white p-3">
                                     <div class="mx-3">
@@ -225,7 +227,7 @@
                                     @if (count($userNotifications) > 0)
                                         @foreach ($userNotifications as $notification)
                                             <li>
-                                                <a class="dropdown-item my-2 cart-dropdown-item"
+                                                <a class="dropdown-item my-2 notification-dropdown-item"
                                                     href="{{ route('notifications.show', $notification) }}">
                                                     <div class="row align-items-center">
                                                         <div class="col-2">
@@ -245,7 +247,8 @@
                                         @endforeach
                                     @else
                                         <div class="cart-no-auth pt-3 justify-content-center text-center rounded-3 px-3">
-                                            <img class="cart-img" src="/assets/klikspl-logo.png" alt="" width="100">
+                                            <img class="cart-img" src="/assets/klikspl-logo.png" alt=""
+                                                width="100">
                                             <p class="text-muted pt-1 px-1">
                                                 Tidak ada notifikasi buat kamu sekarang ini
                                             </p>
@@ -268,18 +271,118 @@
                         </ul>
                     @endauth
                 </li>
-                <li class="nav-item mx-1 navbar-dropdown">
-                     <a class="nav-link navbar-cart" href="{{ route('profile.index') }}">
-                        <i class="bi bi-list"></i>
+                <li class="nav-item mx-1 navbar-dropdown dropdown d-none d-md-block">
+                    {{-- <a class="nav-link dropdown-toggle navbar-cart" href="{{ route('cartitems.index') }}">
+                        <i class="bi bi-cart"></i>
+                        @auth
+                            <span class="position-absolute top-5 start-100 translate-middle badge  bg-danger">
+                                {{ count($userCartItems) }}
+                                <span class="visually-hidden">cart items</span>
+                            </span>
+                        @endauth
+                    </a> --}}
+                    <a class="nav-link dropdown-toggle navbar-cart" href="{{ route('order.index') }}">
+                        <i class="bi bi-bag"></i>
+                        @auth
+                            @if (count($userOrders) > 0)
+                                <span class="position-absolute top-5 start-100 translate-middle badge  bg-danger">
+                                    {{ count($userOrders) }}
+                                    <span class="visually-hidden">Order</span>
+                                </span>
+                            @endif
+                        @endauth
                     </a>
+                    @auth
+                        <ul class="dropdown-menu cart-dropdown cart-dropdown-logged-in">
+                            <div class="">
+                                <div class="d-flex fixed-top bg-white p-3">
+                                    <div class="">
+                                        Pesanan Aktif ({{ count($userOrders) }})
+                                    </div>
+                                    <div class="mx-3 ms-auto">
+                                        <a href="{{ route('order.index') }}"
+                                            class="text-decoration-none text-danger fw-bold">Lihat Semua</a>
+                                    </div>
+                                </div>
+                                {{-- {{ dd($userOrders) }} --}}
+                                <div class="nav-cart-items mt-5">
+                                    @if (count($userOrders) > 0)
+                                        @foreach ($userOrders as $order)
+                                            <li>
+                                                <a class="dropdown-item my-2 cart-dropdown-item"
+                                                    href="{{ route('order.show', $order) }}">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-2">
+                                                            {{-- <i class="bi bi-box"></i>&nbsp; --}}
+                                                            {{-- <img src="https://source.unsplash.com/400x400?product-2" alt="" width="40"> --}}
+                                                            @if (isset($order->orderitem[0]->orderproduct->orderproductimage))
+                                                                <img src="{{ asset('/storage/' . $order->orderitem[0]->orderproduct->orderproductimage->first()->name) }}"
+                                                                    class="w-100 border-radius-5px" alt="">
+                                                            @endif
+                                                            {{-- @if (!is_null($order->orderitem[0]->orderproduct->orderproductimage->first()))
+                                                                <img src="{{ asset('/storage/' . $order->orderitem[0]->orderproduct->orderproductimage->first()->name) }}"
+                                                                    class="w-100 border-radius-5px" alt="">
+                                                            @endif --}}
+                                                        </div>
+                                                        <div class="col-5 ps-0 text-truncate" data-bs-toggle="tooltip"
+                                                            data-bs-placement="bottom"
+                                                            title="{{ is_null($order->invoice_no) ? 'No.Invoice belum terbit' : $order->invoice_no }}">
+                                                            {{ is_null($order->invoice_no) ? 'No.Invoice belum terbit' : $order->invoice_no }}
+                                                        </div>
+                                                        <div class="col-5 ps-0 text-end text-truncate"
+                                                            data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                            title="{{ $order->order_status }}">
+                                                            @if ($order->order_status == 'pembayaran ditolak')
+                                                                <span class="badge bg-danger">
+                                                                    {{ $order->order_status }}
+                                                                </span>
+                                                            @else
+                                                                {{ $order->order_status }}
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    @else
+                                        <div class="cart-no-auth pt-3 justify-content-center text-center rounded-3 px-3">
+                                            <img class="cart-img" src="{{ asset('/assets/klikspl-logo.png') }}"
+                                                alt="" width="100">
+                                            <p class="text-muted py-3 px-2">
+                                                Tidak ada pesanan yang dalam proses saat ini, yuk cari produk menarik dan
+                                                pesan sekarang
+                                            </p>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </ul>
+                    @else
+                        <ul class="dropdown-menu cart-dropdown">
+                            <li>
+                                <div class="cart-no-auth pt-3 justify-content-center text-center rounded-3 px-3">
+                                    <img class="cart-img" src="{{ asset('/assets/klikspl-logo.png') }}" alt=""
+                                        width="100">
+                                    <p class="text-muted py-3 px-2">
+                                        Masuk/daftar membership untuk melihat pesananmu yang sedang aktif
+                                    </p>
+                                </div>
+                            </li>
+                        </ul>
+                    @endauth
+                </li>
+                <li class="nav-item mx-1 navbar-dropdown d-block d-md-none">
+                    <button class="btn nav-link btn-show-pop-up-user shadow-none">
+                        <i class="bi bi-list"></i>
+                    </button>
                 </li>
             </ul>
 
             @auth
-                <div class="navbar-nav ms-auto navbar-account d-none d-sm-block">
+                <div class="navbar-nav ms-auto navbar-account d-none d-lg-block">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle mx-1 nav-acc" href="#" id="navbarDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle mx-1 nav-acc" href="#" id="navbarDropdown"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             @if (!empty(auth()->user()->profile_image))
                             @else
                                 <i class="far fa-user-circle"></i>
@@ -309,7 +412,7 @@
                     </li>
                 </div>
             @else
-                <div class="navbar-nav ms-auto navbar-signup-login d-none d-sm-block">
+                <div class="navbar-nav ms-auto navbar-signup-login d-none d-md-flex">
                     <div class="nav-item">
                         <a href="/login" class="p-0 px-3 py-2 mx-1 nav-link navbar-action login">
                             Masuk
@@ -325,3 +428,180 @@
         </div>
     </div>
 </nav>
+<div class="mt-5 pt-4 fixed-top pop-up-user d-none d-lg-none">
+    <div class="card pop-up-user-card">
+        <div class="card-body">
+                <ul class="list-unstyled">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <li>
+                                <h5 class="dropdown-item disabled text-dark fs-6">Produk</h5>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="/products">
+                                    <i class="bi bi-border-all"></i>&nbsp; Semua Produk
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="/products/latest">
+                                    <i class="bi bi-megaphone"></i>&nbsp; Produk Terbaru
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="/products/star">
+                                    <i class="bi bi-star"></i>&nbsp; Produk Terbaik
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="/products/best-seller">
+                                    <i class="bi bi-basket3"></i>&nbsp; Produk Terlaris
+                                </a>
+                            </li>
+                            <li>
+                                <h5 class="dropdown-item disabled text-dark fs-6 mt-3">Kategori</h5>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="/category">
+                                    <i class="bi bi-box"></i>&nbsp;
+                                    Semua Kategori
+                                </a>
+                            </li>
+                            @foreach ($categories as $category)
+                                <li>
+                                    <a class="dropdown-item" href="/category/{{ $category->slug }}">
+                                        <i class="bi bi-box"></i>&nbsp;
+                                        {{ $category->name }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </div>
+                        <div class="col-md-6">
+                            <li>
+                                <h5 class="dropdown-item disabled text-dark fs-6 mt-3">Merk</h5>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="/merk">
+                                    <i class="bi bi-box"></i>&nbsp;
+                                    Semua Merk
+                                </a>
+                            </li>
+                            @foreach ($merks as $merk)
+                                <li>
+                                    <a class="dropdown-item" href="/merk/{{ $merk->slug }}">
+                                        <img class="w-25" src="/{{ $merk->image }}" alt="">&nbsp;
+                                        {{ $merk->name }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </div>
+                    </div>
+                </ul>
+            @auth
+                <ul class="list-unstyled">
+                    <li class="">
+                        <a class="btn btn-toggle align-items-center shadow-none user-button-menu-collapse accordion-button py-2 ps-3"
+                            data-bs-toggle="collapse" href="#account-collapse" role="button" aria-expanded="false"
+                            aria-controls="account-collapse">
+                            <i class="far fa-user-circle me-2"></i> Akun Saya
+                        </a>
+                        {{-- <button class="btn btn-toggle align-items-center shadow-none" data-bs-toggle="collapse"
+                        data-bs-target="#account-collapse" aria-expanded="true">
+                        <i class="far fa-user-circle me-1"></i> Akun Saya
+                    </button> --}}
+                        <div class="collapse show" id="account-collapse" style="">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                <li>
+                                    <a href="{{ route('profile.index') }}"
+                                        class="text-decoration-none link-dark ms-4 py-1 ps-3 d-inline-flex {{ isset($active) ? ($active == 'profile' ? 'active-menu' : '') : '' }}">Profil</a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('useraddress.index') }}"
+                                        class="text-decoration-none link-dark ms-4 py-1 ps-3 d-inline-flex {{ isset($active) ? ($active == 'manageAddress' ? 'active-menu' : '') : '' }}">Kelola
+                                        Alamat</a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('change.password') }}"
+                                        class="text-decoration-none link-dark ms-4 py-1 ps-3 d-inline-flex {{ isset($active) ? ($active == 'changePassword' ? 'active-menu' : '') : '' }}">Ubah
+                                        Password</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="">
+                        <a class="btn btn-toggle align-items-center shadow-none notification-button-menu-collapse ps-3 py-2 {{ isset($active) ? ($active == 'order' ? 'active-menu' : '') : '' }}"
+                            href="{{ route('order.index') }}">
+                            <i class="bi bi-bag me-2"></i>Pesanan Saya
+                        </a>
+                    </li>
+
+                    <li class="">
+                        <a class="btn btn-toggle align-items-center shadow-none notification-button-menu-collapse ps-3 py-2 {{ isset($active) ? ($active == 'rating' ? 'active-menu' : '') : '' }}"
+                            href="{{ route('rating.index') }}">
+                            <i class="bi bi-star me-2"></i>Penilaian
+                        </a>
+                    </li>
+
+                    <li class="">
+                        <a class="btn btn-toggle align-items-center shadow-none notification-button-menu-collapse ps-3 py-2 {{ isset($active) ? ($active == 'comment' ? 'active-menu' : '') : '' }}"
+                            href="{{ route('comment.index') }}">
+                            <i class="bi bi-chat-left-text me-2"></i>Komentar
+                        </a>
+                    </li>
+
+                    <li class="">
+                        <a class="btn btn-toggle align-items-center shadow-none notification-button-menu-collapse ps-3 py-2 {{ isset($active) ? ($active == 'promo' ? 'active-menu' : '') : '' }}"
+                            href="{{ route('promo.index') }}">
+                            <i class="bi bi-percent me-2"></i>Voucher Promo Saya
+                        </a>
+                    </li>
+
+                    <li class="">
+                        <a class="btn btn-toggle align-items-center shadow-none notification-button-menu-collapse ps-3 py-2 {{ isset($active) ? ($active == 'notification' ? 'active-menu' : '') : '' }}"
+                            href="{{ route('notifications.index') }}">
+                            <i class="bi bi-bell me-2"></i>Notifikasi
+                        </a>
+                    </li>
+
+                    <li class="my-2">
+                        <form action="/logout" method="post">
+                            @csrf
+                            <button class="dropdown-item account-dropdown-item">
+                                <i class="bi bi-box-arrow-in-right me-1"></i> Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            @else
+                <ul class="list-unstyled">
+                    <li class="">
+                        <a class="btn btn-toggle align-items-center shadow-none ps-3 py-2 {{ isset($active) ? ($active == 'login' ? 'active-menu' : '') : '' }}"
+                            href="{{ route('login') }}">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Masuk
+                        </a>
+                    </li>
+
+                    <li class="">
+                        <a class="btn btn-toggle align-items-center shadow-none ps-3 py-2 {{ isset($active) ? ($active == 'register' ? 'active-menu' : '') : '' }}"
+                            href="{{ route('register') }}">
+                            <i class="bi bi-box-arrow-right me-2"></i>Daftar
+                        </a>
+                    </li>
+                </ul>
+            @endauth
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $('.btn-show-pop-up-user').on('click', function(e) {
+            if ($('.pop-up-user').hasClass('d-none')) {
+                $('.pop-up-user').removeClass('d-none');
+                $('.pop-up-user').addClass('d-block');
+            } else {
+                $('.pop-up-user').removeClass('d-block');
+                $('.pop-up-user').addClass('d-none');
+            }
+        })
+    });
+</script>

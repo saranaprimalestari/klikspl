@@ -66,7 +66,7 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                     <li class="my-2">
-                        <a class="dropdown-item account-dropdown-item" href="{{ route('profile.index') }}">
+                        <a class="dropdown-item account-dropdown-item" href="{{ route('adminprofile.index') }}">
                             <i class="far fa-user-circle me-1"></i> Akun saya
                         </a>
                     </li>

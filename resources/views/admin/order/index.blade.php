@@ -73,7 +73,7 @@
                         <div class="col-auto">
                             <a href="{{ route('adminorder.index') }}" class="btn btn-secondary fs-14 filter-btn">Bersihkan
                                 Filter</a>
-                            <button type="submit" class="btn btn-danger fs-14 filter-btn ms-1">Tampilkan</button>
+                            <button type="submit" class="btn btn-danger fs-14 filter-btn ms-1 submit-button">Tampilkan</button>
                         </div>
                     </div>
                 </form>
@@ -414,14 +414,25 @@
     </div>
 
     <script>
-        $('#searchKeyword').on("keyup", function() {
-            // $('.filter-btn').on("click", function() {
-            // var search = $(this).val().toLowerCase();
-            var search = $('input[name="search"]').val().toLowerCase();
-            $(".card-product-order").filter(function() {
-                $(this).toggle($(this).text().toLowerCase().indexOf(search) > -1);
-                // });
+        $(document).ready(function(){
+            $('#searchKeyword').on("keyup", function() {
+                // $('.filter-btn').on("click", function() {
+                // var search = $(this).val().toLowerCase();
+                var search = $('input[name="search"]').val().toLowerCase();
+                $(".card-product-order").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(search) > -1);
+                    // });
+                });
             });
+            $('.status-form').submit(function(e) {
+                console.log(e);
+                $('.submit-button').append(
+                    '<span class="ms-2 spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+                );
+                $('.submit-button').attr('disabled', true);
+
+                // e.preventDefault();
+            })
         });
     </script>
 @endsection

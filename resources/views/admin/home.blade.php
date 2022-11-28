@@ -324,7 +324,7 @@
                         <h4>Penghasilan Perbulan</h4>
                         <div class="row">
                             <div class="col-md-12 col-12">
-                                <canvas class="my-4 w-100" id="myChart" width="900" height="250"></canvas>
+                                <canvas class="my-4 w-100" id="myChart" width="900" height="400"></canvas>
                             </div>
                         </div>
                     </div>
@@ -333,9 +333,9 @@
         @endif
     </div>
     <script>
-        $(window).focus(function() {
-            window.location.reload();
-        });
+        // $(window).focus(function() {
+        //     window.location.reload();
+        // });
         $(document).ready(function() {
             var incomePerMonth = {!! json_encode($incomePerMonth) !!};
             console.log(typeof incomePerMonth);

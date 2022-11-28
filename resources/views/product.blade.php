@@ -840,8 +840,8 @@
                                 </button>
                             </form> --}}
 
-                    <form action="{{ route('cart.store') }}" onsubmit="return validateForm()" method="POST"
-                        enctype="multipart/form-data" id="add-to-cart-form">
+                    {{-- <form class="add-to-cart-form" action="{{ route('cart.store') }}" onsubmit="return validateForm()"
+                        method="POST" enctype="multipart/form-data" id="add-to-cart-form">
                         @csrf
                         @auth
                             <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
@@ -855,15 +855,36 @@
                         <input type="hidden" name="subtotal"
                             value="{{ count($product->productvariant) == 0 ? $product->price : '' }}">
                         <button type="submit"
-                            class="btn btn-outline-danger add-to-cart-btn px-3 py-2 my-1 me-2 {{ count($product->productvariant) == 0 ? (empty($product->stock) ? 'disabled' : '') : '' }}"
+                            class="btn btn-outline-danger add-to-cart-btn px-3 py-2 my-1 me-2 {{ count($product->productvariant) == 0 ? (empty($product->stock) ? 'disabled' : '') : '' }} add-to-cart-submit-button"
                             id="add-to-cart-btn">
+                            <i class="bi bi-cart"></i>
+                            Masukkan Keranjang
+                        </button>
+                    </form> --}}
+
+                    <form class="add-to-cart-form" action="{{ route('cart.store') }}" onsubmit="return validateForm()"
+                        method="POST" enctype="multipart/form-data" id="">
+                        @csrf
+                        @auth
+                            <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+                        @endauth
+                        <input type="hidden" name="type" value="cart">
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <input type="hidden" name="product_variant_id" value="">
+                        <input type="hidden" name="sender_address_id" value="">
+                        <input type="hidden" name="quantity"
+                            value="{{ count($product->productvariant) == 0 ? '1' : '' }}">
+                        <input type="hidden" name="subtotal"
+                            value="{{ count($product->productvariant) == 0 ? $product->price : '' }}">
+                        <button type="submit" id="checkout-button"
+                            class="btn btn-outline-danger checkout-btn px-3 py-2 my-1 me-2 {{ count($product->productvariant) == 0 ? (empty($product->stock) ? 'disabled' : '') : '' }} add-to-cart-submit-button">
                             <i class="bi bi-cart"></i>
                             Masukkan Keranjang
                         </button>
                     </form>
 
-                    <form action="{{ route('buy.now') }}" onsubmit="return validateForm()" method="POST"
-                        enctype="multipart/form-data" id="add-to-cart-form">
+                    <form class="buy-now-form" action="{{ route('buy.now') }}" onsubmit="return validateForm()"
+                        method="POST" enctype="multipart/form-data" id="buy-now-form">
                         @csrf
                         @auth
                             <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
@@ -875,7 +896,7 @@
                         <input type="hidden" name="quantity" value="">
                         <input type="hidden" name="subtotal" value="">
                         <button type="submit" id="checkout-button"
-                            class="btn btn-danger checkout-btn px-3 py-2 my-1 {{ count($product->productvariant) == 0 ? (empty($product->stock) ? 'disabled' : '') : '' }}">
+                            class="btn btn-danger checkout-btn px-3 py-2 my-1 {{ count($product->productvariant) == 0 ? (empty($product->stock) ? 'disabled' : '') : '' }} buy-now-submit-button">
                             <i class="bi bi-wallet"></i>
                             Beli Sekarang
                         </button>
@@ -1129,6 +1150,7 @@
                 window.varianIdGlobal = [];
                 // window.city_origins = {!! json_encode($product->productorigin->unique('sender_address_id')) !!}
                 window.city_origins = {!! json_encode($senderAddress) !!};
+                console.log(typeof(city_origins));
                 console.log(city_origins);
                 if (city_origins == '') {
                     window.location.reload();
@@ -1146,6 +1168,7 @@
 
             });
             $(document).ready(function() {
+                window.city_origins = {!! json_encode($senderAddress) !!};
                 $('body').on('click', '#commentImage', function() {
                     $('.commentImagePreview').attr('src', $(this).attr('src'));
                     $('#commentImageModal').modal('show');
@@ -1165,6 +1188,10 @@
                     console.log(senderAddressId);
                     $('input[name="sender_address_id"]').val(senderAddressId);
                     $('.sender_address_id_error').html('');
+                    $('.add-to-cart-submit-button').attr('disabled', false);
+                    $('.buy-now-submit-button').attr('disabled', false);
+                    $('.add-to-cart-submit-button').children('.spinner-border').remove()
+                    $('.buy-now-submit-button').children('.spinner-border').remove()
                     $.each(city_origins, function(key, value) {
                         if (value['id'] == senderAddressId) {
                             $('.send-from-city').text(value['city']['type'] + ' ' + value['city'][
@@ -1268,6 +1295,14 @@
                                                                     $('.shipment-' + variantID)
                                                                         .append(
                                                                             '<div class="modal-ongkir row d-flex align-items-center mb-3"><div class="col-1 pe-0 text-center"><i class="bi bi-circle-fill"></i></div><div class="col-8"><p class="m-0 d-inline-block modal-courier-type pe-1">' +
+                                                                            response[index][0]
+                                                                            .code
+                                                                            .toUpperCase() +
+                                                                            '</p><p class="m-0 d-inline-block modal-courier-package">' +
+                                                                            value.service + ' ()'+
+                                                                            value.description +
+                                                                            '</p><p class="m-0 modal-courier-etd"> Estimasi ' +
+                                                                            value.cost[0].etd +
                                                                             ' hari</p></div><div class="col-3"><p class="text-end m-0 modal-courier-price">' +
                                                                             formatRupiah(value
                                                                                 .cost[0].value,
@@ -1394,6 +1429,24 @@
                 // // $(".sender-address").append(newState).trigger('change');
                 // $('.sender-address').html('').select2({data: [{id: '', text: ''}]});
                 // $(".sender-address").append(new Option('Pilih kota pengirim',0,true,true)).trigger('change');
+                $('.add-to-cart-form').submit(function(e) {
+                    console.log(e);
+                    $('.add-to-cart-submit-button').append(
+                        '<span class="ms-2 spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+                    );
+                    $('.add-to-cart-submit-button').attr('disabled', true);
+
+                    // e.preventDefault();
+                });
+                $('.buy-now-form').submit(function(e) {
+                    console.log(e);
+                    $('.buy-now-submit-button').append(
+                        '<span class="ms-2 spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+                    );
+                    $('.buy-now-submit-button').attr('disabled', true);
+
+                    // e.preventDefault();
+                });
             });
         } catch (err) {
             location.reload();

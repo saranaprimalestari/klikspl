@@ -30,7 +30,7 @@
     </h5>
     <div class="card mb-3 border-radius-075rem fs-14">
         <div class="card-body p-4">
-            <form action="{{ route('rating.store') }}" method="POST" enctype="multipart/form-data">
+            <form class="add-rating-form" action="{{ route('rating.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="id" id="" value="{{ $orderItem->id }}">
                 <input type="hidden" name="user_id" id="" value="{{ $orderItem->user_id }}">
@@ -122,7 +122,7 @@
                 </div>
                 <div class="row">
                     <div class="col-12 text-end">
-                        <button type="submit" class="btn btn-danger fs-14">
+                        <button type="submit" class="btn btn-danger fs-14 submit-button">
                             <i class="bi bi-send"></i> Kirim
                         </button>
                     </div>
@@ -186,7 +186,17 @@
                     console.log($('.img-preview'));
                 }
                 // Allowing file type
-            })
+            });
+
+            $('.add-rating-form').submit(function(e) {
+                console.log(e);
+                $('.submit-button').append(
+                    '<span class="ms-2 spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+                );
+                $('.submit-button').attr('disabled', true);
+
+                // e.preventDefault();
+            });
         });
     </script>
 @endsection

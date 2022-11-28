@@ -18,20 +18,21 @@
     <div class="card mb-3 profile-card">
         <div class="card-body p-4">
             <h5 class="mb-4">
-                <a href="{{ url()->previous() }}" class="text-decoration-none link-dark" >
+                <a href="{{ url()->previous() }}" class="text-decoration-none link-dark">
                     <i class="bi bi-arrow-left"></i>
-                </a>            
+                </a>
                 Tambahkan Alamat Baru
             </h5>
-            <form class="row g-3" action="{{ route('useraddress.store') }}" method="post">
+            <form class="row g-3 create-address" action="{{ route('useraddress.store') }}" method="post">
                 @csrf
                 <input type="hidden" class="form-control user-account-input shadow-none" id="user_id"
                     value="{{ auth()->user()->id }}" name="user_id" required>
                 <div class="col-md-6">
                     <label for="name" class="form-label">Nama Lengkap</label>
                     <input type="text"
-                        class="form-control user-account-input shadow-none @error('name') is-invalid @enderror" id="name"
-                        placeholder="Nama pemilik alamat" name="name" required value="{{ old('name') }}">
+                        class="form-control user-account-input shadow-none @error('name') is-invalid @enderror"
+                        id="name" placeholder="Nama pemilik alamat" name="name" required
+                        value="{{ old('name') }}">
                     @error('name')
                         <div class="invalid-feedback">
                             {{ $message }}
@@ -110,18 +111,31 @@
                 <div class="col-12">
                     <label for="address" class="form-label">Alamat</label>
                     <textarea class="form-control user-account-input shadow-none @error('address') is-invalid @enderror"
-                        placeholder="Tuliskan alamat lengkap disertai nomor rumah, gang/blok, RT dan RW untuk memudahakan kurir pengirim menemukan alamat kamu" id="address" name="address" rows="3" required> {{ old('address') }}</textarea>
+                        placeholder="Tuliskan alamat lengkap disertai nomor rumah, gang/blok, RT dan RW untuk memudahakan kurir pengirim menemukan alamat kamu"
+                        id="address" name="address" rows="3" required> {{ old('address') }}</textarea>
                     @error('address')
                         <div class="invalid-feedback">
                             {{ $message }}
                         </div>
                     @enderror
                 </div>
-                <div class="col-12 my-4">
-                    <button type="submit" class="btn btn-danger profile-address-save-btn">Simpan Alamat</button>
+                <div class="col-12 my-4 text-end">
+                    <button type="submit" class="btn btn-danger profile-address-save-btn submit-button">Simpan Alamat</button>
                 </div>
-            </form>
             </form>
         </div>
     </div>
+    <script>
+        $(document).ready(function() {
+            $('.create-address').submit(function(e) {
+                console.log(e);
+                $('.submit-button').append(
+                    '<span class="ms-2 spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+                );
+                $('.submit-button').attr('disabled', true);
+
+                // e.preventDefault();
+            });
+        });
+    </script>
 @endsection

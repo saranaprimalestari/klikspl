@@ -58,7 +58,7 @@ class ForgotPasswordController extends Controller
                 $request->session()->put('password', $user->password);
                 $validatedData = $request->validate(
                     [
-                        'telp_no' => 'required|min:12|max:13|regex:/^[0-9]*$/'
+                        'telp_no' => 'required|min:10|max:13|regex:/^[0-9]*$/'
                     ],
                     [
                         'telp_no.required' => 'Nomor telepon harus diisi',

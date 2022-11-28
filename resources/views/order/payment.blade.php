@@ -9,17 +9,9 @@
             null
         };
     </script> --}}
-    {{-- {{ dd(session()->all()) }} --}}
-    {{-- {{ dd($orderItems) }} --}}
-    {{-- {{ dd($orderProducts->sum('weight')) }} --}}
-    {{-- {{ dd($orders[0]->paymentmethod) }} --}}
-
-
     <div class="container-fluid">
         {{ Breadcrumbs::render('order.payment') }}
     </div>
-
-
     <div class="container my-5">
         <div class="row mb-3">
             <div class="col-12">
@@ -40,6 +32,11 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
+        @if ($orders[0]->orderStatusDetail->last()->status == 'Pesanan Dibatalkan')
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            {{ $orders[0]->orderStatusDetail->last()->status_detail }}
+        </div>
+        @endif
         <div class="row">
             <div class="col-md-6 col-12">
                 <h5 class="mb-3">Pembayaran</h5>
@@ -50,7 +47,9 @@
                                 Ringkasan Pembayaran
                             </div>
                             <div>
-                                <a target="_blank" href="{{ route('payment.order.bind.pdf',['id' => Crypt::encrypt($orders[0]->id)]) }}" class="btn btn-danger fs-14">
+                                <a target="_blank"
+                                    href="{{ route('payment.order.bind.pdf', ['id' => Crypt::encrypt($orders[0]->id)]) }}"
+                                    class="btn btn-danger fs-14">
                                     <i class="bi bi-file-earmark-pdf"></i> PDF
                                 </a>
                             </div>
@@ -378,11 +377,11 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary fs-14"
+                                        <button type="button" class="btn btn-outline-secondary fs-14"
                                             data-bs-dismiss="modal">Tutup</button>
                                         <input type="hidden" name="order_id" value="{{ $orders[0]->id }}">
                                         <button type="submit"
-                                            class="btn btn-danger shadow-none fs-14">Konfirmasi</button>
+                                            class="btn btn-danger shadow-none fs-14 submit-button">Konfirmasi</button>
                                     </div>
                                 </form>
                             </div>
@@ -427,16 +426,17 @@
                             </div>
                         </div>
                     </div>
-
-                    <button type="button" class="btn btn-outline-secondary fs-14 my-2 shadow-none"
-                        data-bs-toggle="modal" data-bs-target="#cancelConfirm">Batalkan Pesanan</button>
-                    <button type="button" class="btn btn-danger fs-14 my-2 shadow-none" data-bs-toggle="modal"
-                        data-bs-target="#paymentConfirm">Sudah Bayar</button>
-                    <p class="fs-12">
-                        *Klik <strong>Sudah Bayar</strong> ketika sudah melakukan pembayaran pesanan agar mempermudah
-                        verifikasi
-                        oleh tim admin KLIKSPL
-                    </p>
+                    @if ($order->orderStatusDetail->last()->status != 'Pesanan Dibatalkan')
+                        <button type="button" class="btn btn-outline-secondary fs-14 my-2 shadow-none"
+                            data-bs-toggle="modal" data-bs-target="#cancelConfirm">Batalkan Pesanan</button>
+                        <button type="button" class="btn btn-danger fs-14 my-2 shadow-none" data-bs-toggle="modal"
+                            data-bs-target="#paymentConfirm">Sudah Bayar</button>
+                        <p class="fs-12">
+                            *Klik <strong>Sudah Bayar</strong> ketika sudah melakukan pembayaran pesanan agar mempermudah
+                            verifikasi
+                            oleh tim admin KLIKSPL
+                        </p>
+                    @endif
                 </div>
                 {{-- <div class="card fs-14 border-radius-075rem mb-4">
                     <div class="card-header bg-transparent py-3 fw-bold">
@@ -609,10 +609,15 @@
                                                     <span>
                                                         Rp{{ price_format_rupiah($item->orderproduct->price) }}
                                                         {{-- @if (!empty($item->discount)) --}}
-                                                            {{-- Rp{{ price_format_rupiah($item->orderproduct->price - $item->discount) }} --}}
+                                                        {{-- Rp{{ price_format_rupiah($item->orderproduct->price - $item->discount) }} --}}
                                                         {{-- @endif --}}
                                                     </span>
                                                 </div>
+                                                @if ($item->order_item_status == 'stock habis')
+                                                    <div class="text-danger fw-600">
+                                                        {{ $item->order_item_status }}
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -784,6 +789,9 @@
         </div>
     </div> --}}
     <script>
+        //  $(window).focus(function() {
+        //     window.location.reload();
+        // });
         const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         console.log(timezone);
         if (timezone == 'Asia/Makassar') {
@@ -859,6 +867,15 @@
                         '*Jangan gunakan karakter khusus dan angka untuk menuliskan alasan pembatalan');
                     e.preventDefault();
                 }
+            });
+            $('.payment-form').submit(function(e) {
+                console.log(e);
+                $('.submit-button').append(
+                    '<span class="ms-2 spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+                );
+                $('.submit-button').attr('disabled', true);
+
+                // e.preventDefault();
             });
         });
     </script>

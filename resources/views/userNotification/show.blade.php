@@ -73,10 +73,10 @@
                                 </div>
                                 <div class="col-md-4 text-end order-item-total-payment py-2">
                                     <p class="m-0">
-                                        Total Harga Produk
+                                        Total Pesanan
                                     </p>
                                     <p class="m-0 fw-bold text-danger">
-                                        Rp{{ price_format_rupiah($order->total_price) }}
+                                        Rp{{ price_format_rupiah($order->total_price + $order->courier_price- $order->discount) }}
                                     </p>
                                 </div>
                             </div>

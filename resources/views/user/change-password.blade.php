@@ -86,8 +86,13 @@
                         </div>
                     </div>
                 </div>
-                <button id="reset-button" type="submit"
-                    class="btn btn-danger reset-password-button my-2 fs-14">Simpan</button>
+                <div class="text-end">
+                    <a href="" class="btn btn-outline-secondary reset-password-button my-2 fs-14">
+                        Lupa Password
+                    </a>
+                    <button id="reset-button" type="submit"
+                        class="btn btn-danger reset-password-button my-2 fs-14">Simpan</button>
+                </div>
             </form>
         </div>
     </div>

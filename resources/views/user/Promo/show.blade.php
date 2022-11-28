@@ -1,6 +1,6 @@
 @extends('layouts.main')
 @section('container')
-    <div class="container-fluid breadcrumb-notification">
+    <div class="container-fluid breadcrumb-notification text-truncate">
         {{ Breadcrumbs::render('promo.show', $promo) }}
     </div>
     <div class="container mt-5">
@@ -137,21 +137,23 @@
                 </div>
                 <div class="mb-3">
                     <p class="m-0 fw-600">
-                        Quota Voucher
+                        Kuota Voucher
                     </p>
                     <p class="m-0">
                         @if (count($promo->userPromoUse))
-                        @foreach ($promo->userPromoUse as $userPromoUse)
-                            @if ($userPromoUse->user_id == auth()->user()->id)
-                                @if($userPromoUse->promo_use <= $promo->quota)
-                                    {{ $promo->quota - $userPromoUse->promo_use }}
+                            @foreach ($promo->userPromoUse as $userPromoUse)
+                                @if ($userPromoUse->user_id == auth()->user()->id)
+                                    @if ($userPromoUse->promo_use <= $promo->quota)
+                                        {{ $promo->quota - $userPromoUse->promo_use }}
+                                    @else
+                                        0
+                                    @endif
                                 @endif
-                            @endif
-                        @endforeach
-                    @else
-                        {{ $promo->quota }}
-                    @endif
-                    Voucher
+                            @endforeach
+                        @else
+                            {{ $promo->quota }}
+                        @endif
+                        Voucher
                     </p>
                 </div>
             </div>
@@ -159,7 +161,13 @@
             <div class="col-md-8 col-12 mx-auto mb-5 fs-14">
                 <div class="d-grid mt-4 mb-3">
                     <a href="@foreach ($promo->productpromo as $product) @if (count($promo->productpromo) > 1) {{ route('product') }} @break  @else {{ route('product.show', $product->product->slug) }} @endif @endforeach"
-                        class="btn btn-danger border-radius-05rem py-2 fs-14">
+                        class="btn btn-danger border-radius-05rem py-2 fs-14 
+                        @if (count($promo->userPromoUse)) @foreach ($promo->userPromoUse as $userPromoUse)
+                            @if ($userPromoUse->user_id == auth()->user()->id)
+                                @if ($userPromoUse->promo_use >= $promo->quota)
+                                    disabled @endif
+                            @endif @endforeach
+                        @endif">
                         Gunakan
                     </a>
                 </div>

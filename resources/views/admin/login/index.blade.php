@@ -37,7 +37,7 @@
                                 {{-- <a class="text-decoration-none text-danger login-register-link" href="/register">Daftar Membership</a> --}}
                             </div>
                         </div>
-                        <form class="mt-1" method="POST" action="{{ route('admin.login.post') }}">
+                        <form class="mt-1 admin-login-form" method="POST" action="{{ route('admin.login.post') }}">
                             @csrf
                             <div class="mb-3">
                                 <label for="login-user" class="form-label login-user-label m-0">Alamat Email/ Username/ No
@@ -107,6 +107,11 @@
                     $('#show_hide_password i').removeClass("fa-eye-slash");
                     $('#show_hide_password i').addClass("fa-eye");
                 }
+            });
+            $('.admin-login-form').submit(function(e){
+                console.log(e);
+                $('.login-button').append('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+                $('.login-button').attr('disabled', true);
             });
         });
     </script>

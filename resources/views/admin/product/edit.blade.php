@@ -33,7 +33,7 @@
         <a class="btn btn-secondary fs-14" href="{{ route('product.show', $product) }}" target="_blank"><i
                 class="bi bi-eye"></i> Preview produk</a>
     </div>
-    <form action="{{ route('adminproduct.update', $product) }}" method="post" enctype="multipart/form-data">
+    <form class="edit-product-form" action="{{ route('adminproduct.update', $product) }}" method="post" enctype="multipart/form-data">
         @csrf
         @method('put')
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -769,7 +769,7 @@
         <div class="container p-0 mb-5 pb-5">
             <div class="row">
                 <div class="col-12 text-end">
-                    <button type="submit" class="btn btn-danger fs-14  ">
+                    <button type="submit" class="btn btn-danger fs-14 submit-button">
                         <i class="far fa-save"></i> Simpan
                     </button>
                 </div>
@@ -1545,6 +1545,16 @@
                 });
             });
 
+            $('.edit-product-form').submit(function(e) {
+                console.log(e);
+                $('.submit-button').append(
+                    '<span class="ms-2 spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+                );
+                $('.submit-button').attr('disabled', true);
+
+                // e.preventDefault();
+            });
+            
         });
     </script>
 @endsection

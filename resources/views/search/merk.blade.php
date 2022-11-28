@@ -41,7 +41,7 @@
                 @endif
                 <input type="hidden" name="merk" value="{{ $merk->slug }}">
                 <button type="submit"
-                    class="btn p-0 text-dark text-decoration-none shadow-none category-left-side {{ $merk->slug == request('merk') ? 'fw-bold' : '' }}">
+                    class="text-start btn p-0 text-dark text-decoration-none shadow-none category-left-side {{ $merk->slug == request('merk') ? 'fw-bold' : '' }}">
                     {{ $merk->name }}
                 </button>
             </li>

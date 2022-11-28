@@ -23,7 +23,7 @@
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-md-3 pt-5 pb-3 mb-1">
         <h4 class="m-0">Tambah Produk</h4>
     </div>
-    <form action="{{ route('adminproduct.store') }}" method="post" enctype="multipart/form-data">
+    <form class="create-product-form" action="{{ route('adminproduct.store') }}" method="post" enctype="multipart/form-data">
         @csrf
         <div class="container p-0 mb-4">
             <div class="card product-image-card border-0 border-radius-1-5rem fs-14">
@@ -502,7 +502,7 @@
         <div class="container p-0 mb-5 pb-5">
             <div class="row">
                 <div class="col-12 text-end">
-                    <button type="submit" class="btn btn-danger fs-14  ">
+                    <button type="submit" class="btn btn-danger fs-14 submit-button">
                         <i class="bi bi-plus-lg"></i> Tambahkan Produk
                     </button>
                 </div>
@@ -1121,7 +1121,15 @@
                     }
                 });
             });
+            $('.create-product-form').submit(function(e) {
+                console.log(e);
+                $('.submit-button').append(
+                    '<span class="ms-2 spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+                );
+                $('.submit-button').attr('disabled', true);
 
+                // e.preventDefault();
+            })
         });
     </script>
 @endsection

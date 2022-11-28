@@ -1,7 +1,7 @@
 @extends('layouts.main')
 
 @section('container')
-    <div class="container-fluid breadcrumb-products">
+    <div class="container-fluid breadcrumb-products px-0">
         {{ Breadcrumbs::render('product') }}
     </div>
     {{-- @if (request('category'))
@@ -31,8 +31,37 @@
             </div>
         </div>
         <div class="col-md-9">
-            <div class="row d-flex align-items-center">
-                <div class="col-md-7 me-auto d-flex ps-0">
+            <div class="row align-items-center d-block d-sm-none">
+                <div class="col-12 ps-1">
+                    {{-- <button type="button" class="btn product-reset-filter mx-1 products-clear-filter-btn shadow-none mb-3">
+                        Filter <i class="bi bi-funnel"></i>
+                    </button> --}}
+                    <div class="dropdown">
+                        <button class="btn product-reset-filter mx-1 products-clear-filter-btn shadow-none mb-3"
+                            type="button" id="FilterButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            Filter <i class="bi bi-funnel"></i>
+                        </button>
+                        <div class="dropdown-menu filter-search-category-merk-mobile p-4 w-100"
+                            aria-labelledby="FilterButton">
+                            <div class="row">
+                                <div class="col-6 mb-4">
+                                    @include('search.category')
+                                </div>
+                                <div class="col-6">
+                                    @include('search.merk')
+                                </div>
+                            </div>
+
+
+                            {{-- <li><a class="dropdown-item" href="#">Action</a></li>
+                          <li><a class="dropdown-item" href="#">Another action</a></li>
+                          <li><a class="dropdown-item" href="#">Something else here</a></li> --}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-md-7 me-auto d-flex ps-1">
                     @include('search.clear-filter')
                 </div>
                 <div class="col-md-2 text-end product-sortby-text d-none">

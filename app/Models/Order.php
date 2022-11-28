@@ -34,6 +34,7 @@ class Order extends Model
                     // $keyword = 'pesanan dibatalkan';
                     // dd($keyword);
                     $query->where('order_status', 'like', '%' . $keyword . '%')
+                        ->orwhere('order_status', 'like', '%pembayaran ditolak%')
                         ->orwhere('order_status', 'like', '%upload ulang bukti pembayaran%');
                     // dd($query);
                 });

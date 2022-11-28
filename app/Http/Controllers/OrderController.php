@@ -702,25 +702,25 @@ class OrderController extends Controller
         //     }
         // }
         // dd($request);
-        $folderPathSave = 'user/' . auth()->user()->username . '/order/' . $order->id;
-        if (auth()->user()->id == $order->user_id) {
-            foreach ($order->orderItem as $orderItem) {
-                foreach ($orderItem->orderProduct->orderProductImage as $orderProductImage) {
-                    $orderProductImage->delete();
-                    $orderItem->orderProduct->delete();
-                }
-                $orderItem->delete();
-            }
-            foreach ($order->orderstatusdetail as $orderDetail) {
-                $orderDetail->delete();
-            }
-            Storage::deleteDirectory($folderPathSave);
-            $order->forceDelete();
-            return redirect()->route('order.index')->with('success', 'Berhasil membatalkan pesanan.');
-        } else {
-            // return redirect('/dashboard/posts')->with('failed','Delete post failed!');
-            abort(403);
-        }
+        // $folderPathSave = 'user/' . auth()->user()->username . '/order/' . $order->id;
+        // if (auth()->user()->id == $order->user_id) {
+        //     foreach ($order->orderItem as $orderItem) {
+        //         foreach ($orderItem->orderProduct->orderProductImage as $orderProductImage) {
+        //             $orderProductImage->delete();
+        //             $orderItem->orderProduct->delete();
+        //         }
+        //         $orderItem->delete();
+        //     }
+        //     foreach ($order->orderstatusdetail as $orderDetail) {
+        //         $orderDetail->delete();
+        //     }
+        //     Storage::deleteDirectory($folderPathSave);
+        //     $order->forceDelete();
+        //     return redirect()->route('order.index')->with('success', 'Berhasil membatalkan pesanan.');
+        // } else {
+        //     // return redirect('/dashboard/posts')->with('failed','Delete post failed!');
+        //     abort(403);
+        // }
     }
 
     public function deleteOrder(Request $request, Order $order)
@@ -821,6 +821,9 @@ class OrderController extends Controller
     public function paymentCompleted(Request $request)
     {
         $this->expiredCheck();
+        if (!$this->stockCheckBeforePayment($request->order_id)) {
+            return redirect()->route('order.index')->with('failed', 'Gagal melakukan pembayaran : item stock habis! Silakan hubungi pihak Admin KLIKSPL dengan menekan menu customer care');
+        }
         // dd($request);
         $validatedData = $request->validate(
             [
@@ -1051,7 +1054,39 @@ class OrderController extends Controller
         $id = Crypt::decrypt($id);
         // dd($id);
         $this->expiredCheck();
-
+        if (!$this->stockCheckBeforePayment($id)) {
+            return redirect()->route('order.index')->with('failed', 'Gagal melakukan pembayaran : item stock habis! Silakan hubungi pihak Admin KLIKSPL dengan menekan menu customer care');
+        }
+        // $outStock = '';
+        // $status = null;
+        // $order = Order::findOrFail($id);
+        // dd($order);
+        // foreach ($order->orderItem as $idx => $item) {
+        //     if (!empty($item->product_variant_id)) {
+        //         $variant = $item->productvariant;
+        //         if ($item->quantity > $variant->stock) {
+        //             $itemOutStock[$idx]['id'] = $item->id;
+        //             $itemOutStock[$idx]['status'] = 'Stock habis di salah satu item yang dipesan';
+        //         }
+        //     } else {
+        //         $product = $item->product;
+        //         if ($item->quantity > $product->stock) {
+        //             $itemOutStock[$idx]['id'] = $item->id;
+        //             $itemOutStock[$idx]['status'] = 'Stock habis pada item yang dipesan';
+        //         }
+        //     }
+        // }
+        // dd($itemOutStock);
+        // if (!empty($itemOutStock)) {
+        //     print_r($itemOutStock);
+        // }
+        // foreach ($itemOutStock as $item) {
+        //     echo $item->id;
+        //     foreach ($item as $i) {
+        //         echo $i;
+        //     }
+        // }
+        // dd($id);
         $order = Order::where('id', $id)->with(['orderitem', 'orderstatusdetail'])->first();
         // dd($order->orderitem[0]->product);
         if (!is_null($order)) {
@@ -1160,7 +1195,7 @@ class OrderController extends Controller
             $pdf = PDF::setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true])->loadview('order.invoice-pdf', [
                 'order' => $order,
             ]);
-            return $pdf->stream('invoice-pembayaran pesanan-'.auth()->user()->username.'-'.$orderProducts[0]->slug.'.pdf');
+            return $pdf->stream('invoice-pembayaran pesanan-' . auth()->user()->username . '-' . $orderProducts[0]->slug . '.pdf');
             // return view('order.invoice-pdf',[
             //     'order' => $order,
             //     'promoUse' => $promoUse,
@@ -1174,7 +1209,8 @@ class OrderController extends Controller
     {
         $id = Crypt::decrypt($id);
         $this->expiredCheck();
-
+        
+        $outStock = null;
         // dd($order->id);
         $order = Order::withTrashed()->where('id', $id)->first();
         foreach ($order->orderitem as $item) {
@@ -1188,8 +1224,13 @@ class OrderController extends Controller
         $weightGr = 0;
         foreach ($orderItems as $item) {
             $weightGr += ($item->quantity * $item->orderproduct->weight);
+            if($item->order_item_status == 'stok habis'){
+                $outStock = 1;
+            }
         }
         $weight = round(($weightGr / 1000), 2);
+
+        // dd($outStock);
         return view(
             'order.detail',
             [
@@ -1199,6 +1240,7 @@ class OrderController extends Controller
                 'orderItems' => $orderItems,
                 'orderProducts' => $orderProducts,
                 'weight' => $weight,
+                'outStock' => $outStock,
             ]
         );
     }
@@ -1323,6 +1365,50 @@ class OrderController extends Controller
             }
         }
     }
+
+    public function stockCheckBeforePayment($order_id)
+    {
+        // dd($request);
+        $outStock = null;
+        $status = null;
+        $order = Order::findOrFail($order_id);
+        foreach ($order->orderItem as $item) {
+            $item->order_item_status = 'pesanan dibatalkan';
+            if (!empty($item->product_variant_id)) {
+                $variant = $item->productvariant;
+                if ($item->quantity > $variant->stock) {
+                    $item->order_item_status = 'stok habis';
+                    $status = 'Stok habis di salah satu item yang dipesan';
+                    $outStock = 1;
+                }
+            } else {
+                $product = $item->product;
+                if ($item->quantity > $product->stock) {
+                    $item->order_item_status = 'stok habis';
+                    $status = 'Stok habis pada item yang dipesan';
+                    $outStock = 1;
+                }
+            }
+            $item->save();
+        }
+        if (!empty($outStock)) {
+            $orderStatus = OrderStatusDetail::create(
+                [
+                    'order_id' => $order->id,
+                    'status' => 'Pesanan Dibatalkan',
+                    'status_detail' => 'Pesanan Dibatalkan. Alasan pembatalan: ' . $status. ', silakan hubungi admin KLIKSPL melalui menu customer care apabila anda sudah melakukan pembayaran',
+                    'status_date' => date('Y-m-d H:i:s')
+                ]
+            );
+            $order->order_status = 'pesanan dibatalkan';
+            $order->save();
+            $order->delete();
+            return false;
+        }else{
+            return true;
+        }
+    }
+
     public function confirmOrder(Request $request)
     {
         $request->merge(['id' => $request->orderId]);
@@ -1395,7 +1481,7 @@ class OrderController extends Controller
         // $orderProduct->productorigin->with('senderAddress')->unique('sender_address_id');
         $senderAddress = SenderAddress::where('is_active', '=', 1)->with('city')->get();
         // dd($senderAddress);
-        $orderProductImages = OrderproductImage::where('name', 'like', 'user/'.auth()->user()->username.'/order/'.$order->id.'/'.$orderProduct->id.'%')->get();
+        $orderProductImages = OrderproductImage::where('name', 'like', 'user/' . auth()->user()->username . '/order/' . $order->id . '/' . $orderProduct->id . '%')->get();
         // dd($orderProductImages);
         return view('order.orderProduct', [
             'title' => $orderProduct->name,

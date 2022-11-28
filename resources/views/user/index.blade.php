@@ -146,7 +146,11 @@
                             {{-- {{ date("d/m/Y", strtotime($user->birthdate)) }}
                             {{ date("d/m/Y", strtotime(old('birthdate'))) }} --}}
                         </div>
-                        <button type="submit" class="btn btn-danger user-account-submit mb-3">Simpan</button>
+                        <div class="row text-end">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-danger user-account-submit mb-3">Simpan</button>
+                            </div>
+                        </div>
                     </form>
                 </div>
                 <div class="col-md-4 order-1 order-md-2 mb-3">

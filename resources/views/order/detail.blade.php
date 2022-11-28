@@ -106,6 +106,13 @@
                                 </div>
                             @endif
                         @endif
+                        @if (!empty($outStock))
+                            <div class="col-md-12 col-12">
+                                <div class="alert alert-danger alert-dismissible" role="alert">
+                                    {{ $orders[0]->orderStatusDetail->last()->status_detail }}
+                                </div>
+                            </div>
+                        @endif
                         <div class="col-md-12 col-12">
                             <div class="card fs-14 border-radius-075rem mb-4 box-shadow">
                                 <div class="card-body p-4">
@@ -266,7 +273,8 @@
                                             </div>
                                         </div>
                                     @elseif ($order->order_status == 'pesanan dikirim' &&
-                                        $order->orderstatusdetail->last()->status == 'Nomor resi telah terbit')
+                                        ($order->orderstatusdetail->last()->status == 'Nomor resi telah terbit' ||
+                                            $order->orderstatusdetail->last()->status == 'Nomor resi diperbarui admin'))
                                         <div class="row mb-2 mt-4">
                                             <div class="col-md-12 col-12">
                                                 <p class="mb-1 fs-14 fw-bold">Pesanan Diterima</p>
@@ -327,6 +335,12 @@
                                                                     {{ $item->quantity }} x
                                                                     Rp{{ price_format_rupiah($item->orderproduct->price) }}
                                                                 </div>
+                                                                @if ($item->order_item_status == 'stok habis')
+                                                                    <div
+                                                                        class="text-truncate order-items-product-variant text-danger fw-600 text-uppercase">
+                                                                        {{ $item->order_item_status }}
+                                                                    </div>
+                                                                @endif
                                                             </div>
                                                         </div>
                                                     </div>

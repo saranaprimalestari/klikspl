@@ -794,7 +794,7 @@
                                 <div class="modal-footer border-0 p-4">
                                     <button type="button" class="btn btn-secondary show-payment-modal-button"
                                         data-bs-dismiss="modal">Kembali</button>
-                                    <button type="submit" class="btn btn-danger show-payment-modal-button">Lanjutkan
+                                    <button type="submit" class="btn btn-danger show-payment-modal-button continue-payment">Lanjutkan
                                         Pembayaran
                                     </button>
                                 </div>
@@ -1699,6 +1699,12 @@
                     $(this).toggle($(this).text().toLowerCase().indexOf(search) > -1);
                     // });
                 });
+            });
+
+            $('.payment-form').submit(function(e){
+                console.log(e);
+                $('.continue-payment').append('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+                $('.show-payment-modal-button').attr('disabled', true);
             });
         });
     </script>

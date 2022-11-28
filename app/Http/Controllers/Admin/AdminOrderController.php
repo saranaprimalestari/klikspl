@@ -672,6 +672,40 @@ class AdminOrderController extends Controller
         }
     }
 
+    public function shippingReceiptUpdate(Request $request)
+    {
+        // dd($request);
+        $request->merge(['id' => $request->order_id]);
+        $validatedData = $request->validate(
+            [
+                'id' => 'required',
+                'resi' => 'required|unique:orders'
+            ],
+            [
+                'resi.required' => 'Nomor Resi Wajid diisi!',
+                'resi.unique' => 'Nomor Resi sudah digunakan, Nomor Resi harus unik!',
+            ]
+        );
+        $order = Order::find($request->order_id);
+        $order->resi = $validatedData['resi'];
+        $update = $order->save();
+        if ($update) {
+            $orderStatus = OrderStatusDetail::create(
+                [
+                    'order_id' => $order->id,
+                    'status' => 'Nomor resi diperbarui admin',
+                    'status_detail' => 'Nomor Resi pesanan anda ' . $order->resi,
+                    'status_date' => date('Y-m-d H:i:s')
+                ]
+            );
+        }
+        if ($update && $orderStatus) {
+            return redirect()->route('adminorder.index', ['status' => $request->session()->get('status')])->with('success', 'Status pesanan berhasil diperbarui');
+        } else {
+            return redirect()->route('adminorder.index', ['status' => $request->session()->get('status')])->with('failed', 'Status pesanan gagal diperbarui');
+        }
+    }
+
 
     public function isAdministrator()
     {

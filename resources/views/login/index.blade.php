@@ -4,11 +4,11 @@
     {{-- {{ print_r(session()->all()) }} --}}
     <div class="login-container">
         <div class="row justify-content-center mb-5">
-            <div class="col-md-6 d-flex login-left-col">
+            <div class="col-md-6 d-flex login-left-col mt-5 mt-sm-0 mt-md-0 mt-lg-0 mt-xl-0 px-5 px-sm-0 px-md-0 px-lg-0 px-xl-0">
                 <img class="footer-logo w-100" src="/assets/footer-logo.svg" alt="">
                 {{-- <img class="" src="https://source.unsplash.com/500x500?market"> --}}
             </div>
-            <div class="col-md-5 mt-5 ms-5">
+            <div class="col-md-5 mt-md-5 ms-md-5">
                 @if (session()->has('loginError'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         {{ session('loginError') }}
@@ -31,7 +31,7 @@
                                 {{-- <a class="text-decoration-none text-danger login-register-link" href="/register">Daftar Membership</a> --}}
                             </div>
                         </div>
-                        <form class="mt-1" method="POST" action="/login">
+                        <form class="mt-1 user-login-form" method="POST" action="/login">
                             @csrf
                             <div class="mb-3">
                                 <label for="login-user" class="form-label login-user-label m-0">Alamat Email/ Username/ No
@@ -74,7 +74,7 @@
                                             password?</a>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-danger login-button">
+                                <button type="submit" class="btn btn-danger login-button submit-button">
                                     Masuk
                                 </button>
                             </div>
@@ -109,6 +109,11 @@
                     $('#show_hide_password i').addClass("fa-eye");
                 }
             });
+            $('.user-login-form').submit(function(e){
+                console.log(e);
+                $('.login-button').append('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+                $('.login-button').attr('disabled', true);
+            })
         });
     </script>
 @endsection

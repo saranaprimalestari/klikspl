@@ -87,7 +87,7 @@
                                     </button>
                                 </form>
                             @elseif (isset($telp_no))
-                                <form action="{{ route($route) }}" method="POST" class="">
+                                {{-- <form action="{{ route($route) }}" method="POST" class="">
                                     @csrf
                                     <input type="hidden" name="id" value="{{ auth()->user()->id }}">
                                     <input type="hidden" name="username" value="{{ auth()->user()->username }}">
@@ -116,7 +116,7 @@
                                             </div>
                                         </div>
                                     </button>
-                                </form>
+                                </form> --}}
                                 <form action="{{ route($route) }}" method="POST" class="phone-verify-method-form">
                                     @csrf
                                     <input type="hidden" name="id" value="{{ auth()->user()->id }}">

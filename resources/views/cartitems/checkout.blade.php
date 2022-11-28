@@ -402,8 +402,8 @@
                     </div>
                 </div>
 
-                <div class="modal fade" id="promoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-                    aria-labelledby="paymentModalLabel" aria-hidden="true">
+                <div class="modal fade" id="promoModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                    tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
                         <div class="modal-content payment-method-modal">
                             {{-- <form class="payment-form" action="{{ route('order.store') }}" method="POST"
@@ -468,11 +468,10 @@
                                                 class="card mb-3 border-radius-075rem box-shadow promo-card-checkout-modal product-promo-{{ $productPromo[0]->id }} promo-{{ $productPromo[0]->promo->id }} 
                                                 @foreach ($productPromo[0]->promo->userPromoUse as $userPromoUse)
                                                     @if ($userPromoUse->user_id == auth()->user()->id)
-                                                        @if($userPromoUse->promo_use >= $productPromo[0]->promo->quota)
+                                                        @if ($userPromoUse->promo_use >= $productPromo[0]->promo->quota)
                                                             {{ 'd-none exceeding-the-quota-limit' }}
                                                         @endif
-                                                    @endif
-                                                @endforeach">
+                                                    @endif @endforeach">
                                                 <div class="card-body p-4">
                                                     <div class="row align-items-center">
                                                         <div class="col-md-9 col-12">
@@ -506,7 +505,7 @@
                                                                         @if (count($productPromo[0]->promo->userPromoUse))
                                                                             @foreach ($productPromo[0]->promo->userPromoUse as $userPromoUse)
                                                                                 @if ($userPromoUse->user_id == auth()->user()->id)
-                                                                                    @if($userPromoUse->promo_use <= $productPromo[0]->promo->quota)
+                                                                                    @if ($userPromoUse->promo_use <= $productPromo[0]->promo->quota)
                                                                                         {{ $productPromo[0]->promo->quota - $userPromoUse->promo_use }}
                                                                                     @endif
                                                                                 @endif
@@ -590,8 +589,7 @@
                     tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
                         <div class="modal-content payment-method-modal">
-                            <form class="payment-form" action="{{ route('order.store') }}" method="POST"
-                                onSubmit="return confirm('Apakah anda yakin Data Pemesanan anda sudah benar (Alamat Pengiriman, Produk Pesanan, dan Kurir Pengiriman)?');">
+                            <form class="payment-form" action="{{ route('order.store') }}" method="POST">
                                 @csrf
 
                                 <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
@@ -699,15 +697,16 @@
                                                     Diskon Promo
                                                 </div>
                                                 <div class="col-5 discount-val fs-14 m-0 text-end">
-                                                    
+
                                                 </div>
                                             </div>
                                             <div class="row mb-2 discount-used-row d-none">
                                                 <div class="col-7 fs-12 discount-used-text">
                                                 </div>
                                                 <div class="col-5 fs-12 m-0 text-end">
-                                                    <div class="text-red-klikspl fw-600 discount-used-cancel-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Batalkan penggunaan promo"
-                                                    >Batalkan</div>
+                                                    <div class="text-red-klikspl fw-600 discount-used-cancel-btn"
+                                                        data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                        title="Batalkan penggunaan promo">Batalkan</div>
                                                 </div>
                                             </div>
 
@@ -761,7 +760,8 @@
                                 <div class="modal-footer border-0 p-4">
                                     <button type="button" class="btn btn-secondary show-payment-modal-button"
                                         data-bs-dismiss="modal">Kembali</button>
-                                    <button type="submit" class="btn btn-danger show-payment-modal-button">Lanjutkan
+                                    <button type="submit"
+                                        class="btn btn-danger show-payment-modal-button continue-payment">Lanjutkan
                                         Pembayaran
                                     </button>
                                 </div>
@@ -856,7 +856,7 @@
                                         Diskon Promo
                                     </div>
                                     <div class="col-5 discount-val fs-14 m-0 text-end">
-                                        
+
                                     </div>
                                 </div>
                                 <div class="row mb-2 discount-used-row d-none">
@@ -917,7 +917,8 @@
                                 role="button" data-bs-toggle="button" aria-pressed="true">
                                 Detail <i class="bi bi-chevron-up mx-2 expand-checkout-bill-chevron"></i>
                             </a>
-                            <form class="checkout-bill-form d-none" action="" onsubmit="return validateCheckout()" method="POST">
+                            <form class="checkout-bill-form d-none" action="" onsubmit="return validateCheckout()"
+                                method="POST">
                                 @csrf
 
                                 @foreach ($items as $item)
@@ -999,7 +1000,7 @@
                                         Diskon Promo
                                     </div>
                                     <div class="col-5 discount-val fs-14 m-0 text-end">
-                                        
+
                                     </div>
                                 </div>
                                 <div class="row mb-2 discount-used-row d-none">
@@ -1069,20 +1070,17 @@
                     <br>
                     promo id : {{ $productPromo[0]->promo_id }}
                     <br> --}}
-                @if (count($productPromo[0]->promo->userPromoUse)>0)
-                    
+                @if (count($productPromo[0]->promo->userPromoUse) > 0)
                 @else
-                    
                 @endif
-               
+
                 <div
                     class="card mb-3 border-radius-075rem box-shadow promo-card-checkout-modal product-promo-{{ $productPromo[0]->id }} promo-{{ $productPromo[0]->promo->id }}  @foreach ($productPromo[0]->promo->userPromoUse as $userPromoUse)
                     @if ($userPromoUse->user_id == auth()->user()->id)
-                        @if($userPromoUse->promo_use >= $productPromo[0]->promo->quota)
+                        @if ($userPromoUse->promo_use >= $productPromo[0]->promo->quota)
                             {{ 'd-none exceeding-the-quota-limit' }}
                         @endif
-                    @endif
-                @endforeach">
+                    @endif @endforeach">
                     <div class="card-body p-4">
                         <div class="row align-items-center">
                             <div class="col-md-9 col-12">
@@ -1091,21 +1089,17 @@
                                         @if (!empty($productPromo[0]->promo->image))
                                             @if (File::exists(public_path($productPromo[0]->promo->image)))
                                                 <img src="{{ asset($productPromo[0]->promo->image) }}"
-                                                    class="img-fluid w-100 border-radius-075rem"
-                                                    alt="...">
+                                                    class="img-fluid w-100 border-radius-075rem" alt="...">
                                             @elseif(Storage::exists($productPromo[0]->promo->image))
                                                 <img src="{{ asset('/storage/' . $productPromo[0]->promo->image) }}"
-                                                    class="img-fluid w-100 border-radius-075rem"
-                                                    alt="...">
+                                                    class="img-fluid w-100 border-radius-075rem" alt="...">
                                             @else
                                                 <img src="{{ asset('assets/voucher.png') }}"
-                                                    class="img-fluid w-100 border-radius-075rem"
-                                                    alt="...">
+                                                    class="img-fluid w-100 border-radius-075rem" alt="...">
                                             @endif
                                         @else
                                             <img src="{{ asset('assets/voucher.png') }}"
-                                                class="img-fluid w-100 border-radius-075rem"
-                                                alt="...">
+                                                class="img-fluid w-100 border-radius-075rem" alt="...">
                                         @endif
                                     </div>
                                     <div class="col-md-10 col-12 my-2 ps-md-0">
@@ -1116,7 +1110,7 @@
                                             @if (count($productPromo[0]->promo->userPromoUse))
                                                 @foreach ($productPromo[0]->promo->userPromoUse as $userPromoUse)
                                                     @if ($userPromoUse->user_id == auth()->user()->id)
-                                                        @if($userPromoUse->promo_use <= $productPromo[0]->promo->quota)
+                                                        @if ($userPromoUse->promo_use <= $productPromo[0]->promo->quota)
                                                             {{ $productPromo[0]->promo->quota - $userPromoUse->promo_use }}
                                                         @endif
                                                     @endif
@@ -1158,8 +1152,7 @@
 
                                         </span>
                                         <div>
-                                            <a href="{{ route('promo.show', $productPromo[0]->promo) }}"
-                                                target="_blank"
+                                            <a href="{{ route('promo.show', $productPromo[0]->promo) }}" target="_blank"
                                                 class="text-decoration-none fs-12 text-danger">S&K</a>
                                         </div>
                                     </div>
@@ -1168,8 +1161,7 @@
                             <div class="col-md-3 col-12 text-end">
                                 <button
                                     class="btn btn-outline-danger fs-12 promo-use-btn promo-btn-{{ $productPromo[0]->promo->id }}"
-                                    id="{{ $productPromo[0]->promo->id }}"
-                                    id="{{ $productPromo[0]->promo->id }}">
+                                    id="{{ $productPromo[0]->promo->id }}" id="{{ $productPromo[0]->promo->id }}">
                                     Pakai Promo
                                 </button>
                             </div>
@@ -1200,7 +1192,7 @@
             var productIds = {!! json_encode($productIds) !!};
             var items = {!! json_encode($items) !!};
             console.log(weight + ' g');
-            
+
             if (weight < 1000) {
                 weight = 1000;
             }
@@ -1236,25 +1228,26 @@
             //         console.log(productPromos[keys][key]['promo']);
             //     });
             // });
-            $('body').on('change', 'input:radio[name="payment_method_id"]', function(e) 
-            {
+            $('body').on('change', 'input:radio[name="payment_method_id"]', function(e) {
                 console.log('e : ');
                 console.log(e.currentTarget.value);
                 paymentMethodArr = [];
                 window.paymentMethodId = e.currentTarget.value;
                 // window.paymentMethodId = $('input:radio[name="payment_method_id"]').val();
-                console.log('payment method id change id : '+paymentMethodId);
+                console.log('payment method id change id : ' + paymentMethodId);
                 $.each(promos, function(keys, values) {
-                    console.log('promos['+keys+'] : ');
+                    console.log('promos[' + keys + '] : ');
                     console.log(promos[keys]);
                     $.each(promos[keys]['promo_payment_method'], function(key, value) {
-                        console.log('- promos['+keys+'][id] : '+promos[keys]['id']);
-                        console.log('- value[payment_method_id] : '+value['payment_method_id']);
+                        console.log('- promos[' + keys + '][id] : ' + promos[keys]['id']);
+                        console.log('- value[payment_method_id] : ' + value[
+                            'payment_method_id']);
                         promoPaymentMethodId = value['payment_method_id'];
-                        console.log('- promoPaymentMethodId : '+promoPaymentMethodId);
-                        console.log('- paymentMethodId : '+paymentMethodId);
+                        console.log('- promoPaymentMethodId : ' + promoPaymentMethodId);
+                        console.log('- paymentMethodId : ' + paymentMethodId);
                         if (paymentMethodId == promoPaymentMethodId) {
-                            console.log('-- promoPaymentMethodId : '+promoPaymentMethodId);
+                            console.log('-- promoPaymentMethodId : ' +
+                            promoPaymentMethodId);
                             paymentMethodArr.push(promos[keys]['id']);
                         }
                     });
@@ -1268,17 +1261,24 @@
                         isInArray = jQuery.inArray(promos[key]['id'], paymentMethodArr);
                         console.log('* is in arry : ' + isInArray);
                         if (isInArray != -1) {
-                            if (!$('.promo-' + promos[key]['id']).hasClass("exceeding-the-quota-limit")) {
+                            if (!$('.promo-' + promos[key]['id']).hasClass(
+                                    "exceeding-the-quota-limit")) {
                                 $('.promo-' + promos[key]['id']).hasClass("d-none");
                                 $('.promo-' + promos[key]['id']).removeClass("d-none");
-                                $('.promo-btn-' + promos[key]['id']).prop("disabled", false);
-                                console.log('** promo key-' + key + ' id-' + promos[key]['id']);
+                                $('.promo-btn-' + promos[key]['id']).prop("disabled",
+                                false);
+                                console.log('** promo key-' + key + ' id-' + promos[key][
+                                    'id'
+                                ]);
                             }
-                            
+
                         } else {
-                            if (!$('.promo-' + promos[key]['id']).hasClass("exceeding-the-quota-limit")) {
-                                console.log('++ cannot be used promo key-' + key + ' id-' + promos[key]['id']);
-                                console.log('++ promo btn'+ promos[key]['id']+' : '+$('.promo-btn-' + promos[key]['id']).attr('id'));
+                            if (!$('.promo-' + promos[key]['id']).hasClass(
+                                    "exceeding-the-quota-limit")) {
+                                console.log('++ cannot be used promo key-' + key + ' id-' +
+                                    promos[key]['id']);
+                                console.log('++ promo btn' + promos[key]['id'] + ' : ' + $(
+                                    '.promo-btn-' + promos[key]['id']).attr('id'));
                                 $('.promo-btn-' + promos[key]['id']).prop("disabled", true);
                                 $('.promo-' + promos[key]['id']).addClass("d-none");
                             }
@@ -1292,9 +1292,9 @@
                 var subtotalWithDiscount = 0;
                 var discountedPrice = 0;
                 console.log('promo id : ' + promo_id);
-                
+
                 $('.promo-use-btn').text('Pakai Promo');
-                $('.promo-use-btn').prop('disabled',false);
+                $('.promo-use-btn').prop('disabled', false);
 
                 // $('#promoModal').modal('hide');
                 $.each(productPromos, function(keys, values) {
@@ -1313,71 +1313,113 @@
                             window.promoProductId = (value['product_id']);
                             window.discount = 0;
                             window.discountName = '';
-                            discount = productPromo['discount'];    
-                            discountName = productPromo['name'];    
-                            $('.discount-used-row').hasClass('d-none') ? $('.discount-used-row').removeClass('d-none') : '';
-                            $.each(items, function(idItem, item){
-                                $('.subtotal-cart-items-'+item['id']).text(formatRupiah(Math.round(item['subtotal']),'Rp'));
-                                
-                                $('.subtotal-cart-items-'+item['id']).hasClass('text-decoration-line-through') ? $('.subtotal-cart-items-'+item['id']).removeClass('text-decoration-line-through') : '' ; 
-                            
-                                if ($('.subtotal-cart-items-'+item['id']).hasClass('text-secondary')) {
-                                    $('.subtotal-cart-items-'+item['id']).removeClass('text-secondary');
-                                    $('.subtotal-cart-items-'+item['id']).addClass('text-danger');
+                            discount = productPromo['discount'];
+                            discountName = productPromo['name'];
+                            $('.discount-used-row').hasClass('d-none') ? $(
+                                '.discount-used-row').removeClass('d-none') : '';
+                            $.each(items, function(idItem, item) {
+                                $('.subtotal-cart-items-' + item['id']).text(
+                                    formatRupiah(Math.round(item['subtotal']),
+                                        'Rp'));
+
+                                $('.subtotal-cart-items-' + item['id']).hasClass(
+                                        'text-decoration-line-through') ? $(
+                                        '.subtotal-cart-items-' + item['id'])
+                                    .removeClass('text-decoration-line-through') :
+                                    '';
+
+                                if ($('.subtotal-cart-items-' + item['id'])
+                                    .hasClass('text-secondary')) {
+                                    $('.subtotal-cart-items-' + item['id'])
+                                        .removeClass('text-secondary');
+                                    $('.subtotal-cart-items-' + item['id'])
+                                        .addClass('text-danger');
                                 }
 
-                                $('.subtotal-cart-items-promo-'+item['id']).empty();
+                                $('.subtotal-cart-items-promo-' + item['id'])
+                                .empty();
                                 if (promoTypeId == 1 || promoTypeId == 2) {
                                     if (promoTypeId == 1) {
                                         if (promoProductId == item['product_id']) {
-                                            discount = Math.round(item['subtotal']*productPromo['discount']/100);
-                                            discountedPrice = item['subtotal'] - Math.round(item['subtotal']*productPromo['discount']/100);
-                                            console.log('subtotal : '+ discountedPrice); 
-                                            $('.subtotal-cart-items-'+item['id']).removeClass('text-danger');
-                                            $('.subtotal-cart-items-'+item['id']).addClass('text-secondary');
-                                            $('.subtotal-cart-items-'+item['id']).addClass('text-decoration-line-through');
-                                            $('.subtotal-cart-items-promo-'+item['id']).text(formatRupiah(discountedPrice, "Rp"));
+                                            discount = Math.round(item['subtotal'] *
+                                                productPromo['discount'] / 100);
+                                            discountedPrice = item['subtotal'] -
+                                                Math.round(item['subtotal'] *
+                                                    productPromo['discount'] / 100);
+                                            console.log('subtotal : ' +
+                                                discountedPrice);
+                                            $('.subtotal-cart-items-' + item['id'])
+                                                .removeClass('text-danger');
+                                            $('.subtotal-cart-items-' + item['id'])
+                                                .addClass('text-secondary');
+                                            $('.subtotal-cart-items-' + item['id'])
+                                                .addClass(
+                                                    'text-decoration-line-through');
+                                            $('.subtotal-cart-items-promo-' + item[
+                                                'id']).text(formatRupiah(
+                                                discountedPrice, "Rp"));
                                             subtotalWithDiscount += discountedPrice;
-                                        }else{
-                                            subtotalWithDiscount +=item['subtotal'];
-                                            console.log('subtotal with discount else : '+subtotalWithDiscount);
+                                        } else {
+                                            subtotalWithDiscount += item[
+                                            'subtotal'];
+                                            console.log(
+                                                'subtotal with discount else : ' +
+                                                subtotalWithDiscount);
                                         }
-                                        console.log('subtotal with discount : '+subtotalWithDiscount);
+                                        console.log('subtotal with discount : ' +
+                                            subtotalWithDiscount);
                                     } else if (promoTypeId == 2) {
                                         if (promoProductId == item['product_id']) {
-                                            discount = item['quantity']*productPromo['discount'];
-                                            discountedPrice = item['subtotal'] - (discount);
-                                            console.log('subtotal : '+ discountedPrice); 
-                                            $('.subtotal-cart-items-'+item['id']).removeClass('text-danger');
-                                            $('.subtotal-cart-items-'+item['id']).addClass('text-secondary');
-                                            $('.subtotal-cart-items-'+item['id']).addClass('text-decoration-line-through');
-                                            $('.subtotal-cart-items-promo-'+item['id']).text(formatRupiah(discountedPrice, "Rp"));
+                                            discount = item['quantity'] *
+                                                productPromo['discount'];
+                                            discountedPrice = item['subtotal'] - (
+                                                discount);
+                                            console.log('subtotal : ' +
+                                                discountedPrice);
+                                            $('.subtotal-cart-items-' + item['id'])
+                                                .removeClass('text-danger');
+                                            $('.subtotal-cart-items-' + item['id'])
+                                                .addClass('text-secondary');
+                                            $('.subtotal-cart-items-' + item['id'])
+                                                .addClass(
+                                                    'text-decoration-line-through');
+                                            $('.subtotal-cart-items-promo-' + item[
+                                                'id']).text(formatRupiah(
+                                                discountedPrice, "Rp"));
                                             subtotalWithDiscount += discountedPrice;
-                                        }else{
-                                        subtotalWithDiscount +=item['subtotal'];
-                                        console.log('subtotal with discount else : '+subtotalWithDiscount);
+                                        } else {
+                                            subtotalWithDiscount += item[
+                                            'subtotal'];
+                                            console.log(
+                                                'subtotal with discount else : ' +
+                                                subtotalWithDiscount);
                                         }
-                                        console.log('subtotal with discount : '+subtotalWithDiscount);
+                                        console.log('subtotal with discount : ' +
+                                            subtotalWithDiscount);
                                     }
                                 } else {
-                                    if(key == 0 ){
-                                        subtotalWithDiscount +=item['subtotal'];
+                                    if (key == 0) {
+                                        subtotalWithDiscount += item['subtotal'];
                                     }
-                                    console.log('subtotal : '+ subtotalWithDiscount);
-                                    console.log('item subtotal : '+ item['subtotal']);
+                                    console.log('subtotal : ' +
+                                        subtotalWithDiscount);
+                                    console.log('item subtotal : ' + item[
+                                        'subtotal']);
                                     discountName = productPromo['name'];
                                 }
-                                
+
                             });
-                            console.log('product promo key : '+ key);
-                            if(key == 0){
+                            console.log('product promo key : ' + key);
+                            if (key == 0) {
                                 if (promoTypeId == 3 || promoTypeId == 4) {
                                     console.log('promo type : ' + promoTypeId);
                                     if (promoTypeId == 3) {
-                                        discount = Math.round(subtotalWithDiscount*productPromo['discount']/100);
+                                        discount = Math.round(subtotalWithDiscount *
+                                            productPromo['discount'] / 100);
                                         subtotalWithDiscount -= discount;
-                                        console.log('discount : '+ discount);
-                                        console.log('subtotal with discount  : '+ subtotalWithDiscount);
+                                        console.log('discount : ' + discount);
+                                        console.log('subtotal with discount  : ' +
+                                            subtotalWithDiscount);
                                         // $('.discount-val').text(discount + '%');
                                     } else if (promoTypeId == 4) {
                                         subtotalWithDiscount -= discount;
@@ -1388,44 +1430,49 @@
                             }
                             console.log(productPromo['promo_type_id']);
                         });
-                        $('.discount-val').text(formatRupiah(discount,"Rp"));
+                        $('.discount-val').text(formatRupiah(discount, "Rp"));
                         $('.discount-used-text').text(discountName);
                     }
                     console.log('discounted price : ' + subtotalWithDiscount);
                     console.log('shipment price : ' + price);
-                    
+
                     // $('input[name="checkout_total_price"]').val(subtotalWithDiscount + parseInt(price));
 
                     // $('.cart-items-total-val').text(formatRupiah(subtotalWithDiscount, "Rp"));
                     // $('.checkout-payment-total-price-val').text(formatRupiah(subtotalWithDiscount, "Rp"));
-                    $('.checkout-payment-total-all-val').text(formatRupiah(subtotalWithDiscount + parseInt(price), "Rp"));
-                    $('.checkout-total-all-val').text(formatRupiah(subtotalWithDiscount + parseInt(price), "Rp"));
-                        
+                    $('.checkout-payment-total-all-val').text(formatRupiah(subtotalWithDiscount +
+                        parseInt(price), "Rp"));
+                    $('.checkout-total-all-val').text(formatRupiah(subtotalWithDiscount + parseInt(
+                        price), "Rp"));
+
                     // $('input[name="checkout_payment_total_price"]').val(subtotalWithDiscount + parseInt(price));
-                
+
                 });
-                   
-                $('.promo-btn-'+promo_id).text('Digunakan');
-                $('.promo-btn-'+promo_id).prop('disabled',true);
+
+                $('.promo-btn-' + promo_id).text('Digunakan');
+                $('.promo-btn-' + promo_id).prop('disabled', true);
 
                 $('#promoModal').modal('hide');
                 $('#paymentModal').modal('show');
             });
 
-            $('body').on('click','.discount-used-cancel-btn', function(){
+            $('body').on('click', '.discount-used-cancel-btn', function() {
                 var subtotalProductPrice = 0;
-                $.each(items, function(idItem, item){
+                $.each(items, function(idItem, item) {
                     subtotalProductPrice += item['subtotal'];
                 });
 
                 $('input[name="promo_use_id"]').val('');
-                $('.discount-used-row').hasClass('d-none') ? '': $('.discount-used-row').addClass('d-none');
+                $('.discount-used-row').hasClass('d-none') ? '' : $('.discount-used-row').addClass(
+                'd-none');
                 $('.discount-used-text').text('');
                 $('.discount-val').text('');
-                $('.checkout-payment-total-all-val').text(formatRupiah(subtotalProductPrice + parseInt(price), "Rp"));
-                $('.checkout-total-all-val').text(formatRupiah(subtotalProductPrice + parseInt(price), "Rp"));
+                $('.checkout-payment-total-all-val').text(formatRupiah(subtotalProductPrice + parseInt(
+                    price), "Rp"));
+                $('.checkout-total-all-val').text(formatRupiah(subtotalProductPrice + parseInt(price),
+                    "Rp"));
                 $('.promo-use-btn').text('Pakai Promo');
-                $('.promo-use-btn').prop('disabled',false);
+                $('.promo-use-btn').prop('disabled', false);
             });
 
             $('body').on('change', 'select[name="sender_city_id"]', function(e) {
@@ -1522,27 +1569,27 @@
                     $('.checkout-shipment-total-text').text('Total Ongkos Kirim');
 
                     $('.checkout-payment-shipment-text').text('Total Ongkos Kirim');
-                    
+
                     $('input[name="checkout_total_price"]').val(parseInt($(
                         'input[name="total_subtotal"]').val()) + parseInt(price));
-                    
+
                     $('.checkout-shipment-total-val').text(formatRupiah(price, "Rp"));
-                    
+
                     $('.checkout-payment-shipment-val').text(formatRupiah(price, "Rp"));
-                    
+
                     $('.checkout-total-all-val').text(formatRupiah(parseInt($(
                         'input[name="total_subtotal"]').val()) + parseInt(price), "Rp"));
-                    
+
                     $('.checkout-payment-total-all-val').text(formatRupiah(parseInt($(
                         'input[name="total_subtotal"]').val()) + parseInt(price), "Rp"));
-                    
+
                     $('#courierModal').modal('toggle');
-                    
+
                     $('input[name="checkout_payment_total_price"]').val(parseInt($(
                         'input[name="total_subtotal"]').val()) + parseInt(price));
-                    
+
                     $('.courier-error-text').empty();
-                    
+
                     $('.checkout-payment-courier-text').text(courier + ' ' + service + ' ' + etd +
                         ' hari');
 
@@ -1622,6 +1669,21 @@
                     $(this).toggle($(this).text().toLowerCase().indexOf(search) > -1);
                     // });
                 });
+            });
+
+            $('.payment-form').on('submit', function(e) {
+                if (confirm('Apakah anda yakin Data Pemesanan anda sudah benar (Alamat Pengiriman, Produk Pesanan, dan Kurir Pengiriman)?')) {
+                    $('.continue-payment').append(
+                        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+                        );
+                    $('.show-payment-modal-button').attr('disabled', true);
+                    // console.log('confirm');
+                    // e.preventDefault();
+                    return true;
+                } else {
+                    return false;
+                }
+
             });
         });
     </script>

@@ -40,7 +40,7 @@
                 @endif
                 <input type="hidden" name="category" value="{{ $category->slug }}">
                 <button type="submit"
-                    class="btn p-0 text-dark text-decoration-none shadow-none category-left-side {{ $category->slug == request('category') ? 'fw-bold' : '' }}">
+                    class="text-start btn p-0 text-dark text-decoration-none shadow-none category-left-side {{ $category->slug == request('category') ? 'fw-bold' : '' }}">
                     {{ $category->name }}
                 </button>
             </li>

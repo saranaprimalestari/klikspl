@@ -7,22 +7,42 @@
                     <span class="small d-block">Beranda</span>
                 </a>
             </li>
-            <li class="nav-item {{ isset($active) ? ($active == 'order' ? 'nav-mobile-active' : '') : '' }}">
-                    <a href="{{route('order.index')}}" class="nav-link text-center text-dark">
-                <i class="bi bi-receipt-cutoff"></i>
-                <span class="small d-block">Pesanan</span>
+            <li class="nav-item {{ isset($active) ? ($active == 'order' ? 'nav-mobile-active' : '') : '' }} navbar-dropdown dropdown">
+                <a href="{{ route('order.index') }}" class="nav-link text-center text-dark">
+                    <i class="bi bi-bag"></i>
+                    @auth
+                    @if (count($userOrders) > 0)
+                        <span class="position-absolute top-5 start-100 bot-nav-badge badge bg-danger">
+                            {{ count($userOrders) }}
+                            <span class="visually-hidden">Order</span>
+                        </span>
+                    @endif
+                @endauth
+                    <span class="small d-block">Pesanan</span>
                 </a>
             </li>
-            <li class="nav-item {{ isset($active) ? ($active == 'notification' ? 'nav-mobile-active' : '') : '' }}">
+            {{-- <li class="nav-item {{ isset($active) ? ($active == 'notification' ? 'nav-mobile-active' : '') : '' }}">
                 <a href="{{ route('notifications.index') }}" class="nav-link text-center text-dark">
                     <i class="bi bi-bell"></i>
                     <span class="small d-block">Notifikasi</span>
                 </a>
+            </li> --}}
+            <li class="nav-item {{ isset($active) ? ($active == 'rating' ? 'nav-mobile-active' : '') : '' }}">
+                <a href="{{ route('rating.index') }}" class="nav-link text-center text-dark">
+                    <i class="bi bi-star"></i>
+                    <span class="small d-block">Penilaian</span>
+                </a>
             </li>
             <li class="nav-item {{ isset($active) ? ($active == 'profile' ? 'nav-mobile-active' : '') : '' }}">
-                <a href="{{ route('profile.index') }}" class="nav-link text-center text-dark" role="button" id="dropdownMenuProfile"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="bi bi-person"></i>
+                <a href="{{ route('profile.index') }}" class="nav-link text-center text-dark" role="button"
+                    id="dropdownMenuProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    @if (!empty(auth()->user()->profile_image))
+                        <img class="navbar-profile-image"
+                            src="{{ asset('/storage/' . auth()->user()->profile_image) }}" alt="">
+                    @else
+                        <i class="far fa-user-circle"></i>
+                    @endif
+                    {{-- <i class="bi bi-person"></i> --}}
                     <span class="small d-block">Profil</span>
                 </a>
                 <!-- Dropup menu for profile -->

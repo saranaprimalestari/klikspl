@@ -27,7 +27,7 @@
                     <div class="col-md-10 col-8">
                         <div class="input-group me-3">
                             <div class="input-group fs-14">
-                                <input type="text"
+                                <input type="search"
                                     class="form-control border-radius-075rem fs-14 shadow-none border-end-0"
                                     id="searchKeyword" placeholder="Cari nama produk, no.inv, no.resi"
                                     aria-label="Cari nama produk, pembeli, nomor resi" aria-describedby="search-order"
@@ -180,7 +180,7 @@
                                 </div>
                             </a>
                             <div class="row d-flex align-items-center fs-13">
-                                <div class="col-md-7 col-12 my-2">
+                                <div class="col-md-7 col-12 my-0 my-sm-2 mt-3 mt-sm-2">
                                     <p class="m-0">
                                         Status Pesanan:
                                     </p>
@@ -194,7 +194,7 @@
                                             <span class="badge bg-secondary">
                                                 Pesanan Dibatalkan
                                             </span>
-                                            <div class="mt-1">
+                                            <div class="mt-1 text-truncate">
                                                 <span class="m-0">
                                                     {{-- <span>
                                                         {{ ucfirst($order->order_status) }},
@@ -217,7 +217,7 @@
                                                     {{ ucfirst($order->order_status) }}
                                                 </span>
                                             </div>
-                                            <div class="mt-1">
+                                            <div class="mt-1 text-truncate">
                                                 <span class="m-0 text-danger">
                                                     {{-- <span>
                                                         {{ ucfirst($order->order_status) }},
@@ -239,7 +239,7 @@
                                                     {{ ucfirst($order->order_status) }}
                                                 </span>
                                             </div>
-                                            <div class="mt-1">
+                                            <div class="mt-1 text-truncate">
                                                 <span class="m-0">
                                                     {{-- <span>
                                                         {{ ucfirst($order->order_status) }},
@@ -255,7 +255,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="col-md-5 col-12 text-end my-2">
+                                <div class="col-md-5 col-12 text-end my-0 my-sm-2">
                                     @if ($order->order_status === 'belum bayar')
                                         <a href="{{ route('order.show', $order) }}"
                                             class="btn btn-danger fs-13 my-1 mx-1">
@@ -277,7 +277,7 @@
                                 </div>
                             </div>
                             @if ($order->order_status == 'pesanan dikirim' &&
-                                $order->orderstatusdetail->last()->status == 'Nomor resi telah terbit')
+                                ($order->orderstatusdetail->last()->status == 'Nomor resi telah terbit' || $order->orderstatusdetail->last()->status == 'Nomor resi diperbarui admin'))
                                 <div class="row d-flex align-items-center fs-13">
                                     <div class="col-md-9 col-12 my-2 d-none d-sm-block">
                                         Tekan tombol <strong>PESANAN DITERIMA</strong> jika pesanan sudah sampai dan anda
@@ -376,11 +376,11 @@
                                 <form class="confirm-order-form" action="{{ route('confirm.order') }}" method="POST"
                                     enctype="multipart/form-data">
                                     @csrf
-                                    <button type="button" class="btn btn-secondary fs-14"
+                                    <button type="button" class="btn btn-outline-secondary fs-14"
                                         data-bs-dismiss="modal">Tutup</button>
                                     {{-- <input type="hidden" name="order_id" value="{{ $orders[0]->id }}"> --}}
                                     <input type="hidden" class="confirm-order-id" name="orderId" value="">
-                                    <button type="submit" class="btn btn-danger shadow-none fs-14">Konfirmasi</button>
+                                    <button type="submit" class="btn btn-danger shadow-none fs-14 submit-button">Konfirmasi</button>
                                 </form>
                             </div>
                         </div>
@@ -474,6 +474,18 @@
                     orderId +
                     '">');
             });
+
+            $('.confirm-order-form').submit(function(e) {
+                console.log(e);
+                console.log('ini function');
+                console.log($('.submit-button'));
+                $('.submit-button').append(
+                    '<span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>'
+                );
+                $('.submit-button').attr('disabled', true);
+
+                // e.preventDefault();
+            })
 
         });
     </script>

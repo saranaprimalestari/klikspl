@@ -147,7 +147,7 @@
                                                 <th class="min-mobile">No</th>
                                                 {{-- <th class="min-mobile">Pesanan</th> --}}
                                                 <th class="min-mobile">No. Invoice</th>
-                                                <th class="min-mobile">Status</th>
+                                                <th class="min-mobile">Username</th>
                                                 <th class="min-mobile">Metode Pembayaran</th>
                                                 <th class="not-mobile">Total Pembayaran</th>
                                             </tr>
@@ -165,7 +165,7 @@
                                                         </a>
                                                     </td>
                                                     <td>
-                                                        {{ $order->order_status }}
+                                                        {{ $order->users->username }}
                                                     </td>
                                                     <td>
                                                         {{ $order->paymentmethod->type }}
@@ -192,7 +192,7 @@
                                             <tr>
                                                 <th class="min-mobile">No</th>
                                                 <th class="min-mobile">No. Invoice</th>
-                                                <th class="min-mobile">Status</th>
+                                                <th class="min-mobile">Username</th>
                                                 <th class="min-mobile">Metode Pembayaran</th>
                                                 <th class="not-mobile">Total Pembayaran</th>
                                             </tr>
@@ -210,7 +210,7 @@
                                                         </a>
                                                     </td>
                                                     <td>
-                                                        {{ $orderThisMonth->order_status }}
+                                                        {{ $orderThisMonth->users->username }}
                                                     </td>
                                                     <td>
                                                         {{ $orderThisMonth->paymentmethod->type }}

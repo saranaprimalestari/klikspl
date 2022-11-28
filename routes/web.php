@@ -112,11 +112,11 @@ Route::name('checkout.payment')->post('/payment', [CartItemUserController::class
 Route::name('checkout.payment.view')->get('/payment', [CartItemUserController::class, 'paymentView'])->middleware('auth');
 
 //user notification
-Route::name('read.all.notifications')->post('/user/account/readallnotifications', [UserNotificationController::class,'allNotificationsIsReaded'])->middleware('auth');
+Route::name('read.all.notifications')->post('/user/account/readallnotifications', [UserNotificationController::class, 'allNotificationsIsReaded'])->middleware('auth');
 Route::resource('/user/account/notifications', UserNotificationController::class)->middleware('auth');
 
 //user Promo
-Route::resource('/user/account/promo', UserPromoController::class)->except(['edit','update','destroy'])->middleware('auth')->parameters(['promo' => 'promo:slug']);;
+Route::resource('/user/account/promo', UserPromoController::class)->except(['edit', 'update', 'destroy'])->middleware('auth')->parameters(['promo' => 'promo:slug']);;
 
 //user address
 Route::name('useraddress.change.active')->post('/changeaddress', [UserAddressController::class, 'changeAddress'])->middleware('auth');
@@ -220,7 +220,7 @@ Route::prefix('administrator')->group(function () {
 
     Route::name('admin.home')->get('/', [Admin\HomeController::class, 'index']);
     Route::resource('/management', Admin\AdminManagementController::class)->middleware('adminMiddle');
-    
+
     Route::name('admin.product.check.slug')->get('/adminproduct/checkSlug', [Admin\AdminProductController::class, 'checkSlug']);
     Route::name('admin.product.delete.image')->post('/adminproduct/deleteproductimage', [Admin\AdminProductController::class, 'deleteProductImage']);
     Route::name('admin.product.update.status')->post('/adminproduct/updatestatus', [Admin\AdminProductController::class, 'updateStatus']);
@@ -244,6 +244,7 @@ Route::prefix('administrator')->group(function () {
     Route::name('delive.order')->post('/adminorder/delive-order', [Admin\AdminOrderController::class, 'deliveOrder']);
     Route::name('decline.payment')->post('/adminorder/decline-payment', [Admin\AdminOrderController::class, 'declinePayment']);
     Route::name('shipping.receipt.upload')->post('/adminorder/shipping-receipt-upload', [Admin\AdminOrderController::class, 'shippingReceiptUpload']);
+    Route::name('shipping.receipt.update')->post('/adminorder/shipping-receipt-update', [Admin\AdminOrderController::class, 'shippingReceiptUpdate']);
     Route::name('decline.cancellation.order')->post('/adminorder/decline-cancellation-order', [Admin\AdminOrderController::class, 'declineCancellationOrder']);
     Route::name('confirm.cancellation.order')->post('/adminorder/confirm-cancellation-order', [Admin\AdminOrderController::class, 'confirmCancellationOrder']);
     Route::name('cancel.order')->post('/adminorder/cancel-order', [Admin\AdminOrderController::class, 'cancelOrder']);
@@ -255,9 +256,9 @@ Route::prefix('administrator')->group(function () {
 
     Route::name('admin.payment.update.status')->post('/paymentmethod/updatestatus', [Admin\AdminPaymentMethodController::class, 'updateStatus'])->middleware('adminMiddle');
     Route::resource('/paymentmethod', Admin\AdminPaymentMethodController::class)->middleware('adminMiddle');
-    
+
     Route::name('admin.income')->get('/incomes', [Admin\AdminIncomeController::class, 'index'])->middleware('adminMiddle');
-    
+
     Route::name('admin.promo.banner.check.slug')->get('/promobanner/checkSlug', [Admin\AdminPromoBannerController::class, 'checkSlug']);
     Route::resource('/promobanner', Admin\AdminPromoBannerController::class)->middleware('adminMiddle');
 
@@ -266,10 +267,11 @@ Route::prefix('administrator')->group(function () {
     Route::name('admin.promo.voucher.delete.image')->post('/promovoucher/deleteimage', [Admin\AdminPromoVoucherController::class, 'deleteImage']);
     Route::name('admin.promo.voucher.check.slug')->get('/promovoucher/checkSlug', [Admin\AdminPromoVoucherController::class, 'checkSlug']);
     Route::resource('/promovoucher', Admin\AdminPromoVoucherController::class)->middleware('adminMiddle')->parameters(['promovoucher' => 'promovoucher:slug']);;
+    Route::resource('/account/adminprofile', Admin\AdminProfileController::class)->middleware('adminMiddle');
 
     Route::name('productcomment.reply')->get('/productcomment/reply/{comment}', [Admin\AdminProductCommentController::class, 'commentReply'])->middleware('adminMiddle');
     Route::resource('/productcomment', Admin\AdminProductCommentController::class)->middleware('adminMiddle');
-    Route::name('my.comment.index')->get('/mycomment', [Admin\AdminReplyCommentController::class,'index'])->middleware('adminMiddle');
+    Route::name('my.comment.index')->get('/mycomment', [Admin\AdminReplyCommentController::class, 'index'])->middleware('adminMiddle');
     // finance-admin
     Route::prefix('finance')->group(function () {
         Route::name('finance.home')->get('/', [Admin\Finance\FinanceHomeController::class, 'index']);

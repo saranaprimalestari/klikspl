@@ -22,8 +22,7 @@
             <h5 class="m-0">Alamat Saya</h5>
         </div>
         <div class="col-md-4 text-end">
-            <a href="{{ route('useraddress.create') }}"
-                class="btn btn-danger profile-address-change-btn py-2 px-3">
+            <a href="{{ route('useraddress.create') }}" class="btn btn-danger profile-address-change-btn py-2 px-3">
                 <p>
                     <i class="bi bi-plus-lg"></i> Tambah Alamat
                 </p>
@@ -33,8 +32,7 @@
     <div class="card mb-3 profile-card">
         <div class="card-body p-4">
             @if (auth()->user()->useraddress->count() > 0)
-                @foreach (auth()->user()->useraddress()->orderBy('is_active', 'desc')->get()
-        as $address)
+                @foreach (auth()->user()->useraddress()->orderBy('is_active', 'desc')->get() as $address)
                     <div
                         class="card mb-4 profile-address-card user-address-{{ $address->id }} {{ $address->is_active == 1 ? 'border border-danger' : '' }}">
                         <div class="card-body p-0 p-4">
@@ -54,11 +52,11 @@
                                             {{ $address->city->name }},
                                         </span>
                                         <span class="m-0 profile-address-province me-1">
-                                            {{ $address->province->name }},
+                                            {{ $address->province->name }}
                                         </span>
-                                        <span class="m-0 profile-address-postalcode">
+                                        {{-- <span class="m-0 profile-address-postalcode">
                                             {{ $address->city->postal_code }}
-                                        </span>
+                                        </span> --}}
                                     </div>
                                     <div class="input-data">
                                         <input class="city-origin" type="hidden" name="cityOrigin" value="35">

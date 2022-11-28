@@ -61,7 +61,7 @@
     </div>
 
     <div class="index-adp mt-4 d-none d-sm-block mb-5">
-        <div class="row justify-content-center align-items-center">
+        <div class="row justify-content-center align-items-center text-center">
             @foreach ($merksIndex as $merk)
                 <div class="index-adp-item col-md-2 col-6 my-3">
                     <a class="index-adp-img" href="/products?merk={{ $merk->slug }}">
@@ -77,13 +77,15 @@
 
     <div class="index-adp-mobile d-block d-sm-none my-5">
         <h4>Produk Keagenan</h4>
-        <div class="row align-items-center">
-            @foreach ($merks as $merk)
-                <div class="index-adp-item col-md-2 col-5 my-3">
-                    <a class="index-adp-img" href="/merk/{{ $merk->slug }}">
-                        <img src="{{ $merk->image }}" alt="">
-                    </a>
-                </div>
+        <div class="row align-items-center text-center">
+            @foreach ($merksIndex as $merk)
+                @if (!empty($merk->image))
+                    <div class="index-adp-item col-md-2 col-5 my-3">
+                        <a class="index-adp-img-mobile" href="/products?merk={{ $merk->slug }}">
+                            <img src="{{ $merk->image }}" alt="">
+                        </a>
+                    </div>
+                @endif
             @endforeach
             <div class="index-adp-item col-md-2 col-6 my-3">
                 <a class="text-decoration-none text-danger fs-14" href="{{ route('merk') }}">Lihat Semua</a>

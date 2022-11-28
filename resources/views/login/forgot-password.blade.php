@@ -84,7 +84,7 @@
                                 </span>
                             </div>
                         </div>
-                        <form class="mt-1" method="POST" action="{{ route(' m.password.post') }}">
+                        <form class="mt-1" method="POST" action="{{ route('forgot.password.post') }}">
                             @csrf
                             <div class="mb-3">
                                 <label for="forgot-password-email-telpno"

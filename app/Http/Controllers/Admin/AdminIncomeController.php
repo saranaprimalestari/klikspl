@@ -30,6 +30,7 @@ class AdminIncomeController extends Controller
         $allOrders = Order::withTrashed()->get();
         // dd($allOrders);
 
+        // dd($incomePerPaymentMethod);
         // dd($orders);
         // dd(date('Y'));
         // dd($orderThisMonth);

@@ -161,7 +161,7 @@
                                 <div class="d-flex justify-content-end">
                                     <div class="row my-3 text-end">
                                         <div class="col-md-12">
-                                            <button type="button" class="btn btn-secondary fs-14 mb-2"
+                                            <button type="button" class="btn btn-outline-secondary fs-14 mb-2"
                                                 data-bs-toggle="modal" data-bs-target="#cancelConfirmPayment">
                                                 Tolak Pembayaran
                                             </button>
@@ -204,8 +204,8 @@
                                             @csrf
                                             <input type="hidden" name="order_id" value="{{ $orders->id }}">
                                             <button type="submit"
-                                                class="btn btn-danger fs-14 my-2 shadow-none">Konfirmasi
-                                                Pembayaran
+                                                class="btn btn-danger fs-14 my-2 shadow-none submit-button">
+                                                Konfirmasi Pembayaran
                                             </button>
                                         </form>
                                     </div>
@@ -285,7 +285,8 @@
                                             method="POST">
                                             @csrf
                                             <input type="hidden" name="order_id" value="{{ $orders->id }}">
-                                            <button type="submit" class="btn btn-danger fs-14 my-2 shadow-none">
+                                            <button type="submit"
+                                                class="btn btn-danger fs-14 my-2 shadow-none submit-button">
                                                 Siapkan Pesanan
                                             </button>
                                         </form>
@@ -301,7 +302,6 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
-                                    {{-- @method('delete') --}}
                                     @csrf
                                     <div class="modal-body text-center py-2 px-5">
                                         <h5 class="mb-3">Konfirmasi Kirim Pesanan</h5>
@@ -320,30 +320,37 @@
                                             method="POST">
                                             @csrf
                                             <input type="hidden" name="order_id" value="{{ $orders->id }}">
-                                            <button type="submit" class="btn btn-danger fs-14 my-2 shadow-none">Kirim
-                                                Pesanan
+                                            <button type="submit"
+                                                class="btn btn-danger fs-14 my-2 shadow-none submit-button">
+                                                Kirim Pesanan
                                             </button>
                                         </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    @elseif($orders->order_status === 'pesanan dikirim' &&
-                        $orders->orderstatusdetail->last()->status != 'Nomor resi telah terbit')
+                    @elseif($orders->order_status === 'pesanan dikirim')
+                        {{-- @if ($orders->orderstatusdetail->last()->status != 'Nomor resi telah terbit') --}}
                         <div class="card fs-14 border-radius-1-5rem border-0 mb-4 box-shadow">
                             <div class="card-body p-4 pb-0">
                                 {{-- <form action="{{ route('shipping.receipt.upload') }}" method="POST">
                                     @csrf --}}
                                 <p class=" fs-14 fw-bold m-0 mb-1">
-                                    @if ($orders->order_status === 'pesanan dikirim')
+                                    @if ($orders->order_status === 'pesanan dikirim' &&
+                                        $orders->orderstatusdetail->last()->status != 'Nomor resi telah terbit')
                                         Masukkan Nomor Resi
+                                    @elseif ($orders->order_status === 'pesanan dikirim')
+                                        Ubah Nomor Resi
                                     @elseif($orders->order_status === 'pesanan disiapkan')
                                         Kirimkan Pesanan
                                     @endif
                                 </p>
                                 <p class="fs-12 m-0 mb-4">
-                                    @if ($orders->order_status === 'pesanan dikirim')
+                                    @if ($orders->order_status === 'pesanan dikirim' &&
+                                        $orders->orderstatusdetail->last()->status != 'Nomor resi telah terbit')
                                         Masukkan nomor resi/bukti pengiriman ke kurir di bawah ini
+                                    @elseif ($orders->order_status === 'pesanan dikirim')
+                                        Masukkan nomor resi/bukti pengiriman terbaru di bawah ini
                                     @endif
                                 </p>
                                 <div class="mb-3 row">
@@ -388,10 +395,14 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
-                                    {{-- @method('delete') --}}
-                                    @csrf
                                     <div class="modal-body text-center py-2 px-5">
-                                        <h5 class="mb-3">Konfirmasi Nomor Resi </h5>
+                                        @if ($orders->order_status === 'pesanan dikirim' &&
+                                            $orders->orderstatusdetail->last()->status != 'Nomor resi telah terbit')
+                                            <h5 class="mb-3">Konfirmasi Nomor Resi </h5>
+                                        @elseif ($orders->order_status === 'pesanan dikirim')
+                                            <h5 class="mb-3">Konfirmasi Update Nomor Resi </h5>
+                                        @endif
+                                        {{-- <h5 class="mb-3">Konfirmasi Nomor Resi </h5> --}}
                                         <div class="fs-14">
                                             <p class="mb-1">
                                                 Nomor Resi yang anda masukkan adalah
@@ -412,19 +423,21 @@
                                     <div class="modal-footer border-0 d-flex justify-content-center pb-4">
                                         <button type="button" class="btn btn-outline-secondary fs-14"
                                             data-bs-dismiss="modal">Tutup</button>
-                                        <form class="" action="{{ route('shipping.receipt.upload') }}"
+                                        <form class="submit-resi-number-form"
+                                            action="{{ $orders->order_status === 'pesanan dikirim' && $orders->orderstatusdetail->last()->status != 'Nomor resi telah terbit' ? route('shipping.receipt.upload') : route('shipping.receipt.update') }}"
                                             method="POST">
                                             @csrf
                                             <input type="hidden" name="resi" value="">
                                             <input type="hidden" name="order_id" value="{{ $orders->id }}">
-                                            <button type="submit" class="btn btn-danger fs-14 my-2 shadow-none">Simpan
+                                            <button type="submit" class="btn btn-danger fs-14 my-2 shadow-none submit-button">
+                                                Simpan
                                             </button>
                                         </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="modal fade" id="prepareOrder" tabindex="-1" aria-labelledby="prepareOrderModal"
+                        {{-- <div class="modal fade" id="prepareOrder" tabindex="-1" aria-labelledby="prepareOrderModal"
                             aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content border-radius-1-5rem">
@@ -432,7 +445,6 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
-                                    {{-- @method('delete') --}}
                                     @csrf
                                     <div class="modal-body text-center py-2 px-5">
                                         <h5 class="mb-3">Konfirmasi Siapkan Pesanan</h5>
@@ -452,14 +464,14 @@
                                             method="POST">
                                             @csrf
                                             <input type="hidden" name="order_id" value="{{ $orders->id }}">
-                                            <button type="submit" class="btn btn-danger fs-14 my-2 shadow-none">Siapkan
-                                                Pesanan
+                                            <button type="submit" class="btn btn-danger fs-14 my-2 shadow-none submit-button">
+                                                Siapkan Pesanan
                                             </button>
                                         </form>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="modal fade" id="deliveOrder" tabindex="-1" aria-labelledby="deliveOrderModal"
                             aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
@@ -468,7 +480,6 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
-                                    {{-- @method('delete') --}}
                                     @csrf
                                     <div class="modal-body text-center py-2 px-5">
                                         <h5 class="mb-3">Konfirmasi Kirim Pesanan</h5>
@@ -857,7 +868,7 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
-                            <form action="{{ route('decline.payment') }}" method="post" class="d-inline">
+                            <form action="{{ route('decline.payment') }}" method="post" class="d-inline cancel-confirm-payment-form">
                                 {{-- @method('delete') --}}
                                 @csrf
                                 <div class="modal-body text-center py-2 px-5">
@@ -880,7 +891,7 @@
                                 <div class="modal-footer border-0 d-flex justify-content-center pb-4">
                                     <button type="button" class="btn btn-outline-secondary fs-14"
                                         data-bs-dismiss="modal">Tutup</button>
-                                    <button type="submit" class="btn btn-danger fs-14 my-2 shadow-none">Tolak
+                                    <button type="submit" class="btn btn-danger fs-14 my-2 shadow-none submit-button">Tolak
                                         Pembayaran</button>
                                 </div>
                             </form>
@@ -895,7 +906,7 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
-                            <form action="{{ route('cancel.order') }}" method="post" class="d-inline">
+                            <form action="{{ route('cancel.order') }}" method="post" class="d-inline cancel-confirm-order-form">
                                 {{-- @method('delete') --}}
                                 @csrf
                                 <div class="modal-body text-center py-2 px-5">
@@ -917,7 +928,7 @@
                                 <div class="modal-footer border-0 d-flex justify-content-center pb-4">
                                     <button type="button" class="btn btn-outline-secondary fs-14"
                                         data-bs-dismiss="modal">Tutup</button>
-                                    <button type="submit" class="btn btn-danger fs-14 my-2 shadow-none">
+                                    <button type="submit" class="btn btn-danger fs-14 my-2 shadow-none submit-button">
                                         Batalkan Pesanan
                                     </button>
                                 </div>
@@ -1639,6 +1650,17 @@
                     console.log($('.expand-detail-shipment-order-chevron'));
                 }
             });
+            $('.confirm-payment-form, .prepare-order-form, .delive-order-form, .submit-resi-number-form, .cancel-confirm-payment-form, .cancel-confirm-order-form').submit(function(e) {
+                console.log(e);
+                console.log('ini function');
+                console.log($('.submit-button'));
+                $('.submit-button').append(
+                    '<span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>'
+                );
+                $('.submit-button').attr('disabled', true);
+
+                // e.preventDefault();
+            })
         });
     </script>
 @endsection
