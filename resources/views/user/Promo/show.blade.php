@@ -174,4 +174,9 @@
             </div>
         </div>
     </div>
+    <script>
+         $(window).focus(function() {
+            window.location.reload();
+        });
+    </script>
 @endsection

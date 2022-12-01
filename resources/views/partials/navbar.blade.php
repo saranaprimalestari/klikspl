@@ -205,14 +205,14 @@
                                                                         src="{{ asset('/storage/' . $cart->product->productimage[0]->name) }}"
                                                                         alt="" width="40">
                                                                 @else
-                                                                    <img class="img-fluid w-100 border-radius-05rem"
+                                                                    {{-- <img class="img-fluid w-100 border-radius-05rem"
                                                                         src="https://source.unsplash.com/400x400?product--{{ $loop->iteration }}"
-                                                                        alt="" width="40">
+                                                                        alt="" width="40"> --}}
                                                                 @endif
                                                             @else
-                                                                <img class="img-fluid w-100 border-radius-05rem"
+                                                                {{-- <img class="img-fluid w-100 border-radius-05rem"
                                                                     src="https://source.unsplash.com/400x400?product--{{ $loop->iteration }}"
-                                                                    alt="" width="40">
+                                                                    alt="" width="40"> --}}
                                                             @endif
                                                             {{-- <img src="/assets/cheetah-adv-army.png" alt="" width="40"> --}}
 
@@ -316,13 +316,23 @@
                                                                     class="img-fluid w-100 border-radius-05rem"
                                                                     alt="...">
                                                             @else
-                                                                <img src="https://source.unsplash.com/400x400?product-1"
+                                                                {{-- <img src="https://source.unsplash.com/400x400?product-1"
                                                                     class="img-fluid w-100 border-radius-05rem"
-                                                                    alt="...">
+                                                                    alt="..."> --}}
                                                             @endif
                                                         </div>
-                                                        <div class="col-10 ps-0 text-truncate ">
-                                                            {{ $notification->excerpt }}
+                                                        <div class="col-10 ps-0 text-truncate notification-dropdown-text">
+                                                            {{-- {{ $notification->excerpt }} --}}
+                                                            <div class="fw-600 m-0">
+                                                                {{ $notification->excerpt }}
+                                                            </div>
+                                                            <div class="fs-12 notification-description-navbar"> 
+                                                                {!! $notification->description !!}
+                                                            </div>
+                                                            <div class="fs-12 text-secondary">
+                                                                {{ \Carbon\Carbon::parse($notification->created_at)->isoFormat('D MMM Y, HH:mm') }}
+                                                                WIB
+                                                            </div>
                                                         </div>
                                                         {{-- <div class="col-4 text-end text-danger">
                                                         Rp{{ price_format_rupiah($notification->product->price) }}

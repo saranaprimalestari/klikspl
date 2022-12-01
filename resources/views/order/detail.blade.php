@@ -81,7 +81,7 @@
                                                                         </div>
                                                                         <div
                                                                             class="text-truncate order-items-product-variant text-grey">
-                                                                            Berat: {{ $item->orderproduct->weight }}
+                                                                            Berat: {{ $item->orderproduct->weight }}gr
                                                                         </div>
                                                                         <div
                                                                             class="text-truncate order-items-product-price-qty text-grey text-end text-md-start">

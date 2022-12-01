@@ -204,9 +204,9 @@
         </div>
     </div>
     <script>
-        // $(window).focus(function() {
-        //     window.location.reload();
-        // });
+        $(window).focus(function() {
+            window.location.reload();
+        });
         $(document).ready(function() {
             window.orders = {!! json_encode($orderItems) !!};
             console.log(orders);

@@ -15,6 +15,12 @@ body {
     color: #000000;
 }
 
+
+/* 
+p {
+    margin: 0;
+} */
+
 .main {
     margin-top: 8rem;
 }
@@ -337,6 +343,15 @@ input[type=number]::-webkit-outer-spin-button {
 
 .bot-nav-badge {
     transform: translate(-140%, -35%);
+}
+
+.notification-dropdown-text {
+    white-space: normal;
+}
+
+.notification-description-navbar {
+    max-height: 40px;
+    overflow: hidden;
 }
 
 
@@ -1246,6 +1261,11 @@ input[type=number]::-webkit-outer-spin-button {
 .notification-empty {
     margin-top: 6rem;
     margin-bottom: 10rem;
+}
+
+.notification-description-index {
+    max-height: 45px;
+    overflow: hidden;
 }
 
 

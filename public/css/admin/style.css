@@ -100,6 +100,21 @@ body {
 }
 
 
+/* navbar */
+
+.admin-notification-dropdown-text {
+    white-space: normal !important;
+}
+
+.admin-notification-description-navbar {
+    max-height: 40px;
+    overflow: hidden;
+}
+
+
+/* end navbar */
+
+
 /* sidebar */
 
 .sidebar {

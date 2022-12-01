@@ -38,7 +38,7 @@
                     {!! $notification->description !!}
                 </div>
                 @if (isset($order))
-                    <div class="card mb-4 border-radius-075rem fs-14">
+                    <div class="card my-4 border-radius-075rem fs-14">
                         <div class="card-header bg-transparent py-3">
                             <p class="m-0 fw-bold">Produk Pesanan</p>
                         </div>
@@ -80,6 +80,12 @@
                                     </p>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="fs-14">
+                            <a href="{{ route('order.show', $order) }}" class="text-decoration-none text-danger fw-bold">Klik</a>
+                            <span>disini untuk melihat detail pesanan</span>
                         </div>
                     </div>
                 @endif

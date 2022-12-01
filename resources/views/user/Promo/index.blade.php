@@ -97,6 +97,9 @@
         </div>
     </div>
     <script>
+         $(window).focus(function() {
+            window.location.reload();
+        });
         $(document).ready(function(){
             $('#searchKeyword').on("keyup", function() {
                 // $('.filter-btn').on("click", function() {

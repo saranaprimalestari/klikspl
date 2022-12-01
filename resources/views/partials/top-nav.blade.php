@@ -11,7 +11,7 @@
             <ul class="navbar-nav ms-auto mb-lg-0">
 
                 <li class="nav-item navbar-dropdown dropdown mx-1 d-none d-md-block">
-                    <a class="nav-link dropdown-toggle navbar-category" href="/categories" id="navbarDropdownMenuLink"
+                    <a class="nav-link dropdown-toggle navbar-category" href="/partialCategories" id="navbarDropdownMenuLink"
                         role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Kategori
                     </a>
@@ -50,7 +50,7 @@
                                         Semua Kategori
                                     </a>
                                 </li>
-                                @foreach ($categories as $category)
+                                @foreach ($partialCategories as $category)
                                     <li>
                                         <a class="dropdown-item" href="/category/{{ $category->slug }}">
                                             <i class="bi bi-box"></i>&nbsp;
@@ -69,7 +69,7 @@
                                         Semua Merk
                                     </a>
                                 </li>
-                                @foreach ($merks as $merk)
+                                @foreach ($partialMerks as $merk)
                                     <li>
                                         <a class="dropdown-item" href="/merk/{{ $merk->slug }}">
                                             <img class="w-25" src="/{{ $merk->image }}" alt="">&nbsp;
@@ -147,8 +147,8 @@
                                                     <div class="row align-items-center">
                                                         <div class="col-2">
                                                             {{-- <i class="bi bi-box"></i>&nbsp; --}}
-                                                            <img src="https://source.unsplash.com/400x400?product-2"
-                                                                alt="" width="40">
+                                                            {{-- <img src="https://source.unsplash.com/400x400?product-2"
+                                                                alt="" width="40"> --}}
                                                             {{-- <img src="/assets/cheetah-adv-army.png" alt="" width="40"> --}}
 
                                                         </div>
@@ -232,8 +232,8 @@
                                                     <div class="row align-items-center">
                                                         <div class="col-2">
                                                             {{-- <i class="bi bi-box"></i>&nbsp; --}}
-                                                            <img src="https://source.unsplash.com/350x350?notification"
-                                                                alt="" width="40">
+                                                            {{-- <img src="https://source.unsplash.com/350x350?notification"
+                                                                alt="" width="40"> --}}
                                                         </div>
                                                         <div class="col-10 ps-0 text-truncate ">
                                                             {{ $notification->excerpt }}
@@ -466,7 +466,7 @@
                                     Semua Kategori
                                 </a>
                             </li>
-                            @foreach ($categories as $category)
+                            @foreach ($partialCategories as $category)
                                 <li>
                                     <a class="dropdown-item" href="/category/{{ $category->slug }}">
                                         <i class="bi bi-box"></i>&nbsp;
@@ -485,7 +485,7 @@
                                     Semua Merk
                                 </a>
                             </li>
-                            @foreach ($merks as $merk)
+                            @foreach ($partialMerks as $merk)
                                 <li>
                                     <a class="dropdown-item" href="/merk/{{ $merk->slug }}">
                                         <img class="w-25" src="/{{ $merk->image }}" alt="">&nbsp;

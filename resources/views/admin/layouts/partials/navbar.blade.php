@@ -5,48 +5,71 @@
         </a>
         <ul class="navbar-nav mb-2 mb-lg-0 d-none d-sm-block">
             <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Refresh Halaman" onclick="reloadFunction()">
+                <a class="nav-link" aria-current="page" href="#" data-bs-toggle="tooltip"
+                    data-bs-placement="bottom" title="Refresh Halaman" onclick="reloadFunction()">
                     <i class="bi bi-arrow-clockwise"></i>
                     {{-- <i class="fas fa-sync-alt"></i> --}}
                 </a>
-              </li>
+            </li>
         </ul>
         <ul class="navbar-nav mb-2 mb-lg-0 d-none d-sm-block fs-14">
             <li class="nav-item dropdown">
-                <a class="fs-14 nav-link dropdown-toggle link-dark color-red-klikspl-hover" id="notification-navbar-dropdown"
+                <a class="fs-14 nav-link link-dark color-red-klikspl-hover" id="notification-navbar-dropdown"
                     role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-bell"></i>
                     {{-- @auth --}}
-                    {{-- @if (count($userNotifications) > 0) --}}
-                    <span class="position-absolute top-5 start-100 translate-middle badge bg-danger">
-                        1
-                        <span class="visually-hidden">Notifications</span>
-                    </span>
-                    {{-- @endif --}}
+                    @if (count($adminNotifications) > 0)
+                        <span class="position-absolute top-5 start-100 translate-middle badge bg-danger">
+                            {{ count($adminNotifications) }}
+                            <span class="visually-hidden">Notifications</span>
+                        </span>
+                    @endif
                     {{-- @endauth --}}
                 </a>
                 @if (Auth::guard('adminMiddle')->user())
-                    <ul class="dropdown-menu dropdown-menu-end admin-notification-dropdown" aria-labelledby="notification-navbar-dropdown">
+                    <ul class="dropdown-menu dropdown-menu-end admin-notification-dropdown"
+                        aria-labelledby="notification-navbar-dropdown">
                         <div class="">
-                            {{-- <div class="d-flex fixed-top bg-white p-3"> --}}
-                            <div class="">
-                                {{-- {{ dd($userNotifications) }} --}}
-                                {{-- Notifikasi({{ count($userNotifications) }}) --}}
-                            </div>
                             <div class="mx-3 my-2">
-                                <a href="{{ route('notifications.index') }}"
-                                    class="fs-14 text-decoration-none text-danger fw-bold">Lihat Semua
-                                    Notifikasi</a>
+                                <div class="d-flex">
+                                    <div class="fs-14">
+                                        Notifikasi ({{ count($adminNotifications) }})
+                                    </div>
+                                    <a href="{{ route('adminnotifications.index') }}"
+                                        class="fs-14 text-decoration-none text-danger fw-bold ms-auto">Lihat Semua Notifikasi</a>
+                                </div>
                             </div>
-                            {{-- </div> --}}
-                            {{-- {{ dd($userCartItems) }} --}}
                             <div class="nav-notification-items mt-1">
-                                <li><a class="fs-14 dropdown-item" href="#">Action</a></li>
-                                <li><a class="fs-14 dropdown-item" href="#">Another action</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="fs-14 dropdown-item" href="#">Something else here</a></li>
+                                @foreach ($adminNotifications as $notification)
+                                {{-- @if (auth()->guard('adminMiddle')->user()->admin_type == '1' || )
+                                    
+                                @endif --}}
+                                    <li>
+                                        <a class="dropdown-item my-2 admin-notification-dropdown-item fs-14"
+                                            href="{{ route('adminnotifications.show', $notification) }}">
+                                            <div class="row align-items-center">
+                                                <div class="col-2">
+                                                    @if (File::exists(public_path($notification->image)))
+                                                        <img src="{{ asset($notification->image) }}"
+                                                            class="img-fluid w-100 border-radius-05rem" alt="...">
+                                                    @endif
+                                                </div>
+                                                <div class="col-10 ps-0 admin-notification-dropdown-text">
+                                                    <div class="fw-600 m-0">
+                                                        {{ $notification->excerpt }}
+                                                    </div>
+                                                    <div class="fs-12 admin-notification-description-navbar"> 
+                                                        {!! $notification->description !!}
+                                                    </div>
+                                                    <div class="fs-12 text-secondary">
+                                                        {{ \Carbon\Carbon::parse($notification->created_at)->isoFormat('D MMM Y, HH:mm') }}
+                                                        WIB
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                @endforeach
                             </div>
                         </div>
                     </ul>
@@ -82,7 +105,8 @@
             </li>
         </div>
         <button class="navbar-toggler d-md-none collapsed" type="button" data-bs-toggle="collapse"
-            data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+            data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
+            aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
     </div>

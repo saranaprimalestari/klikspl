@@ -9,19 +9,20 @@
                 </a>
             </li>
             @if (auth()->guard('adminMiddle')->user()->admin_type == 1)
-            <li class="nav-item">
-                <a class="nav-link {{ isset($active) ? ($active == 'management' ? 'active' : '') : '' }}"
-                    href="{{ route('management.index') }}">
-                    <i class="bi bi-people"></i> Manajemen Admin
-                </a>
-            </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ isset($active) ? ($active == 'management' ? 'active' : '') : '' }}"
+                        href="{{ route('management.index') }}">
+                        <i class="bi bi-people"></i> Manajemen Admin
+                    </a>
+                </li>
             @endif
             {{-- <li class="nav-item">
                 <a class="nav-link" aria-current="page" href="{{ route('admin.test') }}">
                     <i class="bi bi-house-door"></i> Test
                 </a>
             </li> --}}
-            @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2 ||
+            @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+                auth()->guard('adminMiddle')->user()->admin_type == 2 ||
                 auth()->guard('adminMiddle')->user()->admin_type == 4)
                 <li class="nav-item">
                     <a class="btn btn-toggle align-items-center shadow-none user-button-menu-collapse accordion-button py-2 ps-3 fs-14"
@@ -36,7 +37,8 @@
                                     class="text-decoration-none link-dark ms-4 py-1 ps-3 d-inline-flex nav-link {{ isset($active) ? ($active == 'adminproduct' ? 'active' : '') : '' }}">Produk
                                     Saya</a>
                             </li>
-                            @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2)
+                            @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+                                auth()->guard('adminMiddle')->user()->admin_type == 2)
                                 <li class="nav-item w-100">
                                     <a href="{{ route('adminproduct.create') }}"
                                         class="text-decoration-none link-dark ms-4 py-1 ps-3 d-inline-flex nav-link {{ isset($active) ? ($active == 'add-product' ? 'active' : '') : '' }}">Tambah
@@ -82,7 +84,8 @@
                 </a>
                 <div class="collapse show" id="order-collapse" style="">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small nav">
-                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2)
+                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+                            auth()->guard('adminMiddle')->user()->admin_type == 2)
                             <li class="nav-item w-100">
                                 <a href="{{ route('adminorder.index') }}"
                                     class="text-decoration-none link-dark ms-4 py-1 ps-3 d-inline-flex nav-link {{ isset($status) ? ($status == '' ? 'active' : '') : '' }}">Semua</a>
@@ -115,7 +118,8 @@
                                 </form>
                             </li>
                         @endif
-                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2 ||
+                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+                            auth()->guard('adminMiddle')->user()->admin_type == 2 ||
                             auth()->guard('adminMiddle')->user()->admin_type == 3)
                             <li class="nav-item w-100">
                                 <form class="status-form" action="{{ route('adminorder.index') }}" method="GET">
@@ -134,7 +138,8 @@
                                 </form>
                             </li>
                         @endif
-                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2 ||
+                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+                            auth()->guard('adminMiddle')->user()->admin_type == 2 ||
                             auth()->guard('adminMiddle')->user()->admin_type == 4)
                             <li class="nav-item w-100">
                                 <form class="status-form" action="{{ route('adminorder.index') }}" method="GET">
@@ -193,7 +198,8 @@
                                 class="text-decoration-none link-dark ms-4 py-1 ps-3 d-inline-flex nav-link {{ isset($active) ? ($active == 'order' ? 'active' : '') : '' }}">Dalam
                                 Pengiriman</a>
                             </li> --}}
-                            @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2)
+                            @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+                                auth()->guard('adminMiddle')->user()->admin_type == 2)
                                 <li class="nav-item w-100">
                                     <form class="status-form" action="{{ route('adminorder.index') }}"
                                         method="GET">
@@ -258,7 +264,8 @@
                     </ul>
                 </div>
             </li>
-            @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2)
+            @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+                auth()->guard('adminMiddle')->user()->admin_type == 2)
                 <li class="nav-item">
                     <a class="btn btn-toggle align-items-center shadow-none user-button-menu-collapse accordion-button py-2 ps-3 fs-14"
                         data-bs-toggle="collapse" href="#promo-collapse" role="button" aria-expanded="false"
@@ -289,7 +296,8 @@
                     </div>
                 </li>
             @endif
-            @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2 ||
+            @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+                auth()->guard('adminMiddle')->user()->admin_type == 2 ||
                 auth()->guard('adminMiddle')->user()->admin_type == 3)
                 <li class="nav-item">
                     <a class="btn btn-toggle align-items-center shadow-none user-button-menu-collapse accordion-button py-2 ps-3 fs-14"
@@ -315,16 +323,18 @@
                     </div>
                 </li>
             @endif
-            @if (auth()->guard('adminMiddle')->user()->admin_type == 1 || auth()->guard('adminMiddle')->user()->admin_type == 2)
+            <li class="nav-item">
+                <a class="nav-link {{ isset($active) ? ($active == 'notifications' ? 'active' : '') : '' }}"
+                    href="{{ route('adminnotifications.index') }}">
+                    <i class="bi bi-bell"></i> Notifikasi
+                </a>
+            </li>
+            @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+                auth()->guard('adminMiddle')->user()->admin_type == 2)
                 <li class="nav-item">
                     <a class="nav-link {{ isset($active) ? ($active == 'senderAddress' ? 'active' : '') : '' }}"
                         href="{{ route('senderaddress.index') }}">
                         <i class="bi bi-geo-alt"></i> Alamat Pengiriman
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-bell"></i> Notifikasi
                     </a>
                 </li>
                 <li class="nav-item">

@@ -63,7 +63,7 @@
     </div>
     <div class="container p-0 mb-5">
         @foreach ($promoBanners as $promo)
-            <div class="card admin-card-dashboard border-radius-1-5rem fs-14 mb-3 box-shadow">
+            <div class="card admin-card-dashboard border-radius-1-5rem fs-14 mb-3">
                 @if (auth()->guard('adminMiddle')->user()->admin_type == 1)
                     <div class="card-header bg-transparent px-4 pt-4 pb-0 border-0">
                         <div class="fw-600">

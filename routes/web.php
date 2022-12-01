@@ -272,10 +272,16 @@ Route::prefix('administrator')->group(function () {
     Route::name('productcomment.reply')->get('/productcomment/reply/{comment}', [Admin\AdminProductCommentController::class, 'commentReply'])->middleware('adminMiddle');
     Route::resource('/productcomment', Admin\AdminProductCommentController::class)->middleware('adminMiddle');
     Route::name('my.comment.index')->get('/mycomment', [Admin\AdminReplyCommentController::class, 'index'])->middleware('adminMiddle');
+
+    Route::resource('/adminnotifications', Admin\AdminNotificationController::class)->middleware('adminMiddle');
+    Route::name('read.all.admin.notifications')->post('/adminnotifications/readallnotifications', [Admin\AdminNotificationController::class, 'allNotificationsIsReaded'])->middleware('adminMiddle');
+
     // finance-admin
     Route::prefix('finance')->group(function () {
         Route::name('finance.home')->get('/', [Admin\Finance\FinanceHomeController::class, 'index']);
     });
+
+    //wh-log-admin
     Route::prefix('warehouselogistic')->group(function () {
         Route::name('warehouselogistic.home')->get('/', [Admin\WarehouseLogistic\WarehouseLogisticHomeController::class, 'index']);
     });

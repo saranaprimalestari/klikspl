@@ -640,6 +640,19 @@
                                                                             data-bs-parent="#accordionShipment">
                                                                             <div
                                                                                 class="accordion-body shipment-{{ $product->id }}">
+                                                                                <div
+                                                                                    class="modal-ongkir row d-flex align-items-center mb-3">
+                                                                                    <div class="col-11">
+                                                                                        Memuat data...
+                                                                                    </div>
+                                                                                    <div class="col-1">
+                                                                                        <div class="spinner-border spinner-border-sm"
+                                                                                            role="status">
+                                                                                            <span
+                                                                                                class="visually-hidden">Loading...</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -1299,7 +1312,8 @@
                                                                             .code
                                                                             .toUpperCase() +
                                                                             '</p><p class="m-0 d-inline-block modal-courier-package">' +
-                                                                            value.service + ' ()'+
+                                                                            value.service +
+                                                                            ' ()' +
                                                                             value.description +
                                                                             '</p><p class="m-0 modal-courier-etd"> Estimasi ' +
                                                                             value.cost[0].etd +

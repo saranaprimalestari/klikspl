@@ -37,42 +37,38 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="heeader d-flex align-items-center">
-                                            <h5 class="mt-0 notification-list-excerpt me-auto">{{ $notification->type }}
-                                            </h5>
-                                            @if ($notification->is_read == 0)
-                                                <span class="ms-auto badge bg-danger">Belum dibaca</span>
-                                            @endif
+                                            {{-- <h5 class="mt-0 notification-list-excerpt me-auto">{{ $notification->type }}
+                                            </h5> --}}
+        
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row align-items-center">
-                                    <div class="col-md-9 col-12">
-                                        <div class="row align-items-center">
-                                            <div class="col-md-2 col-4">
-                                                {{-- {{ public_path($notification->image) }} --}}
-                                                @if (File::exists(public_path($notification->image)))
-                                                    <img src="{{ asset($notification->image) }}"
-                                                        class="img-fluid w-100 border-radius-075rem" alt="...">
-                                                @else
-                                                    <img src="https://source.unsplash.com/400x400?product-1"
-                                                        class="img-fluid w-100 border-radius-075rem" alt="...">
-                                                @endif
-                                            </div>
-                                            <div class="col-md-10 col-8 my-2 ps-0">
-                                                <span class="d-md-flex notification-list-created-at mb-1">
-                                                    <p class="m-0 me-2">
-                                                        {{ \Carbon\Carbon::parse($notification->created_at)->isoFormat('D MMMM Y, HH:mm') }}
-                                                        WIB</p>
-                                                    <small class="mt-1 fst-italic"> Sekitar
-                                                        {{ $notification->created_at->diffForHumans() }}</small>
-                                                </span>
-                                                <p class="notification-list-excerpt text-truncate m-0">
-                                                    {{ $notification->excerpt }}
-                                                </p>
-                                            </div>
-                                        </div>
+                                    <div class="col-md-2">
+                                        @if (File::exists(public_path($notification->image)))
+                                            <img src="{{ asset($notification->image) }}"
+                                                class="img-fluid w-100 border-radius-05rem" alt="...">
+                                        @endif
                                     </div>
-                                    <div class="col-md-3 col-12 text-end">
+                                    <div class="col-md-8">
+                                        <p class="fs-14 mb-1 fw-600">
+                                            [{{ $notification->type }}] {{ $notification->excerpt }}
+                                        </p>
+                                        <div class="fs-14 mb-1 notification-description-index">
+                                            {!! $notification->description !!}
+                                        </div>
+                                        <span class="d-md-flex fs-12 text-secondary">
+                                            <p class="m-0 me-1">
+                                                {{ \Carbon\Carbon::parse($notification->created_at)->isoFormat('D MMMM Y, HH:mm') }}
+                                                WIB</p>
+                                            <p class="m-0"> Sekitar
+                                                {{ $notification->created_at->diffForHumans() }}</p>
+                                        </span>
+                                    </div>
+                                    <div class="col-md-2 text-end">
+                                        @if ($notification->is_read == 0)
+                                            <span class="ms-auto badge bg-danger mb-2">Belum dibaca</span>
+                                        @endif
                                         <form action="{{ route('notifications.destroy', $notification) }}" method="post">
                                             @csrf
                                             @method('delete')
