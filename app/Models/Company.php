@@ -29,4 +29,9 @@ class Company extends Model
     {
         return $this->hasMany(Promo::class);
     }
+
+    public function AdminNotification()
+    {
+        return $this->hasMany(AdminNotification::class);
+    }
 }

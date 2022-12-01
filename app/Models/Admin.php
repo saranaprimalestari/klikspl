@@ -25,7 +25,7 @@ class Admin extends Authenticatable
         return $this->hasMany(ProductComment::class);
     }
     
-    public function userNotification()
+    public function adminNotification()
     {
         return $this->hasMany(AdminNotification::class);
     }

@@ -253,4 +253,9 @@ class Order extends Model
     {
         return $this->hasMany(UserPromoOrderUse::class);
     }
+
+    public function adminNotification()
+    {
+        return $this->hasMany(AdminNotification::class);
+    }
 }

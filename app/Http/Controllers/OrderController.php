@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdminNotification;
 use DateTime;
 use Carbon\Carbon;
 use App\Models\City;
@@ -335,6 +336,7 @@ class OrderController extends Controller
                 'product_code' => $item->product->product_code,
                 'product_category' => $item->product->productCategory->name,
                 'product_merk' => $item->product->productMerk->name,
+                'company_id' => $item->product->company_id,
             ];
             // retrieve apakah ada promo
             // $promo = Promo::where('id', '=', $item->product->promo_id)->first();
@@ -552,16 +554,16 @@ class OrderController extends Controller
         }
 
         $description = '';
-        // $orderProductImageFirst = OrderProductImage::where('order_product_id', '=', $orderProductIds[0])->first();
+        $orderProductImageFirst = OrderProductImage::where('order_product_id', '=', $orderProductIds[0])->first();
         $shopBag = 'assets\shop-bag-success.png';
         $notifications = [
             'user_id' => auth()->user()->id,
             'slug' => auth()->user()->username . '-' . Crypt::encryptString($order->id) . '-pesanan-berhasil-dibuat',
             'type' => 'Pesanan',
-            'description' => '<p>Pesanan kamu berhasil dibuat. Produk yang kamu pesan berjumlah ' . $order->orderitem->count() . ' item.</p>',
+            'description' => '<p class="m-0">Pesanan kamu berhasil dibuat. Produk yang kamu pesan berjumlah ' . $order->orderitem->count() . ' item.</p>',
             'excerpt' => 'Pesanan kamu berhasil dibuat',
-            'image' => $shopBag,
-            // 'image' => 'storage/' . $orderProductImageFirst->name,
+            // 'image' => $shopBag,
+            'image' => 'storage/' . $orderProductImageFirst->name,
             'is_read' => 0
         ];
         // membuat notifikasi pembuatan pesanan untuk user
@@ -985,6 +987,24 @@ class OrderController extends Controller
 
         // $copy = Storage::copy(auth()->user()->profile_image, $imageFullPathSave);
 
+        $orderProduct = $order->orderitem[0]->orderProduct;
+        $shopBag = 'assets\shop-bag-success.png';
+        $notifications = [
+            // 'admin_id' => auth()->user()->id,
+            'order_id' => $order->id,
+            'admin_type' => 3,
+            'company_id' => $orderProduct->company_id,
+            'slug' => Crypt::encryptString($order->id) . '-pesanan-dibayarkan',
+            'type' => 'Pesanan',
+            'description' => '<p class="m-0">Pesanan ' . $order->invoice_no . ' Sudah dibayarkan. Segera konfirmasi dan kirim pesanan ke ' . auth()->user()->username . '</p>',
+            'excerpt' => 'Pesanan Dibayarkan',
+            // 'image' => $shopBag,
+            'image' => 'storage/' . $orderProduct->orderproductimage->first()->name,
+            'is_read' => 0
+        ];
+        // membuat notifikasi pembuatan pesanan untuk admin
+        $adminNotification = AdminNotification::create($notifications);
+
 
         return redirect()->route('order.index')->with('success', 'Terimakasih telah menyelesaikan pembayaran, silakan menunggu untuk konfirmasi oleh admin KLIKSPL selanjutnya');
     }
@@ -1209,7 +1229,7 @@ class OrderController extends Controller
     {
         $id = Crypt::decrypt($id);
         $this->expiredCheck();
-        
+
         $outStock = null;
         // dd($order->id);
         $order = Order::withTrashed()->where('id', $id)->first();
@@ -1224,7 +1244,7 @@ class OrderController extends Controller
         $weightGr = 0;
         foreach ($orderItems as $item) {
             $weightGr += ($item->quantity * $item->orderproduct->weight);
-            if($item->order_item_status == 'stok habis'){
+            if ($item->order_item_status == 'stok habis') {
                 $outStock = 1;
             }
         }
@@ -1396,7 +1416,7 @@ class OrderController extends Controller
                 [
                     'order_id' => $order->id,
                     'status' => 'Pesanan Dibatalkan',
-                    'status_detail' => 'Pesanan Dibatalkan. Alasan pembatalan: ' . $status. ', silakan hubungi admin KLIKSPL melalui menu customer care apabila anda sudah melakukan pembayaran',
+                    'status_detail' => 'Pesanan Dibatalkan. Alasan pembatalan: ' . $status . ', silakan hubungi admin KLIKSPL melalui menu customer care apabila anda sudah melakukan pembayaran',
                     'status_date' => date('Y-m-d H:i:s')
                 ]
             );
@@ -1404,7 +1424,7 @@ class OrderController extends Controller
             $order->save();
             $order->delete();
             return false;
-        }else{
+        } else {
             return true;
         }
     }
@@ -1442,6 +1462,35 @@ class OrderController extends Controller
         );
 
         if ($OrderDelivered && $orderStatus) {
+
+            $orderProduct = $order->orderitem[0]->orderProduct;
+            $notifications = [
+                'user_id' => auth()->user()->id,
+                'slug' => auth()->user()->username . '-' . Crypt::encryptString($order->id) . '-pesanan-selesai',
+                'type' => 'Pesanan',
+                'description' => '<p class="m-0">Pesanan ' . $order->invoice_no . ' Sudah kamu diterima. Yuk beri ulasan untuk produk yang kamu pesan, bantu KLIKSPL berkembang dengan ulasan kamu.</p>',
+                'excerpt' => 'Pesanan Selesai',
+                'image' => 'storage/' . $orderProduct->orderproductimage->first()->name,
+                'is_read' => 0
+            ];
+            // membuat notifikasi pembuatan pesanan untuk user
+            $notification = UserNotification::create($notifications);
+
+            $notifications = [
+                // 'admin_id' => auth()->user()->id,
+                'order_id' => $order->id,
+                'admin_type' => 3,
+                'company_id' => $orderProduct->company_id,
+                'slug' => Crypt::encryptString($order->id) . '-pesanan-selesai',
+                'type' => 'Pesanan',
+                'description' => '<p class="m-0">Pesanan ' . $order->invoice_no . ' Sudah diterima oleh ' . auth()->user()->username . '.</p>',
+                'excerpt' => 'Pesanan Selesai',
+                'image' => 'storage/' . $orderProduct->orderproductimage->first()->name,
+                'is_read' => 0
+            ];
+            // membuat notifikasi pembuatan pesanan untuk admin
+            $adminNotification = AdminNotification::create($notifications);
+
             return redirect()->back()->with('success', 'Pesanan sudah diterima Terimakasih sudah berbelanja di KLIKSPL :)');
         } else {
             return redirect()->back()->with('failed', 'Gagal menerima pesanan.');

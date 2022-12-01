@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\AdminNotification;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Order;
@@ -60,10 +61,15 @@ class AppServiceProvider extends ServiceProvider
         });
         view()->composer('*', function($view){
             if(auth::guard('adminMiddle')->check()){
-                $view->with('adminAllOrder',Order::withTrashed()->get());
-                $view->with('adminActiveOrder',Order::all());
-                $view->with('adminWaitingPaymentOrder',Order::where('order_status','=','belum bayar')->get());
-                $view->with('adminConfirmPaymentOrder',Order::where('order_status','=','pesanan dibayarkan')->get());
+                if(auth()->guard('adminMiddle')->user()->admin_type == 1){
+                    $view->with('adminNotifications',AdminNotification::where('is_read', '=', '0')->get()->sortByDesc('created_at'));
+                }elseif(auth()->guard('adminMiddle')->user()->admin_type == 2){
+                    $view->with('adminNotifications',AdminNotification::where('is_read', '=', '0')->where('company_id', auth()->guard('adminMiddle')->user()->company_id)->get()->sortByDesc('created_at'));
+                }elseif(auth()->guard('adminMiddle')->user()->admin_type == 3){
+                    $view->with('adminNotifications',AdminNotification::where('is_read', '=', '0')->where('admin_type','=',auth()->guard('adminMiddle')->user()->admin_type)->get()->sortByDesc('created_at'));
+                }else{
+                    $view->with('adminNotifications',AdminNotification::where('is_read', '=', '0')->where('admin_type','=',auth()->guard('adminMiddle')->user()->admin_type)->where('company_id', auth()->guard('adminMiddle')->user()->company_id)->get()->sortByDesc('created_at'));
+                }
             }
         });
     }

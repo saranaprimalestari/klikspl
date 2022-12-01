@@ -216,7 +216,7 @@ class RegisterController extends Controller
             'user_id' => $user->id,
             'slug' => 'pendaftaran-membership-berhasil-'.$user->username,
             'type' => 'Notifikasi',
-            'description' => '<p>Pendaftaran membership kamu berhasil! Selamat menikmati pengalaman berbelanja di klikspl.com.</p>',
+            'description' => '<p class="m-0">Pendaftaran membership kamu berhasil! Selamat menikmati pengalaman berbelanja di klikspl.com.</p>',
             'excerpt' => 'Pendaftaran membership kamu berhasil',
             'image' => 'assets\footer-logo.png',
             'is_read' => 0

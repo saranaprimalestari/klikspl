@@ -167,7 +167,7 @@ class UserEmailController extends Controller
                 'user_id' => $user->id,
                 'slug' => 'email-berhasil-diperbarui-'.$user->username.'-'.Carbon::now(),
                 'type' => 'Notifikasi',
-                'description' => '<p>Email berhasil diperbarui</p></br><p>Email terbaru kamu <strong>'.$user->email.'</strong></p></br><p>Selamat menikmati pengalaman berbelanja di klikspl.com.</p>',
+                'description' => '<p class="m-0">Email berhasil diperbarui</p></br><p class="m-0">Email terbaru kamu <strong>'.$user->email.'</strong></p></br><p class="m-0">Selamat menikmati pengalaman berbelanja di klikspl.com.</p>',
                 'excerpt' => 'Email berhasil diperbarui',
                 'image' => 'assets\email.png',
                 'is_read' => 0

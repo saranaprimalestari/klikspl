@@ -161,7 +161,7 @@ class UserPhoneController extends Controller
                 'user_id' => $user->id,
                 'slug' => 'nomor-telepon-berhasil-diperbarui-'.$user->username.'-'.Carbon::now(),
                 'type' => 'Notifikasi',
-                'description' => '<p>Nomor Telepon berhasil diperbarui</p></br><p>Nomor Telepon terbaru kamu <strong>'.$user->telp_no.'</strong></p></br><p>Selamat menikmati pengalaman berbelanja di klikspl.com.</p>',
+                'description' => '<p class="m-0">Nomor Telepon berhasil diperbarui</p></br><p class="m-0">Nomor Telepon terbaru kamu <strong>'.$user->telp_no.'</strong></p></br><p class="m-0">Selamat menikmati pengalaman berbelanja di klikspl.com.</p>',
                 'excerpt' => 'Nomor Telepon berhasil diperbarui',
                 'image' => 'assets\phone.png',
                 'is_read' => 0

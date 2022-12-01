@@ -3,11 +3,16 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\Product;
 use App\Models\OrderItem;
-use App\Models\ProductComment;
 use Illuminate\Http\Request;
 
+use App\Models\ProductComment;
+use App\Models\ProductVariant;
+use App\Models\UserNotification;
 use function PHPSTORM_META\type;
+use App\Models\AdminNotification;
+use Illuminate\Support\Facades\Crypt;
 
 class OrderItemRatingController extends Controller
 {
@@ -18,7 +23,7 @@ class OrderItemRatingController extends Controller
      */
     public function index()
     {
-        $ratings = OrderItem::where('order_item_status', '=', 'selesai')->where('user_id', '=', auth()->user()->id)->where('is_review','=',0)->get();
+        $ratings = OrderItem::where('order_item_status', '=', 'selesai')->where('user_id', '=', auth()->user()->id)->where('is_review', '=', 0)->get();
 
         return view('user.rating.index', [
             'title' => 'Penilaian Produk',
@@ -88,25 +93,59 @@ class OrderItemRatingController extends Controller
                 'is_edit' => 0,
             ]
         );
+        $variantDescription = '';
+        $product = Product::findOrFail($validatedData['product_id']);
+        if (!empty($validatedData['product_id_variant_id'])) {
+            $productVariant = ProductVariant::findOrFail($validatedData['product_id_variant_id']);
+            $variantDescription = 'dengan varian '.$productVariant->variant_name;
+        }
 
-        if($productComment){
+        if ($productComment) {
             if ($request->file('comment_image')) {
                 $uploadCommentImage = ProductComment::find($productComment->id);
                 $uploadCommentImage->comment_image = $request->file('comment_image')->store($folderPathSave);
                 $uploadCommentImage->save();
             }
-    
+
             $orderItem = OrderItem::find($validatedData['id']);
             $orderItem->is_review = 1;
             $updateOrderItem = $orderItem->save();
         }
-        
-        if($productComment && $updateOrderItem){
+
+        if ($productComment && $updateOrderItem) {
+            $order = $orderItem->order;
+            $orderProduct = $order->orderitem[0]->orderProduct;
+            $notifications = [
+                'user_id' => auth()->user()->id,
+                'slug' => auth()->user()->username . '-' . Crypt::encryptString($order->id) . '-berhasil-memberi-penilaian-ulasan',
+                'type' => 'Pesanan',
+                'description' => '<p class="m-0">Terimakasih telah memberikan penilaian dan ulasan untuk Produk '.$product->name.' '.$variantDescription.' dalam Pesanan ' . $order->invoice_no . '. Penilaian dan ulasan yang kamu beri membantu KLIKSPL untuk berkembang lebih baik lagi.</p>',
+                'excerpt' => 'Berhasil Memberi Penilaian dan Ulasan',
+                'image' => 'storage/' . $orderProduct->orderproductimage->first()->name,
+                'is_read' => 0
+            ];
+            // membuat notifikasi pembuatan pesanan untuk user
+            $notification = UserNotification::create($notifications);
+
+            $notifications = [
+                // 'admin_id' => auth()->user()->id,
+                'order_id' => $order->id,
+                'admin_type' => 3,
+                'company_id' => $orderProduct->company_id,
+                'slug' => Crypt::encryptString($order->id) . '-penilaian-ulasan',
+                'type' => 'Pesanan',
+                'description' => '<p class="m-0">'.auth()->user()->username.' memberikan penilaian dan ulasan untuk Produk '.$product->name.' '.$variantDescription.' dalam Pesanan ' . $order->invoice_no . '. Yuk beri tanggapan dari penilaian dan ulasan yang diberikan pembeli <span onclick="location.href=\''.route('productcomment.show', $productComment).'\'" class="text-danger fw-bold user-select-none">Klik disini</span>.</p>',
+                'excerpt' => 'Penilaian dan Ulasan Produk',
+                'image' => 'storage/' . $orderProduct->orderproductimage->first()->name,
+                'is_read' => 0
+            ];
+            // membuat notifikasi pembuatan pesanan untuk admin
+            $adminNotification = AdminNotification::create($notifications);
+
             return redirect()->route('rating.index')->with(['success' => 'Berhasil memberi penilaian produk pesanan']);
-        }else{
+        } else {
             return redirect()->route('rating.index')->with(['failed' => 'Gagal memberi penilaian produk pesanan']);
         }
-                
     }
 
     /**

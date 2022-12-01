@@ -106,21 +106,28 @@ class AdminProductCommentController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\ProductComment  $productComment
+     * @param  \App\Models\ProductComment  $comment
      * @return \Illuminate\Http\Response
      */
-    public function show(ProductComment $productComment)
+    public function show(ProductComment $productcomment)
     {
-        //
+        // dd(($productcomment));
+
+        if ($productcomment->is_edit != 1){
+            return redirect()->route('productcomment.reply', $productcomment);
+        }else{
+            return redirect()->route('comment.show', $productcomment);
+        }
+        
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\ProductComment  $productComment
+     * @param  \App\Models\ProductComment  $comment
      * @return \Illuminate\Http\Response
      */
-    public function edit(ProductComment $productComment)
+    public function edit(ProductComment $comment)
     {
         //
     }
@@ -129,10 +136,10 @@ class AdminProductCommentController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\ProductComment  $productComment
+     * @param  \App\Models\ProductComment  $comment
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, ProductComment $productComment)
+    public function update(Request $request, ProductComment $comment)
     {
         //
     }
@@ -140,10 +147,10 @@ class AdminProductCommentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\ProductComment  $productComment
+     * @param  \App\Models\ProductComment  $comment
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ProductComment $productComment)
+    public function destroy(ProductComment $comment)
     {
         //
     }

@@ -18,4 +18,9 @@ class AdminType extends Model
     {
         return $this->hasMany(Admin::class);
     }
+    
+    public function AdminNotification()
+    {
+        return $this->hasMany(AdminNotification::class);
+    }
 }

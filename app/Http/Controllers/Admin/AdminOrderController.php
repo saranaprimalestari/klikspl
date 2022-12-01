@@ -10,8 +10,11 @@ use App\Models\OrderItem;
 use App\Models\OrderProduct;
 use Illuminate\Http\Request;
 use App\Models\ProductVariant;
+use App\Models\UserNotification;
+use App\Models\AdminNotification;
 use App\Models\OrderStatusDetail;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Crypt;
 
 class AdminOrderController extends Controller
 {
@@ -46,7 +49,7 @@ class AdminOrderController extends Controller
             } else if (request(['status'])['status'] == 'pesanan dibayarkan') {
                 $header = 'Konfirmasi Pembayaran Pesanan';
             } else if (request(['status'])['status'] == 'pembayaran dikonfirmasi') {
-                $header = 'Pesanan Siap Dikirim';
+                $header = 'Pesanan Perlu Diproses';
             } else if (request(['status'])['status'] == 'pesanan disiapkan') {
                 $header = 'Pesanan Siap Dikirim';
             } else if (request(['status'])['status'] == 'pesanan dikirim') {
@@ -72,7 +75,7 @@ class AdminOrderController extends Controller
             }
         } elseif (auth()->guard('adminMiddle')->user()->admin_type == 4) {
             if (request(['status'])['status'] == 'pembayaran dikonfirmasi') {
-                $header = 'Pesanan Siap Dikirim';
+                $header = 'Pesanan Perlu Disiapkan';
             } else if (request(['status'])['status'] == 'pesanan disiapkan') {
                 $header = 'Pesanan Siap Dikirim';
             } else if (request(['status'])['status'] == 'pesanan dikirim') {
@@ -251,7 +254,7 @@ class AdminOrderController extends Controller
                         if ($orderItem->orderproduct->orderproductimage->count()) {
                             foreach ($orderItem->orderProduct->orderProductImage as $orderProductImage) {
                             }
-                            $cartItem = CartItem::where([['user_id', '=', $orderItem->user_id], ['product_id', '=', $orderItem->product_id], ['product_variant_id', '=', $orderItem->product_variant_id], ['quantity', '=', $orderItem->quantity], ['subtotal','=', $orderItem->total_price_item], ['deleted_at','like','%'.Carbon::parse($orderItem->created_at)->format('Y-m-d H:i').'%'], ['updated_at','like','%'.Carbon::parse($orderItem->created_at)->format('Y-m-d H:i').'%']])->withTrashed()->first();
+                            $cartItem = CartItem::where([['user_id', '=', $orderItem->user_id], ['product_id', '=', $orderItem->product_id], ['product_variant_id', '=', $orderItem->product_variant_id], ['quantity', '=', $orderItem->quantity], ['subtotal', '=', $orderItem->total_price_item], ['deleted_at', 'like', '%' . Carbon::parse($orderItem->created_at)->format('Y-m-d H:i') . '%'], ['updated_at', 'like', '%' . Carbon::parse($orderItem->created_at)->format('Y-m-d H:i') . '%']])->withTrashed()->first();
 
                             // echo "order item id : ";
                             // print_r($orderItem->id);
@@ -292,7 +295,7 @@ class AdminOrderController extends Controller
                             // $orderProductImage->delete();
                             // $orderItem->orderProduct->delete();
                         } else {
-                            $cartItem = CartItem::where([['user_id', '=', $orderItem->user_id], ['product_id', '=', $orderItem->product_id], ['product_variant_id', '=', $orderItem->product_variant_id], ['quantity', '=', $orderItem->quantity], ['subtotal','=', $orderItem->total_price_item], ['deleted_at','like','%'.Carbon::parse($orderItem->created_at)->format('Y-m-d H:i').'%'], ['updated_at','like','%'.Carbon::parse($orderItem->created_at)->format('Y-m-d H:i').'%']])->withTrashed()->first();
+                            $cartItem = CartItem::where([['user_id', '=', $orderItem->user_id], ['product_id', '=', $orderItem->product_id], ['product_variant_id', '=', $orderItem->product_variant_id], ['quantity', '=', $orderItem->quantity], ['subtotal', '=', $orderItem->total_price_item], ['deleted_at', 'like', '%' . Carbon::parse($orderItem->created_at)->format('Y-m-d H:i') . '%'], ['updated_at', 'like', '%' . Carbon::parse($orderItem->created_at)->format('Y-m-d H:i') . '%']])->withTrashed()->first();
                             $cartItem->deleted_at = NULL;
                             $cartItem->save();
                             // $orderItem->orderProduct->delete();
@@ -377,7 +380,7 @@ class AdminOrderController extends Controller
         // dd($request);
         // dd($request->session()->get('status'));
         $order = Order::where('id', '=', $request->order_id)->first();
-        if(is_null($order)){
+        if (is_null($order)) {
             $order = Order::withTrashed()->where('id', '=', $request->order_id)->first();
         }
         $stockVariant = 0;
@@ -533,6 +536,38 @@ class AdminOrderController extends Controller
             ]
         );
 
+        $orderProduct = $order->orderitem[0]->orderProduct;
+        $shopBag = 'assets\shop-bag-success.png';
+
+        $notifications = [
+            'user_id' => $order->user_id,
+            'slug' => $order->users->username . '-' . Crypt::encryptString($order->id) . '-pembayaran-dikonfirmasi',
+            'type' => 'Pesanan',
+            'description' => '<p class="m-0">Pembayaran pesanan ' . $order->invoice_no . ' dikonfirmasi oleh ADMIN KLIKSPL. Pesanan kamu sedang disiapkan dan segera dikirimkan.</p>',
+            'excerpt' => 'Pembayaran Dikonfirmasi',
+            // 'image' => $shopBag,
+            'image' => 'storage/' . $orderProduct->orderproductimage->first()->name,
+            'is_read' => 0
+        ];
+        // membuat notifikasi pembuatan pesanan untuk user
+        $notification = UserNotification::create($notifications);
+
+        $adminNotifications = [
+            'order_id' => $order->id,
+            'admin_id' => auth()->guard('adminMiddle')->user()->id,
+            'admin_type' => 4,
+            'company_id' => $orderProduct->company_id,
+            'slug' => Crypt::encryptString($order->id) . '-pembayaran-dikonfirmasi',
+            'type' => 'Pesanan',
+            'description' => '<p class="m-0">Pembayaran pesanan ' . $order->invoice_no . ' sudah dikonfirmasi. Segera siapkan dan kirim pesanan ke ' . $order->users->username . '</p>',
+            'excerpt' => 'Pembayaran Dikonfirmasi',
+            // 'image' => $shopBag,
+            'image' => 'storage/' . $orderProduct->orderproductimage->first()->name,
+            'is_read' => 0
+        ];
+        // membuat notifikasi pembuatan pesanan untuk admin
+        $adminNotification = AdminNotification::create($adminNotifications);
+
         // return redirect()->back()->with('success', 'Pembayaran berhasil dikonfirmasi, segera siapkan pesanan pembeli');
         return redirect()->route('adminorder.index', ['status' => $request->session()->get('status')])->with('success', 'Pembayaran berhasil dikonfirmasi, segera siapkan pesanan pembeli');
     }
@@ -599,6 +634,37 @@ class AdminOrderController extends Controller
             ]
         );
         if ($orderStatus) {
+            $orderProduct = $order->orderitem[0]->orderProduct;
+
+            $notifications = [
+                'user_id' => $order->user_id,
+                'slug' => $order->users->username . '-' . Crypt::encryptString($order->id) . '-pesanan-dikirim',
+                'type' => 'Pesanan',
+                'description' => '<p class="m-0">Pesanan ' . $order->invoice_no . ' dikirimkan ke Kurir ' . $order->courier . ' dengan layanan ' . $order->courier_package_type . '. Nomor Resi akan terupdate jika proses di kurir selesai</p>',
+                'excerpt' => 'Pesanan Dikirim',
+                // 'image' => $shopBag,
+                'image' => 'storage/' . $orderProduct->orderproductimage->first()->name,
+                'is_read' => 0
+            ];
+            // membuat notifikasi pembuatan pesanan untuk user
+            $notification = UserNotification::create($notifications);
+
+            $adminNotifications = [
+                'order_id' => $order->id,
+                'admin_id' => auth()->guard('adminMiddle')->user()->id,
+                'admin_type' => 4,
+                'company_id' => $orderProduct->company_id,
+                'slug' => Crypt::encryptString($order->id) . '-pesanan-dikirim',
+                'type' => 'Pesanan',
+                'description' => '<p class="m-0">Pesanan ' . $order->invoice_no . ' dikirimkan ke Kurir ' . $order->courier . ' dengan layanan ' . $order->courier_package_type . '. Setelah berhasil mengantar ke kurir segera isi nomor resi pengiriman pesanan!</p>',
+                'excerpt' => 'Pesanan Dikirim',
+                // 'image' => $shopBag,
+                'image' => 'storage/' . $orderProduct->orderproductimage->first()->name,
+                'is_read' => 0
+            ];
+            // membuat notifikasi pembuatan pesanan untuk admin
+            $adminNotification = AdminNotification::create($adminNotifications);
+
             return redirect()->route('adminorder.index', ['status' => $request->session()->get('status')])->with('success', 'status pesanan berhasil diperbarui');
         } else {
             return redirect()->route('adminorder.index', ['status' => $request->session()->get('status')])->with('failed', 'status pesanan gagal diperbarui');
@@ -666,6 +732,30 @@ class AdminOrderController extends Controller
             );
         }
         if ($update && $orderStatus) {
+
+            $orderProduct = $order->orderitem[0]->orderProduct;
+
+            $notifications = [
+                'user_id' => $order->user_id,
+                'slug' => $order->users->username . '-' . Crypt::encryptString($order->id) . '-pesanan-dikirim',
+                'type' => 'Pesanan',
+                'description' =>
+                '<p class="m-0">Pesanan ' . $order->invoice_no . ' sudah dikirim  dengan detail : </p>
+                <ul>
+                <li>Kurir : ' . $order->courier . '</li>
+                <li>Layanan Kurir : ' . $order->courier_package_type . '</li>
+                <li>Estimasi waktu : ' . $order->estimation_day . ' hari, perkiraan tiba pada ' . \Carbon\Carbon::parse($order->estimation_date)->isoFormat('D MMMM Y') . '</li>
+                <li>Nomor Resi : ' . $order->resi . '</li>
+                </ul>
+                <p class="m-0">Silakan konfirmasi apabila pesanan sudah diterima.</p>',
+                'excerpt' => 'Pesanan Dikirim',
+                // 'image' => $shopBag,
+                'image' => 'storage/' . $orderProduct->orderproductimage->first()->name,
+                'is_read' => 0
+            ];
+            // membuat notifikasi pembuatan pesanan untuk user
+            $notification = UserNotification::create($notifications);
+
             return redirect()->route('adminorder.index', ['status' => $request->session()->get('status')])->with('success', 'Status pesanan berhasil diperbarui');
         } else {
             return redirect()->route('adminorder.index', ['status' => $request->session()->get('status')])->with('failed', 'Status pesanan gagal diperbarui');
@@ -689,6 +779,7 @@ class AdminOrderController extends Controller
         $order = Order::find($request->order_id);
         $order->resi = $validatedData['resi'];
         $update = $order->save();
+
         if ($update) {
             $orderStatus = OrderStatusDetail::create(
                 [
@@ -700,6 +791,24 @@ class AdminOrderController extends Controller
             );
         }
         if ($update && $orderStatus) {
+            $orderProduct = $order->orderitem[0]->orderProduct;
+
+            $notifications = [
+                'user_id' => $order->user_id,
+                'slug' => $order->users->username . '-' . Crypt::encryptString($order->id) . '-nomor-resi-diperbarui',
+                'type' => 'Pesanan',
+                'description' =>
+                '<p class="m-0">Nomor resi pesanan ' . $order->invoice_no . ' diperbarui oleh ADMIN KLIKSPL.</p>
+                <p class="m-0">Nomor resi terbaru pesanan anda : ' . $order->resi . '.</p><br>
+                <p class="m-0">Silakan konfirmasi apabila pesanan sudah diterima.</p>',
+                'excerpt' => 'No.Resi Pesanan Diperbarui',
+                // 'image' => $shopBag,
+                'image' => 'storage/' . $orderProduct->orderproductimage->first()->name,
+                'is_read' => 0
+            ];
+            // membuat notifikasi pembuatan pesanan untuk user
+            $notification = UserNotification::create($notifications);
+
             return redirect()->route('adminorder.index', ['status' => $request->session()->get('status')])->with('success', 'Status pesanan berhasil diperbarui');
         } else {
             return redirect()->route('adminorder.index', ['status' => $request->session()->get('status')])->with('failed', 'Status pesanan gagal diperbarui');
@@ -723,10 +832,10 @@ class AdminOrderController extends Controller
     }
 
     public function confirmCancellationOrder(Request $request)
-    {   
+    {
         $this->expiredCheck();
         $order = Order::where('id', '=', $request->order_id)->first();
-        $orderDetail = OrderStatusDetail::where([['order_id','=', $request->order_id], ['status','=','pengajuan pembatalan']])->first();
+        $orderDetail = OrderStatusDetail::where([['order_id', '=', $request->order_id], ['status', '=', 'pengajuan pembatalan']])->first();
         $cancel_order_detail = explode(': ', $orderDetail->status_detail);
         // dd($cancel_order_detail);
 
@@ -807,13 +916,13 @@ class AdminOrderController extends Controller
     }
 
     public function cancelOrder(Request $request)
-    {   
+    {
         // dd($request);
         $this->expiredCheck();
         $order = Order::where('id', '=', $request->order_id)->first();
 
         $cancel_order_detail = '';
-        if(!is_null($request->cancel_order_detail)){
+        if (!is_null($request->cancel_order_detail)) {
             $cancel_order_detail = $request->cancel_order_detail;
         }
 
@@ -823,21 +932,20 @@ class AdminOrderController extends Controller
             $product = Product::where('id', '=', $orderitem->product_id)->first();
             if (!empty($orderitem->product_variant_id)) {
                 $productVariantId = ProductVariant::where('id', '=', $orderitem->product_variant_id)->first();
-                
+
                 $productVariantId->stock = (int)$productVariantId->stock + (int)$orderitem->quantity;
                 $productVariantId->sold = (int)$productVariantId->sold - (int)$orderitem->quantity;
-                
+
                 $stockVariant += $productVariantId->stock;
                 $soldVariant += $productVariantId->sold;
                 $productVariantId->save();
-
             } else {
                 $product->stock = (int)$product->stock + (int)$orderitem->quantity;
                 $product->sold = (int)$product->sold - (int)$orderitem->quantity;
-                
+
                 $product->save();
             }
-           
+
             if (count($product->productvariant) > 0) {
                 $product->stock = $product->productvariant->sum('stock');
                 $product->sold = $product->productvariant->sum('sold');
@@ -864,40 +972,39 @@ class AdminOrderController extends Controller
             );
             return redirect()->route('adminorder.index')->with('success', 'Berhasil mengonfirmasi pembatalan pesanan.');
         }
-
     }
 
     public function declineCancellationOrder(Request $request)
     {
-         // dd($request);
-         $this->expiredCheck();
-         // dd($request);
- 
-         $order = Order::where('id', '=', $request->order_id)->first();
- 
-         $order->order_status = 'pembayaran dikonfirmasi';
-         $order->save();
- 
-         if ($order->save()) {
-             foreach ($order->orderitem as $item) {
-                 $item->order_item_status = 'pembayaran dikonfirmasi';
-                 $item->save();
-             }
-         }
+        // dd($request);
+        $this->expiredCheck();
+        // dd($request);
 
-         $orderStatus = OrderStatusDetail::create(
-             [
-                 'order_id' => $order->id,
-                 'status' => 'Pengajuan Pembatalan Ditolak',
-                 'status_detail' => 'Pengajuan pembatalan pesanan ditolak oleh Admin KLIKSPL, dengan alasan: ' . $request->cancel_order_detail,
-                 'status_date' => date('Y-m-d H:i:s')
-             ]
-         );
+        $order = Order::where('id', '=', $request->order_id)->first();
 
-         if ($orderStatus) {
-             return redirect()->back()->with('success', 'Penolakan Pembayaran berhasil, pembeli diberikan waktu 2 x 24 jam untuk mengirimkan bukti pembayaran yang valid');
-         } else {
-             return redirect()->back()->with('failed', 'Terjadi kesalahan dalam pembatalan bukti pembayaran');
-         }
+        $order->order_status = 'pembayaran dikonfirmasi';
+        $order->save();
+
+        if ($order->save()) {
+            foreach ($order->orderitem as $item) {
+                $item->order_item_status = 'pembayaran dikonfirmasi';
+                $item->save();
+            }
+        }
+
+        $orderStatus = OrderStatusDetail::create(
+            [
+                'order_id' => $order->id,
+                'status' => 'Pengajuan Pembatalan Ditolak',
+                'status_detail' => 'Pengajuan pembatalan pesanan ditolak oleh Admin KLIKSPL, dengan alasan: ' . $request->cancel_order_detail,
+                'status_date' => date('Y-m-d H:i:s')
+            ]
+        );
+
+        if ($orderStatus) {
+            return redirect()->back()->with('success', 'Penolakan Pembayaran berhasil, pembeli diberikan waktu 2 x 24 jam untuk mengirimkan bukti pembayaran yang valid');
+        } else {
+            return redirect()->back()->with('failed', 'Terjadi kesalahan dalam pembatalan bukti pembayaran');
+        }
     }
 }

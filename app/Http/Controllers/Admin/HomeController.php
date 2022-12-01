@@ -121,7 +121,7 @@ class HomeController extends Controller
             ->join('order_items', function($join){
                 $join->on('orders.id','=','order_items.order_id')
                 ->where('order_items.is_review','=', '0');
-            })
+            })->groupBy('orders.id')
             ->get();
 
             $finish = Order::where('order_status', '=', 'selesai')->where(['sender_address_id' => function ($query) {
