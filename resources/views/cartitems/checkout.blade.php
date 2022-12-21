@@ -1247,7 +1247,7 @@
                         console.log('- paymentMethodId : ' + paymentMethodId);
                         if (paymentMethodId == promoPaymentMethodId) {
                             console.log('-- promoPaymentMethodId : ' +
-                            promoPaymentMethodId);
+                                promoPaymentMethodId);
                             paymentMethodArr.push(promos[keys]['id']);
                         }
                     });
@@ -1266,7 +1266,7 @@
                                 $('.promo-' + promos[key]['id']).hasClass("d-none");
                                 $('.promo-' + promos[key]['id']).removeClass("d-none");
                                 $('.promo-btn-' + promos[key]['id']).prop("disabled",
-                                false);
+                                    false);
                                 console.log('** promo key-' + key + ' id-' + promos[key][
                                     'id'
                                 ]);
@@ -1337,7 +1337,7 @@
                                 }
 
                                 $('.subtotal-cart-items-promo-' + item['id'])
-                                .empty();
+                                    .empty();
                                 if (promoTypeId == 1 || promoTypeId == 2) {
                                     if (promoTypeId == 1) {
                                         if (promoProductId == item['product_id']) {
@@ -1361,7 +1361,7 @@
                                             subtotalWithDiscount += discountedPrice;
                                         } else {
                                             subtotalWithDiscount += item[
-                                            'subtotal'];
+                                                'subtotal'];
                                             console.log(
                                                 'subtotal with discount else : ' +
                                                 subtotalWithDiscount);
@@ -1389,7 +1389,7 @@
                                             subtotalWithDiscount += discountedPrice;
                                         } else {
                                             subtotalWithDiscount += item[
-                                            'subtotal'];
+                                                'subtotal'];
                                             console.log(
                                                 'subtotal with discount else : ' +
                                                 subtotalWithDiscount);
@@ -1464,7 +1464,7 @@
 
                 $('input[name="promo_use_id"]').val('');
                 $('.discount-used-row').hasClass('d-none') ? '' : $('.discount-used-row').addClass(
-                'd-none');
+                    'd-none');
                 $('.discount-used-text').text('');
                 $('.discount-val').text('');
                 $('.checkout-payment-total-all-val').text(formatRupiah(subtotalProductPrice + parseInt(
@@ -1672,10 +1672,12 @@
             });
 
             $('.payment-form').on('submit', function(e) {
-                if (confirm('Apakah anda yakin Data Pemesanan anda sudah benar (Alamat Pengiriman, Produk Pesanan, dan Kurir Pengiriman)?')) {
+                if (confirm(
+                        'Apakah anda yakin Data Pemesanan anda sudah benar (Alamat Pengiriman, Produk Pesanan, dan Kurir Pengiriman)?'
+                        )) {
                     $('.continue-payment').append(
                         '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
-                        );
+                    );
                     $('.show-payment-modal-button').attr('disabled', true);
                     // console.log('confirm');
                     // e.preventDefault();

@@ -164,7 +164,7 @@
                                 </div>
                             </div>
 
-                            <div class="row d-flex align-items-center fs-13">
+                            <div class="row d-flex align-items-center fs-13">  
                                 <div class="col-md-12 col-12 text-end my-2">
                                     {{-- {{ $comment->is_edit }} --}}
                                     @if ($comment->is_edit != 1)
