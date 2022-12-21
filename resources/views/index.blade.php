@@ -63,7 +63,7 @@
     <div class="index-adp mt-4 d-none d-sm-block mb-5">
         <div class="row justify-content-center align-items-center text-center">
             @foreach ($merksIndex as $merk)
-                <div class="index-adp-item col-md-2 col-6 my-3">
+                <div class="index-adp-item col-md-2 col-6 my-3 col-sm-4">
                     <a class="index-adp-img" href="/products?merk={{ $merk->slug }}">
                         <img class="w-75" src="{{ url($merk->image) }}" alt="">
                     </a>
@@ -152,7 +152,7 @@
     <div class="container mb-5 index-product d-none d-sm-block mb-5">
         <div class="row card-group">
             @foreach ($categories as $category)
-                <div class="col-6 col-md-2 my-2 p-0 px-1">
+                <div class="col-6 col-md-3 col-lg-2 my-2 p-0 px-1 col-sm-4">
                     {{-- <a class="text-decoration-none text-dark" href="/category/{{ $category->slug }}"> --}}
                     <a class="text-decoration-none text-dark" href="/products?category={{ $category->slug }}">
                         <div class="card h-100 product-card">
@@ -160,7 +160,7 @@
                                 @if (count($category->product->last()->productimage))
                                     @if (Storage::exists($category->product->last()->productimage[0]->name))
                                         {{-- {{ ($category->product->last()->productimage[0]->name) }} --}}
-                                        <img src="{{ asset('/storage/' . $category->product->last()->productimage[0]->name) }}"
+                                        <img src="{{ asset('/storage/' . $category->product->last()->productimage[0]->name) }}" 
                                             class="card-img-top" alt="Foto Produk">
                                     @else
                                         <img src="/assets/cart.svg" class="card-img-top"
@@ -202,7 +202,7 @@
     <div class="container mb-5 index-product">
         <div class="row card-group">
             @foreach ($productsLatest as $productLatest)
-                <div class="col-md-2 col-6 my-2 p-0 px-1 col-6 col-sm-4">
+                <div class="col-md-3 col-6 col-lg-2 my-2 p-0 px-1 col-6 col-sm-4">
                     <a href="/product/{{ $productLatest->slug }}" class="text-decoration-none text-dark">
                         <div class="card h-100 mb-3 product-card">
                             @if (count($promosPL) > 0)
@@ -314,7 +314,7 @@
     <div class="containedr mb-5">
         <div class="row card-group">
             @foreach ($productsStar as $star)
-                <div class="col-md-2 col-6 my-2 p-0 px-1">
+                <div class="col-md-3 col-6 col-lg-2 my-2 p-0 px-1 col-sm-4">
                     <a href="/product/{{ $star->slug }}" class="text-decoration-none text-dark">
                         <div class="card h-100 mb-3 product-card">
                             @if (count($promosStar) > 0)
@@ -420,7 +420,7 @@
     <div class="containedr mb-5">
         <div class="row card-group">
             @foreach ($productsBestSeller as $productBS)
-                <div class="col-md-2 col-6 my-2 p-0 px-1">
+                <div class="col-md-3 col-6 col-lg-2 my-2 p-0 px-1 col-sm-4">
                     <a href="/product/{{ $productBS->slug }}" class="text-decoration-none text-dark">
                         <div class="card h-100 mb-3 product-card">
                             {{-- @if (count($productBS->productpromo) > 0) --}}

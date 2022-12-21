@@ -35,7 +35,7 @@
     </div>
     <div class="card mb-3 border-radius-1-5rem fs-14">
         <div class="card-body p-4">
-            <form action="{{ route('productcomment.store') }}" method="POST" enctype="multipart/form-data">
+            <form class="admin-product-comment-reply" action="{{ route('productcomment.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="id" id="" value="{{ $comment->id }}">
                 <input type="hidden" name="admin_id" id="" value="{{ auth()->guard('adminMiddle')->user()->id }}">
@@ -143,7 +143,7 @@
                 </div>
                 <div class="row">
                     <div class="col-12 text-end">
-                        <button type="submit" class="btn btn-danger fs-14">
+                        <button type="submit" class="btn btn-danger fs-14 submit-button">
                             <i class="bi bi-send"></i> Kirim
                         </button>
                     </div>
@@ -156,6 +156,15 @@
             $('.comment-suggestion').on('click', function(e) {
                 console.log(e);
                 $('#commentTextArea').text(e.target.innerText);
+            });
+            $('.admin-product-comment-reply').submit(function(e) {
+                console.log(e);
+                $('.submit-button').append(
+                    '<span class="ms-2 spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+                );
+                $('.submit-button').attr('disabled', true);
+
+                // e.preventDefault();
             });
         });
     </script>

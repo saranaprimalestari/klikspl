@@ -39,7 +39,9 @@
 
     {{-- SCRIPT JQUERY --}}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/js/moment-with-locales.js" type="text/javascript"></script>
     <script src="/js/script.js" type="text/javascript"></script>
+    <script src="/js/admin/script.js" type="text/javascript"></script>
 
     {{-- cropper.js --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/2.0.0-alpha.2/cropper.min.css"
@@ -88,7 +90,9 @@
     {{-- FONTAWESOME --}}
     <script src="https://kit.fontawesome.com/c4d8626996.js" crossorigin="anonymous"></script>
 
+    <script src="/js/moment-with-locales.js" type="text/javascript"></script>
     <script src="/js/script.js" type="text/javascript"></script>
+    <script src="/js/admin/script.js" type="text/javascript"></script>
     <script src="/js/trix.js" type="text/javascript"></script>
 
     {{-- SELECT2 --}}

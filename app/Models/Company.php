@@ -34,4 +34,10 @@ class Company extends Model
     {
         return $this->hasMany(AdminNotification::class);
     }
+    
+    public function chat()
+    {
+        return $this->hasMany(Chat::class);
+    }
+
 }

@@ -10,14 +10,626 @@ function reloadFunction() {
     window.location.reload();
 }
 
+
 $(document).ready(function() {
+    moment.locale('id');
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
 });
 
+window.userChatLength = 0;
+window.userChat = 0;
+
+$(document).on('click', function(e) {
+    var container = $(".chat-container");
+    if (!e.target.classList.contains('user-chat-button')) {
+        if (!$(e.target).closest(container).length) {
+            container.addClass('d-none');
+            container.removeClass('d-block');
+        }
+    }
+});
+
+window.csrfToken = $("input[name='csrf_token']").val();
+window.userId = $("input[name='user_id_chat']").val();
+window.productId = $("input[name='product_id_chat']").val();
+window.orderId = $("input[name='order_id_chat']").val();
+window.adminId = $("input[name='admin_id_chat']").val();
+window.companyId = $("input[name='company_id_chat']").val();
+// console.log($("input[name='order_id']").val());
+
+if (typeof(window.userId) !== 'undefined') {
+    load_chat(window.csrfToken, window.userId, window.productId, window.orderId, window
+        .adminId, window
+        .companyId);
+}
+
+setInterval(function() {
+    // console.log('real time');
+    if (typeof(window.userId) !== 'undefined') {
+        load_chat(window.csrfToken, window.userId, window.productId, window.orderId, window
+            .adminId, window
+            .companyId);
+    }
+    // update_chat_status(window.csrfToken, window.userId, window.productId, window.adminId, window
+    //     .companyId);
+}, 4500);
+
+$('.send-chat-button').on('click', function() {
+    console.log('sending chat...');
+    window.chat = $("textarea[name='chat_user_chat']").val();
+
+    if (window.chat != null && window.chat != '') {
+        // console.log('order id : ' + window.orderId);
+        send_chat(window.csrfToken, window.userId, window.productId, window.orderId, window
+            .adminId, window
+            .companyId, window.chat);
+        $('.send-chat-icon').addClass('d-none');
+        $('.send-chat-spinner').removeClass('d-none');
+        // $('.send-chat-spinner').addClass('d-block');
+        $('.send-chat-button').attr('disabled', true);
+
+    } else {
+        alert('chat tidak boleh kosong!');
+    }
+});
+
+function scroll_to_recent_chat() {
+    setTimeout(() => {
+        $(".inner-user-chat-modal").animate({
+            scrollTop: $(
+                    ".inner-user-chat-modal").get(0)
+                .scrollHeight
+        }, 500);
+    }, 1000);
+}
+
+function chat_container_is_opened() {
+    if ($('.chat-container').hasClass('d-block')) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function load_chat(csrfToken, userId, productId, orderId, adminId, companyId) {
+    // console.log('load chat');
+    $.ajax({
+        // url: "{{ url('/userloadchat') }}",
+        url: window.location.origin + "/userloadchat",
+        type: 'get',
+        data: {
+            _token: csrfToken,
+            user_id: userId,
+            product_id: productId,
+            order_id: orderId,
+            admin_id: adminId,
+            company_id: companyId,
+            // chat_message: chat,
+        },
+        success: function(response) {
+            // console.log(response);
+            if (response['chatHistory'] != '') {
+                $('.inner-user-chat-modal').html('');
+                $.each(response['chatHistory'], function(id, chats) {
+                    $.each(chats['chat_message'], function(idChat, chat) {
+                        // console.log(chat);
+                        // console.log(chat['id']);
+                        if (chat['admin_id'] == null) {
+                            if (chat['status'] == 0) {
+                                var check = 'bi bi-check2';
+                            } else {
+                                var check = 'bi bi-check2-all';
+                            }
+                            $('.inner-user-chat-modal').append(
+                                '<div class = "row mx-0 justify-content-end mb-3" > ' +
+                                '<div class="col-8 bg-danger p-3 text-white border-radius-075rem">' +
+                                '<p class="m-0 mb-2">' + chat[
+                                    'chat_message'] +
+                                '</p>' +
+                                '<div class="d-flex">' +
+                                '<div class="fs-11 m-0">' + moment(
+                                    chat[
+                                        'created_at']).fromNow() +
+                                '</div>' +
+                                '<div class="fs-14 ms-auto"><i class="' +
+                                check + '"></i></div>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>');
+                            // $('.inner-user-chat-modal').append('<div>'+chat['chat_message']+'</div>');
+                        } else {
+                            $('.inner-user-chat-modal').append(
+                                '<div class = "row mx-0 mb-3" > ' +
+                                '<div class="col-8 bg-success p-3 text-white border-radius-075rem">' +
+                                '<p class="m-0 mb-2">' + chat[
+                                    'chat_message'] +
+                                '</p>' +
+                                '<p class="fs-11 m-0">' + moment(
+                                    chat[
+                                        'created_at']).fromNow() +
+                                '</p>' +
+                                '</div>' +
+                                '</div>');
+                        }
+                    });
+                });
+                if (response['unreadChat'] != '') {
+                    if ($('.unread-user-chat-badge').hasClass('d-none')) {
+                        $('.unread-user-chat-badge').removeClass('d-none');
+                        $('.unread-user-chat-badge').addClass('d-block');
+                    }
+                    $('.unread-user-chat-badge').text(response['unreadChat']);
+                } else {
+                    if ($('.unread-user-chat-badge').hasClass('d-block')) {
+                        $('.unread-user-chat-badge').addClass('d-none');
+                        $('.unread-user-chat-badge').removeClass('d-block');
+                    }
+                    $('.unread-user-chat-badge').text('');
+                }
+
+                window.userChatLength = response['chatHistory'][0]['chat_message'].length;
+                if (window.userChat < window.userChatLength) {
+                    window.userChat = window.userChatLength;
+                    // setTimeout(() => {
+                    //     console.log('slebew');
+                    scroll_to_recent_chat();
+                    // }, 1000);
+                }
+            } else {
+                $('.inner-user-chat-modal').html(
+                    '<div class="row mx-0 mb-3">' +
+                    '<div class="col-12 text-center mt-5">' +
+                    '<img class="cart-img" src="' + (new URL("/assets/klikspl-logo.png",
+                        window.location.origin)) + '" alt="" width="100">' +
+                    '<p class="text-muted py-3 px-2">' +
+                    'Tanyakan terkait produk / pesanan di halaman ini ke ADMIN KLIKSPL' +
+                    '</p>' +
+                    '</div>' +
+                    '</div>');
+            }
+
+            if (chat_container_is_opened()) {
+                update_chat_status(window.csrfToken, window.userId, window.productId, window.orderId, window
+                    .adminId, window.companyId);
+            }
+        },
+        dataType: "json"
+    });
+}
+
+function send_chat(csrfToken, userId, productId, orderId, adminId, companyId, chat) {
+    console.log(csrfToken);
+    console.log(userId);
+    console.log(productId);
+    console.log(orderId);
+    console.log(adminId);
+    console.log(companyId);
+    console.log(chat);
+    $.ajax({
+        // url: "{{ url('/usersendchat') }}",
+        url: window.location.origin + "/usersendchat",
+        type: 'post',
+        data: {
+            _token: csrfToken,
+            user_id: userId,
+            product_id: productId,
+            order_id: orderId,
+            admin_id: adminId,
+            company_id: companyId,
+            chat_message: chat,
+        },
+        success: function(response) {
+            // console.log(response);
+            $('textarea[name="chat_user_chat"]').val('');
+            $(document).ready(function() {
+                console.log('launch once');
+                $(".inner-user-chat-modal").animate({
+                    scrollTop: $(
+                            ".inner-user-chat-modal").get(0)
+                        .scrollHeight
+                }, 500);
+            });
+            $('.send-chat-spinner').addClass('d-none');
+            $('.send-chat-spinner').removeClass('d-block');
+            $('.send-chat-icon').removeClass('d-none');
+            $('.send-chat-button').attr('disabled', false);
+            load_chat(csrfToken, userId, productId, orderId, adminId, companyId);
+            if (chat_container_is_opened()) {
+                update_chat_status(window.csrfToken, window.userId, window.productId, window.orderId, window
+                    .adminId, window.companyId);
+            }
+        },
+        error: function(xhr, status, error) {
+            var err = eval("(" + xhr.responseText + ")");
+            console.log(xhr);
+            console.log(status);
+            console.log(error);
+            alert(err.Message);
+            $('.send-chat-button').attr('disabled', false);
+
+        },
+        dataType: "json"
+    });
+}
+
+function update_chat_status(csrfToken, userId, productId, orderId, adminId, companyId) {
+    console.log(csrfToken);
+    console.log(userId);
+    console.log(productId);
+    console.log(orderId);
+    console.log(adminId);
+    console.log(companyId);
+    $.ajax({
+        // url: "{{ url('/updatechatstatus') }}",
+        url: window.location.origin + "/updatechatstatus",
+        type: 'post',
+        data: {
+            _token: csrfToken,
+            user_id: userId,
+            product_id: productId,
+            order_id: orderId,
+            admin_id: adminId,
+            company_id: companyId,
+        },
+        success: function(response) {
+            console.log(response);
+            // $("textarea[name='chat']").val('');
+            // $(document).ready(function() {
+            //     console.log('launch once');
+            //     $(".inner-user-chat-modal").animate({
+            //         scrollTop: $(
+            //                 ".inner-user-chat-modal").get(0)
+            //             .scrollHeight
+            //     }, 0);
+            // });
+        },
+        dataType: "json"
+    });
+}
+
+$('.user-chat-button, .user-chat-close-button').on('click', function() {
+    if ($('.chat-container').hasClass('d-none')) {
+        $('.chat-container').removeClass('d-none');
+        $('.chat-container').addClass('d-block');
+
+        load_chat(window.csrfToken, window.userId, window.productId, window.orderId, window
+            .adminId, window
+            .companyId);
+
+        $(".inner-user-chat-modal").animate({
+            scrollTop: $(
+                    ".inner-user-chat-modal").get(0)
+                .scrollHeight
+        }, 0);
+        console.log('window company id : ' + window.companyId);
+
+        console.log($(this));
+        if ($(this).hasClass('user-chat-button')) {
+            update_chat_status(window.csrfToken, window.userId, window.productId, window.orderId, window
+                .adminId, window.companyId);
+        }
+    } else {
+        $('.chat-container').removeClass('d-block');
+        $('.chat-container').addClass('d-none');
+    }
+});
+var baseURL = 'http://klikspl.test/';
+
+
+function load_chat_admin_all(csrfToken, companyId) {
+    $.ajax({
+        // url: "{!! route('load.admin.chat.all') !!}",
+        url: window.location.origin + "/userloadchatadminall",
+        type: 'get',
+        data: {
+            _token: csrfToken,
+            company_id: companyId,
+        },
+        success: function(response) {
+            if (response != '') {
+                $('.inner-admin-chat-all').html('');
+                $.each(response, function(id, chatResponse) {
+                    // console.log(chatResponse);
+                    // console.log(chatResponse['id']);
+                    var unread = 0;
+                    $.each(chatResponse['chat_message'], function(idChatUnique,
+                        chatUnique) {
+                        if (chatUnique['status'] == 0 &&
+                            chatUnique['admin_id'] == null
+                        ) {
+                            unread += 1;
+                        }
+                    });
+
+                    if (chatResponse['order_id'] != null) {
+                        image = chatResponse['order']['orderitem'][0]['orderproduct']['orderproductimage'][0]['name'];
+                        type = 'Pesanan';
+                        if (chatResponse['order']['invoice_no'] != null) {
+                            detail = chatResponse['order']['invoice_no'];
+                        } else {
+                            detail = 'No.Invoice belum terbit';
+                        }
+                    } else if (chatResponse['product_id'] != null) {
+                        image = chatResponse['product']['productimage'][0]['name'];
+                        type = 'Tanya Produk';
+                        detail = chatResponse['product']['name'];
+                    }
+
+                    // console.log('image source : '+ image);
+                    imgURL = (new URL('/storage/' + image,
+                        baseURL));
+                    // console.log('unread : ' + unread);
+
+                    $('.inner-admin-chat-all').append(
+                        '<button type="button" class="inner-admin-chat-list list-group-item list-group-item-action chat-all-container px-0"aria-current="true" data-id="' +
+                        chatResponse['id'] + '" data-uid="' +
+                        chatResponse['user_id'] + '" data-pid="' +
+                        chatResponse['product_id'] + '" data-oid="' +
+                        chatResponse['order_id'] + '" data-cid="' +
+                        chatResponse['company_id'] + '">' +
+                        '<div class="row align-items-center m-0">' +
+                        '<div class="col-lg-1 col-md-2 col-2 px-0 px-sm-2">' +
+                        '<img class="img-fluid w-100 border-radius-05rem" src="' +
+                        imgURL + '" alt="" width="20">' +
+                        '</div>' +
+                        '<div class="col-lg-10 col-md-9 col-8">' +
+                        '<div class="ps-0" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">' +
+                        '<div class="fw-600 m-0 text-truncate" data-bs-toggle="tooltip" data-bs-placement="bottom" title="' + ' [' + type + ' - ' + detail + ']' + '">' +
+                        chatResponse['user']['username'] +
+                        ' [' + type + ' - ' + detail + ']' +
+                        '</div>' +
+                        '<div class="fs-12 notification-description-navbar">' +
+                        chatResponse['chat_message'][chatResponse[
+                            'chat_message'].length - 1]['chat_message'] +
+                        '</div>' +
+                        '<div class="fs-12 text-secondary">' +
+                        moment(chatResponse['chat_message'][chatResponse[
+                            'chat_message'].length - 1]['created_at'])
+                        .fromNow() +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="col-2 col-sm-1 text-end">' +
+                        '<span class="badge bg-danger rounded-pill">' +
+                        unread +
+                        '</span>' +
+                        '</div>' +
+                        '</div>' +
+                        '</button>'
+                    );
+                });
+            }
+            // var $wrapper = $('.inner-admin-chat-all');
+            // console.log($wrapper);
+            // $wrapper.find('.inner-admin-chat-list').sort(function(a, b) {
+            //         return +b.dataset.id - +a.dataset.id;
+            //     })
+            //     .appendTo($wrapper);
+        },
+        dataType: "json"
+    });
+}
+// $(document).on('click', function(e) {
+//     var container = $(".chat-container");
+//     if (!e.target.classList.contains('user-chat-button')) {
+//         if (!$(e.target).closest(container).length) {
+//             container.addClass('d-none');
+//             container.removeClass('d-block');
+//         }
+//     }
+// });
+
+// window.csrfToken = $("input[name='csrf_token']").val();
+// window.userId = $("input[name='user_id']").val();
+// window.productId = $("input[name='product_id']").val();
+// window.orderId = $("input[name='order_id']").val();
+// window.adminId = $("input[name='admin_id']").val();
+// window.companyId = $("input[name='company_id']").val();
+// // console.log($("input[name='order_id']").val());
+// setInterval(function() {
+//     // console.log('real time');
+//     if (typeof(window.userId) !== 'undefined') {
+//         load_chat(window.csrfToken, window.userId, window.productId, window.orderId, window.adminId, window
+//             .companyId);
+//     }
+//     // update_chat_status(window.csrfToken, window.userId, window.productId, window.adminId, window
+//     //     .companyId);
+// }, 500);
+
+// $('.send-chat-button').on('click', function() {
+//     console.log('send chat on progress...');
+//     window.chat = $("textarea[name='chat']").val();
+
+//     if (window.chat != null && window.chat != '') {
+//         // console.log('order id : ' + window.orderId);
+//         send_chat(window.csrfToken, window.userId, window.productId, window.orderId, window.adminId, window
+//             .companyId, window.chat);
+//         $('.send-chat-icon').addClass('d-none');
+//         $('.send-chat-spinner').removeClass('d-none');
+//         // $('.send-chat-spinner').addClass('d-block');
+//         $('.send-chat-button').attr('disabled', true);
+
+//     } else {
+//         alert('chat tidak boleh kosong!');
+//     }
+// });
+
+// function load_chat(csrfToken, userId, productId, orderId, adminId, companyId) {
+//     // console.log('load chat');
+//     $.ajax({
+//         // url: "{{ url('/userloadchat') }}",
+//         url: window.location.origin + "/userloadchat",
+//         type: 'get',
+//         data: {
+//             _token: csrfToken,
+//             user_id: userId,
+//             product_id: productId,
+//             order_id: orderId,
+//             admin_id: adminId,
+//             company_id: companyId,
+//             // chat_message: chat,
+//         },
+//         success: function(response) {
+//             console.log(response);
+//             // console.log((response) == '');
+//             if (response != '') {
+//                 $('.inner-user-chat-modal').html('');
+//                 $.each(response['chatHistory'], function(id, val) {
+//                     if (val['admin_id'] == null) {
+//                         if (val['status'] == 0) {
+//                             var check = 'bi bi-check2';
+//                         } else {
+//                             var check = 'bi bi-check2-all';
+//                         }
+//                         $('.inner-user-chat-modal').append(
+//                             '<div class = "row mx-0 justify-content-end mb-3" > ' +
+//                             '<div class="col-8 bg-danger p-3 text-white border-radius-075rem">' +
+//                             '<p class="m-0 mb-2">' + val['chat_message'] +
+//                             '</p>' +
+//                             '<div class="d-flex">' +
+//                             '<div class="fs-11 m-0">' + moment(val[
+//                                 'created_at']).fromNow() + '</div>' +
+//                             '<div class="fs-14 ms-auto"><i class="' +
+//                             check + '"></i></div>' +
+//                             '</div>' +
+//                             '</div>' +
+//                             '</div>');
+//                         // $('.inner-user-chat-modal').append('<div>'+val['chat_message']+'</div>');
+//                     } else {
+//                         $('.inner-user-chat-modal').append(
+//                             '<div class = "row mx-0 mb-3" > ' +
+//                             '<div class="col-8 bg-success p-3 text-white border-radius-075rem">' +
+//                             '<p class="m-0 mb-2">' + val['chat_message'] +
+//                             '</p>' +
+//                             '<p class="fs-11 m-0">' + moment(val[
+//                                 'created_at']).fromNow() + '</p>' +
+//                             '</div>' +
+//                             '</div>');
+//                     }
+//                 });
+//                 if (response['unreadChat'] != '') {
+//                     if ($('.unread-user-chat-badge').hasClass('d-none')) {
+//                         $('.unread-user-chat-badge').removeClass('d-none');
+//                         $('.unread-user-chat-badge').addClass('d-block');
+//                     }
+//                     $('.unread-user-chat-badge').text(response['unreadChat']);
+//                 } else {
+//                     if ($('.unread-user-chat-badge').hasClass('d-block')) {
+//                         $('.unread-user-chat-badge').addClass('d-none');
+//                         $('.unread-user-chat-badge').removeClass('d-block');
+//                     }
+//                     $('.unread-user-chat-badge').text('');
+//                 }
+//             }
+//         },
+//         dataType: "json"
+//     });
+// }
+
+// function send_chat(csrfToken, userId, productId, orderId, adminId, companyId, chat) {
+//     console.log(csrfToken);
+//     console.log(userId);
+//     console.log(productId);
+//     console.log(orderId);
+//     console.log(adminId);
+//     console.log(companyId);
+//     console.log(chat);
+//     $.ajax({
+//         // url: "{{ url('/usersendchat') }}",
+//         url: window.location.origin + "/usersendchat",
+//         type: 'post',
+//         data: {
+//             _token: csrfToken,
+//             user_id: userId,
+//             product_id: productId,
+//             order_id: orderId,
+//             admin_id: adminId,
+//             company_id: companyId,
+//             chat_message: chat,
+//         },
+//         success: function(response) {
+//             console.log(response);
+//             $("textarea[name='chat']").val('');
+//             $(document).ready(function() {
+//                 console.log('launch once');
+//                 $(".inner-user-chat-modal").animate({
+//                     scrollTop: $(
+//                             ".inner-user-chat-modal").get(0)
+//                         .scrollHeight
+//                 }, 500);
+//             });
+//             $('.send-chat-spinner').addClass('d-none');
+//             $('.send-chat-spinner').removeClass('d-block');
+//             $('.send-chat-icon').removeClass('d-none');
+//             $('.send-chat-button').attr('disabled', false);
+//         },
+//         error: function(xhr, status, error) {
+//             var err = eval("(" + xhr.responseText + ")");
+//             console.log(xhr);
+//             console.log(status);
+//             console.log(error);
+//             alert(err.Message);
+//             $('.send-chat-button').attr('disabled', false);
+
+//         },
+//         dataType: "json"
+//     });
+// }
+
+// function update_chat_status(csrfToken, userId, productId, orderId, companyId) {
+//     console.log(csrfToken);
+//     console.log(userId);
+//     console.log(productId);
+//     console.log(orderId);
+//     console.log(companyId);
+//     $.ajax({
+//         // url: "{{ url('/updatechatstatus') }}",
+//         url: window.location.origin + "/updatechatstatus",
+//         type: 'post',
+//         data: {
+//             _token: csrfToken,
+//             user_id: userId,
+//             product_id: productId,
+//             company_id: companyId,
+//             // chat_message: chat,
+//         },
+//         success: function(response) {
+//             console.log(response);
+//             // $("textarea[name='chat']").val('');
+//             // $(document).ready(function() {
+//             //     console.log('launch once');
+//             //     $(".inner-user-chat-modal").animate({
+//             //         scrollTop: $(
+//             //                 ".inner-user-chat-modal").get(0)
+//             //             .scrollHeight
+//             //     }, 0);
+//             // });
+//         },
+//         dataType: "json"
+//     });
+// }
+
+// $('.user-chat-button, .user-chat-close-button').on('click', function() {
+//     if ($('.chat-container').hasClass('d-none')) {
+//         $('.chat-container').removeClass('d-none');
+//         $('.chat-container').addClass('d-block');
+//         $(".inner-user-chat-modal").animate({
+//             scrollTop: $(
+//                     ".inner-user-chat-modal").get(0)
+//                 .scrollHeight
+//         }, 0);
+//         update_chat_status(window.csrfToken, window.userId, window.productId, window.orderId, window.companyId);
+//     } else {
+//         $('.chat-container').removeClass('d-block');
+//         $('.chat-container').addClass('d-none');
+//     }
+// });
 // if (performance.navigation.type == 2) {
 //     location.reload(true);
 // }

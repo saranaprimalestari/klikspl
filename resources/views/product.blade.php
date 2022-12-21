@@ -183,7 +183,7 @@
                             @endauth
                             <input type="hidden" name="product_id" value="{{ $product->id }}"> --}}
                 <div class="product-info">
-                    <h5 class="fs-6">{{ $product->name }}</h5>
+                    <h5 class="fs-6 lh-base">{{ $product->name }}</h5>
                     <div class="d-flex">
                         <p class="m-0">
                             <strong>{{ count($product->productvariant) > 0 ? $product->productvariant->sum('sold') : $product->sold }}</strong>
@@ -227,7 +227,7 @@
                     {{-- <input type="hidden" class="none-variant" name="" value="{{  }}"> --}}
                 @endif
                 @if (count($product->productvariant) > 0)
-                    <div class="variant mt-3">
+                    <div class="variant mt-3 mb-4 mb-sm-0">
                         <p class="fw-bold m-0 mb-2">Varian</p>
                         {{-- <div class="btn-group" role="group" aria-label="Basic radio toggle button group"> --}}
                         @foreach ($product->productvariant as $variant)
@@ -309,7 +309,7 @@
                     <input type="hidden" name="subtotal" value="">
                 @endif
 
-                <div class="shipping mt-3">
+                <div class="shipping mt-3 mb-4 mb-sm-0">
                     <p class="fw-bold m-0 mb-2">Pengiriman
                         {{-- <div class="spinner-border" role="status">
                                     <span class="sr-only">Loading...</span>
@@ -415,7 +415,7 @@
                                         </div>
                                         <div class="modal-body p-4">
                                             <div class="row">
-                                                <div class="col-md-4 col-12">
+                                                <div class="col-md-4 col-12 order-1 order-sm-0">
                                                     <div class="card shipment-cost-modal-card mb-4">
                                                         <div class="card-body p-3">
                                                             <div class="send-from">
@@ -577,7 +577,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-8 col-12">
+                                                <div class="col-md-8 col-12 order-0 order-sm-1 mb-4 mb-sm-0">
                                                     <h5>Perkiraan Ongkos Kirim</h5>
                                                     @auth
                                                         @if (count(auth()->user()->useraddress) > 0)
@@ -787,7 +787,7 @@
                     </div>
                 </div>
 
-                <div class="order mt-3">
+                <div class="order mt-3 mb-4 mb-sm-0">
                     <p class="fw-bold m-0 mb-2">Jumlah Pemesanan</p>
                     <div class="col-md-6 col-12 d-flex align-items-center">
                         <div class="input-group inline-group inline-group-qty-product-detail">
@@ -890,7 +890,7 @@
                         <input type="hidden" name="subtotal"
                             value="{{ count($product->productvariant) == 0 ? $product->price : '' }}">
                         <button type="submit" id="checkout-button"
-                            class="btn btn-outline-danger checkout-btn px-3 py-2 my-1 me-2 {{ count($product->productvariant) == 0 ? (empty($product->stock) ? 'disabled' : '') : '' }} add-to-cart-submit-button">
+                            class="btn btn-outline-danger border-red-klikspl checkout-btn px-3 py-2 my-1 me-2 {{ count($product->productvariant) == 0 ? (empty($product->stock) ? 'disabled' : '') : '' }} add-to-cart-submit-button">
                             <i class="bi bi-cart"></i>
                             Masukkan Keranjang
                         </button>
@@ -909,7 +909,7 @@
                         <input type="hidden" name="quantity" value="">
                         <input type="hidden" name="subtotal" value="">
                         <button type="submit" id="checkout-button"
-                            class="btn btn-danger checkout-btn px-3 py-2 my-1 {{ count($product->productvariant) == 0 ? (empty($product->stock) ? 'disabled' : '') : '' }} buy-now-submit-button">
+                            class="btn btn-danger bg-red-klikspl checkout-btn px-3 py-2 my-1 {{ count($product->productvariant) == 0 ? (empty($product->stock) ? 'disabled' : '') : '' }} buy-now-submit-button">
                             <i class="bi bi-wallet"></i>
                             Beli Sekarang
                         </button>
@@ -1034,7 +1034,7 @@
                                     </p>
                                     <h5 class="comment-text mb-1">{{ $comment->user->username }}
                                         <small class="text-muted comment-text fw-light ms-1">
-                                            <i>Diposting
+                                            <i>
                                                 {{ $comment->created_at->diffForHumans() }}
                                             </i>
                                         </small>
@@ -1114,7 +1114,7 @@
                                                         {{ $commentChild->admin->admintype->admin_type }}
                                                     @endif
                                                     <small class="text-muted comment-text fw-light ms-1">
-                                                        <i>Diposting
+                                                        <i>
                                                             {{ $commentChild->created_at->diffForHumans() }}
                                                         </i>
                                                     </small>
@@ -1135,6 +1135,8 @@
         {{-- {{ (json_encode($product)) }} --}}
         {{-- </div> --}}
     </div>
+   @include('chat')
+
     <script>
         try {
             //code
@@ -1154,6 +1156,7 @@
 
             }
             $(window).on('load', function() {
+
                 var var_ids = $('input[name="product_variant_ids"]').val();
                 var token = $('input[name="csrf-token"]').val();
                 var city_destinations = $('input[name="city_destinations"]').val();
@@ -1161,10 +1164,12 @@
                 var origins = {!! json_encode($from_city->city_id) !!};
                 var courier = 'all';
                 window.varianIdGlobal = [];
+
                 // window.city_origins = {!! json_encode($product->productorigin->unique('sender_address_id')) !!}
                 window.city_origins = {!! json_encode($senderAddress) !!};
                 console.log(typeof(city_origins));
                 console.log(city_origins);
+
                 if (city_origins == '') {
                     window.location.reload();
                 }
@@ -1180,7 +1185,220 @@
                 console.log(product['productvariant'].length);
 
             });
+
+            // $(document).on('click', function(e) {
+            //     var container = $(".chat-container");
+            //     if (!e.target.classList.contains('user-chat-button')) {
+            //         if (!$(e.target).closest(container).length) {
+            //             container.addClass('d-none');
+            //             container.removeClass('d-block');
+            //         }
+            //     }
+            // });
+
             $(document).ready(function() {
+
+                // // console.log(moment().format('llll'));
+                // window.csrfToken = $("input[name='csrf_token']").val();
+                // window.userId = $("input[name='user_id']").val();
+                // window.productId = $("input[name='product_id']").val();
+                // window.adminId = $("input[name='admin_id']").val();
+                // window.companyId = $("input[name='company_id']").val();
+                // console.log(window.csrfToken);
+                // console.log(window.userId);
+                // console.log(window.productId);
+                // console.log(window.adminId);
+                // console.log(window.companyId);
+                // // load_chat(window.csrfToken, window.userId, window.productId, window.adminId, window
+                // //     .companyId);
+
+                // setInterval(function() {
+                //     // console.log('real time');
+                //     if (typeof(window.userId) !== 'undefined') {
+                //         load_chat(window.csrfToken, window.userId, window.productId, window.adminId, window
+                //             .companyId);
+                //     }
+                //     // update_chat_status(window.csrfToken, window.userId, window.productId, window.adminId, window
+                //     //     .companyId);
+                // }, 500);
+
+                // $('.send-chat-button').on('click', function() {
+                //     console.log('send chat on progress...');
+                //     window.chat = $("textarea[name='chat']").val();
+
+                //     if (window.chat != null && window.chat != '') {
+                //         send_chat(window.csrfToken, window.userId, window.productId, window.adminId, window
+                //             .companyId, window.chat);
+
+                //         $('.send-chat-icon').addClass('d-none');
+                //         $('.send-chat-spinner').removeClass('d-none');
+                //         // $('.send-chat-spinner').addClass('d-block');
+                //         $('.send-chat-button').attr('disabled', true);
+
+                //     } else {
+                //         alert('chat tidak boleh kosong!');
+                //     }
+                // });
+
+                // function load_chat(csrfToken, userId, productId, adminId, companyId) {
+                //     // console.log('load chat');
+                //     $.ajax({
+                //         url: "{{ url('/userloadchat') }}",
+                //         type: 'get',
+                //         data: {
+                //             _token: csrfToken,
+                //             user_id: userId,
+                //             product_id: productId,
+                //             admin_id: adminId,
+                //             company_id: companyId,
+                //             // chat_message: chat,
+                //         },
+                //         success: function(response) {
+                //             console.log(response);
+                //             // console.log((response) == '');
+                //             if (response != '') {
+                //                 $('.inner-user-chat-modal').html('');
+                //                 $.each(response['chatHistory'], function(id, chats) {
+                //                     $.each(chats['chat_message'], function(idChat, chat) {
+                //                         console.log(chat['id']);
+                //                         if (chat['admin_id'] == null) {
+                //                             if (chat['status'] == 0) {
+                //                                 var check = 'bi bi-check2';
+                //                             } else {
+                //                                 var check = 'bi bi-check2-all';
+                //                             }
+                //                             $('.inner-user-chat-modal').append(
+                //                                 '<div class = "row mx-0 justify-content-end mb-3" > ' +
+                //                                 '<div class="col-8 bg-danger p-3 text-white border-radius-075rem">' +
+                //                                 '<p class="m-0 mb-2">' + chat[
+                //                                     'chat_message'] +
+                //                                 '</p>' +
+                //                                 '<div class="d-flex">' +
+                //                                 '<div class="fs-11 m-0">' + moment(
+                //                                     chat[
+                //                                         'created_at']).fromNow() +
+                //                                 '</div>' +
+                //                                 '<div class="fs-14 ms-auto"><i class="' +
+                //                                 check + '"></i></div>' +
+                //                                 '</div>' +
+                //                                 '</div>' +
+                //                                 '</div>');
+                //                             // $('.inner-user-chat-modal').append('<div>'+chat['chat_message']+'</div>');
+                //                         } else {
+                //                             $('.inner-user-chat-modal').append(
+                //                                 '<div class = "row mx-0 mb-3" > ' +
+                //                                 '<div class="col-8 bg-success p-3 text-white border-radius-075rem">' +
+                //                                 '<p class="m-0 mb-2">' + chat[
+                //                                     'chat_message'] +
+                //                                 '</p>' +
+                //                                 '<p class="fs-11 m-0">' + moment(
+                //                                     chat[
+                //                                         'created_at']).fromNow() +
+                //                                 '</p>' +
+                //                                 '</div>' +
+                //                                 '</div>');
+                //                         }
+                //                     });
+                //                 });
+                //                 if (response['unreadChat'] != '') {
+                //                     if ($('.unread-user-chat-badge').hasClass('d-none')) {
+                //                         $('.unread-user-chat-badge').removeClass('d-none');
+                //                         $('.unread-user-chat-badge').addClass('d-block');
+                //                     }
+                //                     $('.unread-user-chat-badge').text(response['unreadChat']);
+                //                 } else {
+                //                     if ($('.unread-user-chat-badge').hasClass('d-block')) {
+                //                         $('.unread-user-chat-badge').addClass('d-none');
+                //                         $('.unread-user-chat-badge').removeClass('d-block');
+                //                     }
+                //                     $('.unread-user-chat-badge').text('');
+                //                 }
+                //             }
+                //         },
+                //         dataType: "json"
+                //     });
+                // }
+
+                // function send_chat(csrfToken, userId, productId, adminId, companyId, chat) {
+                //     $.ajax({
+                //         url: "{{ url('/usersendchat') }}",
+                //         type: 'post',
+                //         data: {
+                //             _token: csrfToken,
+                //             user_id: userId,
+                //             product_id: productId,
+                //             admin_id: adminId,
+                //             company_id: companyId,
+                //             chat_message: chat,
+                //         },
+                //         success: function(response) {
+                //             console.log(response);
+                //             $("textarea[name='chat']").val('');
+                //             $(document).ready(function() {
+                //                 console.log('launch once');
+                //                 $(".inner-user-chat-modal").animate({
+                //                     scrollTop: $(
+                //                             ".inner-user-chat-modal").get(0)
+                //                         .scrollHeight
+                //                 }, 500);
+                //             });
+                //             $('.send-chat-spinner').addClass('d-none');
+                //             $('.send-chat-spinner').removeClass('d-block');
+                //             $('.send-chat-icon').removeClass('d-none');
+                //             $('.send-chat-button').attr('disabled', false);
+                //         },
+                //         dataType: "json"
+                //     });
+                // }
+
+                // function update_chat_status(csrfToken, userId, productId, companyId) {
+                //     console.log(csrfToken);
+                //     console.log(userId);
+                //     console.log(productId);
+                //     console.log(companyId);
+                //     $.ajax({
+                //         url: "{{ url('/updatechatstatus') }}",
+                //         type: 'post',
+                //         data: {
+                //             _token: csrfToken,
+                //             user_id: userId,
+                //             product_id: productId,
+                //             company_id: companyId,
+                //             // chat_message: chat,
+                //         },
+                //         success: function(response) {
+                //             console.log(response);
+                //             // $("textarea[name='chat']").val('');
+                //             // $(document).ready(function() {
+                //             //     console.log('launch once');
+                //             //     $(".inner-user-chat-modal").animate({
+                //             //         scrollTop: $(
+                //             //                 ".inner-user-chat-modal").get(0)
+                //             //             .scrollHeight
+                //             //     }, 0);
+                //             // });
+                //         },
+                //         dataType: "json"
+                //     });
+                // }
+
+                // $('.user-chat-button, .user-chat-close-button').on('click', function() {
+                //     if ($('.chat-container').hasClass('d-none')) {
+                //         $('.chat-container').removeClass('d-none');
+                //         $('.chat-container').addClass('d-block');
+                //         $(".inner-user-chat-modal").animate({
+                //             scrollTop: $(
+                //                     ".inner-user-chat-modal").get(0)
+                //                 .scrollHeight
+                //         }, 0);
+                //         // update_chat_status(window.csrfToken, window.userId, window.productId, window.companyId);
+                //     } else {
+                //         $('.chat-container').removeClass('d-block');
+                //         $('.chat-container').addClass('d-none');
+                //     }
+                // })
+
+
                 window.city_origins = {!! json_encode($senderAddress) !!};
                 $('body').on('click', '#commentImage', function() {
                     $('.commentImagePreview').attr('src', $(this).attr('src'));

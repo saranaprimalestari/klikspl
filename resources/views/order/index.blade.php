@@ -21,10 +21,10 @@
         <div class="card-body p-4">
             <div class="container p-0 mb-3">
                 <div class="row align-items-center">
-                    <div class="col-md-2 col-4 fw-600">
+                    <div class="col-md-3 col-lg-2 col-4 fw-600">
                         Cari Pesanan
                     </div>
-                    <div class="col-md-10 col-8">
+                    <div class="col-md-9 col-lg-10 col-8">
                         <div class="input-group me-3">
                             <div class="input-group fs-14">
                                 <input type="search"

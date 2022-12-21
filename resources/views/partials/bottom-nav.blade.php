@@ -7,18 +7,34 @@
                     <span class="small d-block">Beranda</span>
                 </a>
             </li>
-            <li class="nav-item {{ isset($active) ? ($active == 'order' ? 'nav-mobile-active' : '') : '' }} navbar-dropdown dropdown">
+            <li
+            class="nav-item {{ isset($active) ? ($active == 'order' ? 'nav-mobile-active' : '') : '' }} navbar-dropdown dropdown">
                 <a href="{{ route('order.index') }}" class="nav-link text-center text-dark">
                     <i class="bi bi-bag"></i>
                     @auth
-                    @if (count($userOrders) > 0)
-                        <span class="position-absolute top-5 start-100 bot-nav-badge badge bg-danger">
-                            {{ count($userOrders) }}
-                            <span class="visually-hidden">Order</span>
-                        </span>
-                    @endif
-                @endauth
+                        @if (count($userOrders) > 0)
+                            <span class="position-absolute top-5 start-100 bot-nav-badge badge bg-danger">
+                                {{ count($userOrders) }}
+                                <span class="visually-hidden">Order</span>
+                            </span>
+                        @endif
+                    @endauth
                     <span class="small d-block">Pesanan</span>
+                </a>
+            </li>
+            <li
+                class="nav-item {{ isset($active) ? ($active == 'chat' ? 'nav-mobile-active' : '') : '' }} navbar-dropdown dropdown">
+                <a href="{{ route('chat.index') }}" class="nav-link text-center text-dark">
+                    <i class="bi bi-chat-dots"></i>
+                    @auth
+                        @if (count($userOrders) > 0)
+                            <span class="position-absolute top-5 start-100 bot-nav-badge badge bg-danger">
+                                {{ count($userChats['userChatGroupped']) }}
+                                <span class="visually-hidden">Chat</span>
+                            </span>
+                        @endif
+                    @endauth
+                    <span class="small d-block">Chat</span>
                 </a>
             </li>
             {{-- <li class="nav-item {{ isset($active) ? ($active == 'notification' ? 'nav-mobile-active' : '') : '' }}">

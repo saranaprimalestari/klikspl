@@ -4,11 +4,11 @@
     {{-- {{ print_r(session()->all()) }} --}}
     <div class="login-container">
         <div class="row justify-content-center mb-5">
-            <div class="col-md-6 d-flex login-left-col mt-5 mt-sm-0 mt-md-0 mt-lg-0 mt-xl-0 px-5 px-sm-0 px-md-0 px-lg-0 px-xl-0">
+            <div class="col-md-8 col-lg-6 d-flex login-left-col mt-4 mt-lg-0 mt-xl-0 px-5 px-lg-0 px-xl-0">
                 <img class="footer-logo w-100" src="/assets/footer-logo.svg" alt="">
                 {{-- <img class="" src="https://source.unsplash.com/500x500?market"> --}}
             </div>
-            <div class="col-md-5 mt-md-5 ms-md-5">
+            <div class="col-md-8 col-lg-5 mt-5 ms-lg-5">
                 @if (session()->has('loginError'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         {{ session('loginError') }}

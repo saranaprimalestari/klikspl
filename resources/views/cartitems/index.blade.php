@@ -69,12 +69,12 @@
             </div>
             <div class="carts mt-4 mb-5">
                 <div class="row">
-                    <div class="col-md-8 col-12">
+                    <div class="col-lg-8 col-12">
                         @foreach ($userCartItems as $cart)
                             <div class="card mb-3 cart-items-card">
                                 <div class="card-body py-4">
                                     <div class="row d-flex align-items-center justify-content-center text-center">
-                                        <div class="col-md-1 col-2 pe-0 d-flex justify-content-center align-items-center">
+                                        <div class="col-lg-1 col-1 pe-0 d-flex justify-content-center align-items-center">
                                             {{-- @if (session()->has('success') && $cart->id == session('cartitems')->id) --}}
                                             {{-- <input class="form-check-input cart-items-check shadow-none m-0"
                                                     type="checkbox" name="cart-items-check" value="{{ $cart->id }}"
@@ -96,7 +96,7 @@
                                             {{-- @endif --}}
                                             {{-- <label for="cart-check-{{ $cart->id }}">{{ $cart->id }}</label> --}}
                                         </div>
-                                        <div class="col-md-1 col-3">
+                                        <div class="col-lg-1 col-3">
                                             <a href="{{ route('product.show', $cart->product) }}"
                                                 class="text-decoration-none text-dark">
                                                 @if (count($cart->product->productimage) > 0)
@@ -119,7 +119,7 @@
                                                     alt="..." width="60"> --}}
                                             </a>
                                         </div>
-                                        <div class="col-md-4 col-7 ps-3">
+                                        <div class="col-lg-4 col-8 ps-0 ps-lg-4">
                                             <a href="{{ route('product.show', $cart->product) }}"
                                                 class="text-decoration-none text-dark">
                                                 <div class="cart-items-product-info text-start ms-2 ">
@@ -159,7 +159,7 @@
                                                 </div>
                                             </a>
                                         </div>
-                                        <div class="col-md-3 col-6 my-3">
+                                        <div class="col-lg-3 col-5 my-3 ps-3 mt-4 mt-lg-0">
                                             <div class="ms-2">
                                                 <div class="input-group inline-group-qty-cart-items ms-1">
                                                     <div class="input-group-prepend">
@@ -208,7 +208,7 @@
                                                 unit
                                             </div>
                                         </div>
-                                        <div class="col-md-2 col-4 my-3">
+                                        <div class="col-lg-2 col-4 my-3">
                                             <input type="hidden" name="subtotal-cart-items-val-{{ $cart->id }}"
                                                 class="subtotal-cart-items-val-{{ $cart->id }}"
                                                 value="{{ price_format_rupiah($cart->subtotal) }}">
@@ -254,10 +254,13 @@
                                             class="text-danger fs-12 text-start ps-md-5 ms-md-5 pt-md-2 mb-0 notification-{{ $cart->id }}">
                                         </p>
                                     </div>
-                                    <div class="row d-flex">
+                                    <div class="row">
                                         {{-- <div class="col-md-1">
                                         </div> --}}
-                                        <div class="col-md-6 col-12">
+                                        <div class="col-lg-1 col-1 pe-0">
+                                            &nbsp;
+                                        </div>
+                                        <div class="col-lg-6 col-11 ps-0">
                                             <div class="fs-13 text-grey m-0 sender-address-div">
                                                 <p class="fs-13 text-grey m-0 ps-2">
                                                     Pilih alamat pengiriman
@@ -297,7 +300,7 @@
                         @endforeach
                     </div>
 
-                    <div class="col-md-4 col-12 cart-items-div-checkout d-none d-sm-block">
+                    <div class="col-lg-4 col-12 cart-items-div-checkout d-none d-lg-block">
                         <div class="card mb-3 cart-items-card-checkout sticky-md-top">
                             <div class="card-body p-4">
                                 <form action="{{ route('cart.checkout') }}" method="POST">
@@ -335,7 +338,7 @@
                         </div>
                     </div>
 
-                    <div class="fixed-bottom d-block d-sm-none p-0 mb-5">
+                    <div class="fixed-bottom d-block d-lg-none p-0 mb-5 mb-md-0">
                         <div class="col-12 cart-items-div-checkout">
                             <div class="card cart-items-card-checkout sticky-md-top">
                                 <div class="card-body p-4">

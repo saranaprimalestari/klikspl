@@ -38,35 +38,42 @@
                     </li>
                     
                     <li class="">
-                        <a class="btn btn-toggle align-items-center shadow-none notification-button-menu-collapse ps-3 py-2 {{ isset($active) ? ($active == 'order' ? 'active-menu' : '') : '' }}"
+                        <a class="btn btn-toggle align-items-center shadow-none notification-button-menu-collapse ps-3 py-2 text-start {{ isset($active) ? ($active == 'chat' ? 'active-menu' : '') : '' }}"
+                            href="{{ route('chat.index') }}">
+                            <i class="bi bi-chat-dots me-2"></i>Chat
+                        </a>
+                    </li>
+
+                    <li class="">
+                        <a class="btn btn-toggle align-items-center shadow-none notification-button-menu-collapse ps-3 py-2 text-start {{ isset($active) ? ($active == 'order' ? 'active-menu' : '') : '' }}"
                             href="{{ route('order.index') }}">
                             <i class="bi bi-bag me-2"></i>Pesanan Saya
                         </a>
                     </li>
                     
                     <li class="">
-                        <a class="btn btn-toggle align-items-center shadow-none notification-button-menu-collapse ps-3 py-2 {{ isset($active) ? ($active == 'rating' ? 'active-menu' : '') : '' }}"
+                        <a class="btn btn-toggle align-items-center shadow-none notification-button-menu-collapse ps-3 py-2 text-start {{ isset($active) ? ($active == 'rating' ? 'active-menu' : '') : '' }}"
                             href="{{ route('rating.index') }}">
                             <i class="bi bi-star me-2"></i>Penilaian
                         </a>
                     </li>
                     
                     <li class="">
-                        <a class="btn btn-toggle align-items-center shadow-none notification-button-menu-collapse ps-3 py-2 {{ isset($active) ? ($active == 'comment' ? 'active-menu' : '') : '' }}"
+                        <a class="btn btn-toggle align-items-center shadow-none notification-button-menu-collapse ps-3 py-2 text-start {{ isset($active) ? ($active == 'comment' ? 'active-menu' : '') : '' }}"
                             href="{{ route('comment.index') }}">
                             <i class="bi bi-chat-left-text me-2"></i>Komentar
                         </a>
                     </li>
                     
                     <li class="">
-                        <a class="btn btn-toggle align-items-center shadow-none notification-button-menu-collapse ps-3 py-2 {{ isset($active) ? ($active == 'promo' ? 'active-menu' : '') : '' }}"
+                        <a class="btn btn-toggle align-items-center shadow-none notification-button-menu-collapse ps-3 py-2 text-start {{ isset($active) ? ($active == 'promo' ? 'active-menu' : '') : '' }}"
                             href="{{ route('promo.index') }}">
                             <i class="bi bi-percent me-2"></i>Voucher Promo Saya
                         </a>
                     </li>
 
                     <li class="">
-                        <a class="btn btn-toggle align-items-center shadow-none notification-button-menu-collapse ps-3 py-2 {{ isset($active) ? ($active == 'notification' ? 'active-menu' : '') : '' }}"
+                        <a class="btn btn-toggle align-items-center shadow-none notification-button-menu-collapse ps-3 py-2 text-start {{ isset($active) ? ($active == 'notification' ? 'active-menu' : '') : '' }}"
                             href="{{ route('notifications.index') }}">
                             <i class="bi bi-bell me-2"></i>Notifikasi
                         </a>

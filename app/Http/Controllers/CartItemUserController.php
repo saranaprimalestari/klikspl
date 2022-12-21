@@ -427,13 +427,13 @@ class CartItemUserController extends Controller
                 }
             }
         }
-        // dd($arr);
-        if (count($items) > 1) {
+        // dd(count($arr));
+        if (count($items) > 1 && count($arr) > 1) {
             $senderIdAddr = (call_user_func_array('array_intersect', $arr));
         } elseif (count($items) == 1) {
             $senderIdAddr = $arr;
         } else {
-            return redirect()->route('cart.index')->with('failed', 'Terdapat kesalahan saat menambahkan produk ke keranjang, keranjang yang dicheckout tidak boleh kosong');
+            return redirect()->route('cart.index')->with('failed', 'Terdapat kesalahan saat menambahkan produk ke keranjang, keranjang yang dicheckout tidak boleh kosong atau tidak boleh ada item tanpa varian yang sama');
         }
         // dd(empty($senderIdAddr));
         // echo "sender address : ";

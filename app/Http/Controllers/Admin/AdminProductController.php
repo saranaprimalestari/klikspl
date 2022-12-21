@@ -96,8 +96,8 @@ class AdminProductController extends Controller
         // }
         $this->isAdministrator();
         if (isset($request->variant_name) || isset($request->variant_slug) || isset($request->variant_value) || isset($request->variant_code) || isset($request->variant_stock) || isset($request->variant_weight) || isset($request->variant_long) || isset($request->variant_width) || isset($request->variant_height) || isset($request->variant_price)) {
-            echo "ada varian";
-            echo '</br>';
+            // echo "ada varian";
+            // echo '</br>';
             $request->merge([
                 'stock' => '0',
                 'weight' => '0',
@@ -107,8 +107,8 @@ class AdminProductController extends Controller
                 'price' => '0',
             ]);
         } else {
-            echo "tidak ada varian";
-            echo '</br>';
+            // echo "tidak ada varian";
+            // echo '</br>';
         }
 
         $request->merge([
@@ -120,8 +120,8 @@ class AdminProductController extends Controller
 
         if (!isset($request->is_active)) {
             $request->merge(['is_active' => '0']);
-            echo "status tidak aktif";
-            echo '</br>';
+            // echo "status tidak aktif";
+            // echo '</br>';
         }
 
         if ($request->company_id !=  auth()->guard('adminMiddle')->user()->company_id) {
@@ -193,9 +193,9 @@ class AdminProductController extends Controller
         // dd($validatedData);
 
         $product = Product::create($validatedData);
-        print_r($product);
-        echo "<br>";
-        echo "<br>";
+        // print_r($product);
+        // echo "<br>";
+        // echo "<br>";
 
         // insert product variant
         if (isset($request->variant_name) || isset($request->variant_slug) || isset($request->variant_value) || isset($request->variant_code) || isset($request->variant_stock) || isset($request->variant_weight) || isset($request->variant_long) || isset($request->variant_width) || isset($request->variant_height) || isset($request->variant_price)) {
@@ -264,9 +264,9 @@ class AdminProductController extends Controller
                     'price' => $request->variant_price[$i],
                     'promo_id' => $request->promo_id,
                 ]);
-                print_r($variant);
-                echo "<br>";
-                echo "<br>";
+                // print_r($variant);
+                // echo "<br>";
+                // echo "<br>";
                 foreach ($request->sender[$i] as $key => $sender) {
                     $productOrigin = ProductOrigin::create([
                         'product_id' => $product->id,
@@ -292,7 +292,8 @@ class AdminProductController extends Controller
                 //         echo "<br>";
                 //     }
                 // }
-                echo "<br>";
+
+                // echo "<br>";
             }
             $product->stock =  $product->stock + array_sum($request->variant_stock);
             $product->save();
@@ -362,7 +363,7 @@ class AdminProductController extends Controller
         } else {
             return redirect()->back()->with('addProductFailed', 'Terdapat kesalahan saat menambahkan produk , mohon pastikan semua form sudah terisi dengan benar');
         }
-        dd($request);
+        // dd($request);
     }
 
     /**

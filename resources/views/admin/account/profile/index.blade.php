@@ -25,7 +25,9 @@
                         @method('put')
                         @csrf
                         <div class="row mb-3 align-items-center">
-                            <label for="inputUsername" class="col-sm-2 col-md-2 col-form-label">Username</label>
+                            <label for="inputUsername" class="col-sm-2 col-md-2 col-form-label">
+                                Username
+                            </label>
                             <div class="col-sm-10 col-md-10">
                                 <input type="text"
                                     class="form-control user-account-input bg-white border-0 ps-0 shadow-none fw-bold"
@@ -33,7 +35,9 @@
                             </div>
                         </div>
                         <div class="row mb-3 align-items-center">
-                            <label for="inputAdminType" class="col-sm-2 col-md-2 col-form-label">Tipe / Jenis Admin</label>
+                            <label for="inputAdminType" class="col-sm-2 col-md-2 col-form-label">
+                                Tipe / Jenis Admin
+                            </label>
                             <div class="col-sm-10 col-md-10">
                                 <input type="text"
                                     class="form-control user-account-input bg-white border-0 ps-0 shadow-none fw-bold"
@@ -41,15 +45,19 @@
                             </div>
                         </div>
                         <div class="row mb-3 align-items-center">
-                            <label for="inputCompany" class="col-sm-2 col-md-2 col-form-label">Perusahaan</label>
+                            <label for="inputCompany" class="col-sm-2 col-md-2 col-form-label">
+                                Perusahaan
+                            </label>
                             <div class="col-sm-10 col-md-10">
                                 <input type="text"
                                     class="form-control user-account-input bg-white border-0 ps-0 shadow-none fw-bold"
-                                    id="inputCompany" value="{{ $admin->company->name }}" disabled readonly name="username">
+                                    id="inputCompany" value="{{ auth()->guard('adminMiddle')->user()->admin_type != 1 ? ($admin->company->name) : 'SUPER ADMIN' }}" disabled readonly name="company">
                             </div>
                         </div>
                         <div class="row mb-3 align-items-center">
-                            <label for="inputFirstName" class="col-sm-2 col-md-2 col-form-label">Nama Depan</label>
+                            <label for="inputFirstName" class="col-sm-2 col-md-2 col-form-label">
+                                Nama Depan
+                            </label>
                             <div class="col-sm-10 col-md-10">
                                 <input type="text"
                                     class="form-control user-account-input shadow-none my-1 border-radius-05rem py-2 px-3 @error('firstname') is-invalid @enderror"
@@ -64,7 +72,9 @@
                             </div>
                         </div>
                         <div class="row mb-3 align-items-center">
-                            <label for="inputFirstName" class="col-sm-2 col-md-2 col-form-label">Nama Belakang</label>
+                            <label for="inputFirstName" class="col-sm-2 col-md-2 col-form-label">
+                                Nama Belakang
+                            </label>
                             <div class="col-sm-10 col-md-10">
                                 <input type="text"
                                     class="form-control user-account-input shadow-none my-1 border-radius-05rem py-2 px-3 @error('lastname') is-invalid @enderror"
@@ -79,7 +89,9 @@
                             </div>
                         </div>
                         <div class="row mb-3 align-items-center">
-                            <label for="inputEmail" class="col-sm-2 col-md-2 col-form-label">Email</label>
+                            <label for="inputEmail" class="col-sm-2 col-md-2 col-form-label">
+                                Email
+                            </label>
                             <div class="col-sm-10 col-md-10">
                                 <input type="text"
                                     class="form-control user-account-input shadow-none my-1 border-radius-05rem py-2 px-3 @error('email') is-invalid @enderror"
@@ -94,7 +106,9 @@
                             </div>
                         </div>
                         <div class="row mb-3 align-items-center">
-                            <label for="inputTelpNo" class="col-sm-2 col-md-2 col-form-label">Nomor Telepon</label>
+                            <label for="inputTelpNo" class="col-sm-2 col-md-2 col-form-label">
+                                Nomor Telepon
+                            </label>
                             <div class="col-sm-10 col-md-10">
                                 <input type="text"
                                     class="form-control user-account-input shadow-none my-1 border-radius-05rem py-2 px-3 @error('telp_no') is-invalid @enderror"

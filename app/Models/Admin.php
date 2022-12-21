@@ -45,4 +45,9 @@ class Admin extends Authenticatable
         return $this->hasMany(AdminSenderAddress::class);
     }
 
+    public function chat()
+    {
+        return $this->hasMany(Chat::class);
+    }
+
 }

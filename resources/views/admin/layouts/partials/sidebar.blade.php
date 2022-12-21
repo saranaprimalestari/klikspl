@@ -24,6 +24,12 @@
             @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
                 auth()->guard('adminMiddle')->user()->admin_type == 2 ||
                 auth()->guard('adminMiddle')->user()->admin_type == 4)
+                 <li class="nav-item">
+                    <a class="nav-link {{ isset($active) ? ($active == 'chat' ? 'active' : '') : '' }}"
+                        href="{{ route('admin.chat.index') }}">
+                        <i class="bi bi-chat-dots"></i> Chat
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a class="btn btn-toggle align-items-center shadow-none user-button-menu-collapse accordion-button py-2 ps-3 fs-14"
                         data-bs-toggle="collapse" href="#product-collapse" role="button" aria-expanded="false"

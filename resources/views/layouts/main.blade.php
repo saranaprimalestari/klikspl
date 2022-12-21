@@ -29,6 +29,7 @@
 
     {{-- SCRIPT JQUERY --}}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/js/moment-with-locales.js" type="text/javascript"></script>
     <script src="/js/script.js" type="text/javascript"></script>
 
     {{-- XZOOM --}}
@@ -70,6 +71,7 @@
     {{-- FONTAWESOME --}}
     <script src="https://kit.fontawesome.com/c4d8626996.js" crossorigin="anonymous"></script>
 
+    <script src="/js/moment-with-locales.js" type="text/javascript"></script>
     <script src="/js/script.js" type="text/javascript"></script>
     @yield('config.manual-js')
     {{-- SELECT2 --}}

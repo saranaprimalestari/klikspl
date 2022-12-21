@@ -1,5 +1,5 @@
 {{-- <nav
-    class="navbar navbar-expand-lg navbar-light bg-white shadow-sm p-3 mb-5 bg-body rounded fixed-top d-none d-sm-block navbar-bottom"> --}}
+    class="navbar navbar-expand-lg navbar-light bg-transparent shadow-sm p-3 mb-5 bg-body rounded fixed-top d-none d-sm-block navbar-bottom"> --}}
 <nav
     class="navbar navbar-expand-lg shadow-sm p-3 mb-5 bg-body rounded fixed-top d-none d-lg-block navbar-bottom navbar-main">
     <div class="container-fluid">
@@ -17,8 +17,8 @@
                         role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Kategori
                     </a>
-                    <ul class="dropdown-menu category-dropdown">
-                        <div class="row">
+                    <ul class="dropdown-menu category-dropdown box-shadows border-0 border-radius-1rem py-3">
+                        <div class="row m-1">
                             <div class="col-md-6">
                                 <li>
                                     <h5 class="dropdown-item disabled text-dark fs-6">Produk</h5>
@@ -178,9 +178,10 @@
                         @endauth
                     </a>
                     @auth
-                        <ul class="dropdown-menu cart-dropdown cart-dropdown-logged-in">
+                        <ul
+                            class="dropdown-menu cart-dropdown cart-dropdown-logged-in box-shadows border-0 border-radius-1rem py-3">
                             <div class="">
-                                <div class="d-flex fixed-top bg-white p-3">
+                                <div class="d-flex fixed-top bg-transparent p-3">
                                     <div class="">
                                         Keranjang ({{ count($userCartItems) }})
                                     </div>
@@ -224,7 +225,7 @@
                                                                 {{ $cart->product->name }}
                                                             </p>
                                                             <p class="m-0 fs-12 text-grey">
-                                                                Varian: 
+                                                                Varian:
                                                                 @if ($cart->product_variant_id != 0)
                                                                     {{ $cart->productvariant->variant_name }}
                                                                 @else
@@ -252,8 +253,8 @@
                                             <img class="cart-img" src="{{ asset('/assets/klikspl-logo.png') }}"
                                                 alt="" width="100">
                                             <p class="text-muted py-3 px-2">
-                                                Keranjang belanjamu kosong, yuk cari produk menarik dan masukkan ke
-                                                keranjangmu
+                                                Keranjang belanja anda kosong, yuk cari produk menarik dan masukkan ke
+                                                keranjang anda
                                             </p>
                                         </div>
                                     @endif
@@ -261,11 +262,12 @@
                             </div>
                         </ul>
                     @else
-                        <ul class="dropdown-menu cart-dropdown">
+                        <ul class="dropdown-menu cart-dropdown box-shadows border-0 border-radius-1rem py-3">
                             <li>
                                 <div class="cart-no-auth pt-3 justify-content-center text-center rounded-3 px-3">
-                                    <img class="cart-img" src="{{ asset('/assets/klikspl-logo.png') }}" alt=""
-                                        width="100">
+                                    {{-- <img class="cart-img" src="{{ asset('/assets/klikspl-logo.png') }}" alt=""
+                                        width="100"> --}}
+                                    <i class="bi bi-cart fs-1 text-secondary"></i>
                                     <p class="text-muted py-3 px-2">
                                         Masuk/daftar membership untuk memasukkan produk ke dalam Keranjang
                                     </p>
@@ -288,9 +290,10 @@
                         @endauth
                     </a>
                     @auth
-                        <ul class="dropdown-menu cart-dropdown cart-dropdown-logged-in">
+                        <ul
+                            class="dropdown-menu cart-dropdown cart-dropdown-logged-in box-shadows border-0 border-radius-1rem py-3">
                             <div class="">
-                                <div class="d-flex fixed-top bg-white p-3">
+                                <div class="d-flex fixed-top bg-transparent p-3">
                                     <div class="">
                                         {{-- {{ dd($userNotifications) }} --}}
                                         Notifikasi ({{ count($userNotifications) }})
@@ -326,7 +329,7 @@
                                                             <div class="fw-600 m-0">
                                                                 {{ $notification->excerpt }}
                                                             </div>
-                                                            <div class="fs-12 notification-description-navbar"> 
+                                                            <div class="fs-12 notification-description-navbar">
                                                                 {!! $notification->description !!}
                                                             </div>
                                                             <div class="fs-12 text-secondary">
@@ -346,7 +349,7 @@
                                             <img class="cart-img" src="{{ asset('/assets/klikspl-logo.png') }}"
                                                 alt="" width="100">
                                             <p class="text-muted py-3 px-2">
-                                                Tidak ada notifikasi buat kamu sekarang ini
+                                                Tidak ada notifikasi buat anda sekarang ini
                                             </p>
                                         </div>
                                     @endif
@@ -354,7 +357,7 @@
                             </div>
                         </ul>
                     @else
-                        <ul class="dropdown-menu notification-dropdown">
+                        <ul class="dropdown-menu notification-dropdown box-shadows border-0 border-radius-1rem py-3">
                             <li>
                                 <div class="nofitication-no-auth pt-3 justify-content-center text-center rounded-3 px-3">
                                     <i class="bi bi-bell fs-1 text-secondary"></i>
@@ -389,9 +392,10 @@
                         @endauth
                     </a>
                     @auth
-                        <ul class="dropdown-menu cart-dropdown cart-dropdown-logged-in">
+                        <ul
+                            class="dropdown-menu cart-dropdown cart-dropdown-logged-in box-shadows border-0 border-radius-1rem py-3">
                             <div class="">
-                                <div class="d-flex fixed-top bg-white p-3">
+                                <div class="d-flex fixed-top bg-transparent p-3">
                                     <div class="">
                                         Pesanan Aktif ({{ count($userOrders) }})
                                     </div>
@@ -445,8 +449,8 @@
                                             <img class="cart-img" src="{{ asset('/assets/klikspl-logo.png') }}"
                                                 alt="" width="100">
                                             <p class="text-muted py-3 px-2">
-                                                Tidak ada pesanan yang dalam proses saat ini, yuk cari produk menarik dan
-                                                pesan sekarang
+                                                Tidak ada pesanan aktif anda saat ini, yuk cari produk menarik dan pesan
+                                                sekarang
                                             </p>
                                         </div>
                                     @endif
@@ -454,13 +458,122 @@
                             </div>
                         </ul>
                     @else
-                        <ul class="dropdown-menu cart-dropdown">
+                        <ul class="dropdown-menu cart-dropdown box-shadows border-0 border-radius-1rem py-3">
                             <li>
                                 <div class="cart-no-auth pt-3 justify-content-center text-center rounded-3 px-3">
                                     <img class="cart-img" src="{{ asset('/assets/klikspl-logo.png') }}" alt=""
                                         width="100">
                                     <p class="text-muted py-3 px-2">
-                                        Masuk/daftar membership untuk melihat pesananmu yang sedang aktif
+                                        Masuk/daftar membership untuk melihat pesanan anda yang sedang aktif
+                                    </p>
+                                </div>
+                            </li>
+                        </ul>
+                    @endauth
+                </li>
+                <li class="nav-item mx-1 navbar-dropdown dropdown">
+                    <a class="nav-link dropdown-toggle navbar-chat" href="{{ route('chat.index') }}">
+                        <i class="bi bi-chat-dots"></i>
+                        @auth
+                            @if (count($userChats) > 0)
+                                <span class="position-absolute top-5 start-100 translate-middle badge  bg-danger">
+                                    {{ count($userChats['userChatGroupped']) }}
+                                    <span class="visually-hidden">Chat</span>
+                                </span>
+                            @endif
+                        @endauth
+                    </a>
+                    @auth
+                        <ul
+                            class="dropdown-menu chat-dropdown chat-dropdown-logged-in box-shadows border-0 border-radius-1rem py-3">
+                            <div class="">
+                                <div class="d-flex fixed-top bg-transparent p-3">
+                                    <div class="">
+                                        Chat ({{ count($userChats['userChatGroupped']) }})
+                                    </div>
+                                    <div class="mx-3 ms-auto">
+                                        <a href="{{ route('order.index') }}"
+                                            class="text-decoration-none text-danger fw-bold">Lihat Semua</a>
+                                    </div>
+                                </div>
+                                <div class="nav-chat-items mt-5">
+                                    @if (count($userChats['userChatGroupped']) > 0)
+                                        @foreach ($userChats['userChatGroupped'] as $chat)
+                                            {{-- @foreach ($chats as $chat) --}}
+                                            <li>
+                                                <a class="dropdown-item my-2 chat-dropdown-item" href="{{ (!is_null($chat->last()->chat->order_id) ? route('order.show', $chat->last()->chat->order) : ((!is_null($chat->last()->chat->product_id)) ? route('product.show',$chat->last()->chat->product->slug) : '') ) }}">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-2">
+                                                            @if (!is_null($chat->last()->chat->order_id))
+                                                                @if (isset($chat->last()->chat->order))
+                                                                    @if (Storage::exists($chat->last()->chat->order->orderitem[0]->orderproduct->orderproductimage[0]->name))
+                                                                        <img class="img-fluid w-100 border-radius-05rem"
+                                                                            src="{{ asset('/storage/' . $chat->last()->chat->order->orderitem[0]->orderproduct->orderproductimage[0]->name) }}"
+                                                                            alt="" width="40">
+                                                                    @endif
+                                                                @else
+                                                                    <img class="img-fluid w-100 border-radius-05rem cart-items-logo"
+                                                                        src="{{ asset('/assets/klikspl-logo.png') }}"
+                                                                        alt="" width="20">
+                                                                @endif
+                                                            @elseif(!is_null($chat->last()->chat->product_id))
+                                                                @if (count($chat->last()->chat->product->productimage) > 0)
+                                                                    @if (Storage::exists($chat->last()->chat->product->productimage[0]->name))
+                                                                        <img class="img-fluid w-100 border-radius-05rem"
+                                                                            src="{{ asset('/storage/' . $chat->last()->chat->product->productimage[0]->name) }}"
+                                                                            alt="" width="40">
+                                                                    @endif
+                                                                @endif
+                                                            @endif
+                                                        </div>
+                                                        <div class="col-10 ps-0 text-truncate" data-bs-toggle="tooltip"
+                                                            data-bs-placement="bottom"
+                                                            title="{{ is_null($chat->last()->chat->invoice_no) ? 'No.Invoice belum terbit' : $chat->last()->chat->invoice_no }}">
+                                                            <div class="fw-600 m-0 text-truncate">
+                                                                @if (!is_null($chat->last()->chat->order_id))
+                                                                    Pesanan
+                                                                    [
+                                                                    {{ !empty($chat->last()->chat->order->invoice_no) ? $chat->last()->chat->order->invoice_no : '(Kedaluwarsa)' }}
+                                                                    ]
+                                                                @elseif(!is_null($chat->last()->chat->product_id))
+                                                                    Tanya Produk
+                                                                    [
+                                                                    {{ !empty($chat->last()->chat->product) ? $chat->last()->chat->product->name : '' }}
+                                                                    ]
+                                                                @endif
+                                                            </div>
+                                                            <div class="fs-12 notification-description-navbar">
+                                                                {{ $chat->last()->chat_message }}
+                                                            </div>
+                                                            <div class="fs-12 text-secondary">
+                                                                {{ \Carbon\Carbon::parse($chat->last()->chat->created_at)->isoFormat('D MMM Y, HH:mm') }}
+                                                                WIB
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                            {{-- @endforeach --}}
+                                        @endforeach
+                                    @else
+                                        <div class="chat-no-auth pt-3 justify-content-center text-center rounded-3 px-3">
+                                            <img class="chat-img" src="{{ asset('/assets/klikspl-logo.png') }}"
+                                                alt="" width="100">
+                                            <p class="text-muted py-3 px-2">
+                                                Anda tidak memiliki obrolan saat ini, mulai obrolan dengan ADMIN KLIKSPL dengan bertanya tentang produk / pesanan anda
+                                            </p>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </ul>
+                    @else
+                        <ul class="dropdown-menu chat-dropdown box-shadows border-0 border-radius-1rem py-3">
+                            <li>
+                                <div class="chat-no-auth pt-3 justify-content-center text-center rounded-3 px-3">
+                                    <i class="bi bi-chat-dots fs-1 text-secondary"></i>
+                                    <p class="text-muted py-3 px-2">
+                                        Masuk/daftar membership untuk melihat obrolan anda
                                     </p>
                                 </div>
                             </li>
@@ -482,10 +595,16 @@
                             @endif
                             {{ auth()->user()->username }}
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end account-dropdown" aria-labelledby="navbarDropdown">
+                        <ul class="dropdown-menu dropdown-menu-end account-dropdown box-shadows border-0 border-radius-1rem py-1"
+                            aria-labelledby="navbarDropdown">
                             <li class="my-2">
                                 <a class="dropdown-item account-dropdown-item" href="{{ route('profile.index') }}">
                                     <i class="far fa-user-circle me-1"></i> Akun saya
+                                </a>
+                            </li>
+                            <li class="my-2">
+                                <a class="dropdown-item account-dropdown-item" href="{{ route('chat.index') }}">
+                                    <i class="bi bi-chat-dots me-1"></i> Chat
                                 </a>
                             </li>
                             <li class="my-2">
@@ -546,14 +665,17 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="https://wa.me/625113269593"><i class="bi bi-chat-dots"></i> Customer
-                    Care</a>
+                    Care
+                </a>
             </li>
         </ul>
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="#"><i class="bi bi-truck"></i> Tracking
-                    Pengiriman</a>
+                    Pengiriman
+                </a>
             </li>
         </ul>
     </div>
 </nav>
+<script></script>

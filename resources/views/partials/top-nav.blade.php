@@ -11,8 +11,8 @@
             <ul class="navbar-nav ms-auto mb-lg-0">
 
                 <li class="nav-item navbar-dropdown dropdown mx-1 d-none d-md-block">
-                    <a class="nav-link dropdown-toggle navbar-category" href="/partialCategories" id="navbarDropdownMenuLink"
-                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle navbar-category" href="/partialCategories"
+                        id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Kategori
                     </a>
                     <ul class="dropdown-menu category-dropdown">
@@ -94,10 +94,11 @@
                             <input type="hidden" name="merk" value="{{ request('merk') }}">
                         @endif
                         <div class="input-group">
-                            <input type="search" class="form-control shadow-none" placeholder="Cari produk..."
-                                aria-label="" aria-describedby="" name="keyword" value="{{ request('keyword') }}">
+                            <input type="search" class="form-control search-input-top-nav shadow-none"
+                                placeholder="Cari produk..." aria-label="" aria-describedby="" name="keyword"
+                                value="{{ request('keyword') }}">
                             <div class="input-group-append">
-                                <button class="btn btn-outline-secondary shadow-none" type="submit">
+                                <button class="btn btn-danger search-submit-top-nav shadow-none" type="submit">
                                     <i class="bi bi-search"></i>
                                 </button>
                             </div>
@@ -260,14 +261,13 @@
                     @else
                         <ul class="dropdown-menu notification-dropdown">
                             <li></li>
-                                <div class="nofitication-no-auth pt-3 justify-content-center text-center rounded-3 px-3">
-                                    <i class="bi bi-bell fs-1 text-secondary"></i>
-                                    <p class="text-muted pt-1 px-1">
-                                        Tidak ada notifikasi untuk anda saat ini, masuk untuk melihat notifikasi di akun
-                                        membership anda. 
-                                    </p>
-                                </div>
-                            </li>
+                            <div class="nofitication-no-auth pt-3 justify-content-center text-center rounded-3 px-3">
+                                <i class="bi bi-bell fs-1 text-secondary"></i>
+                                <p class="text-muted pt-1 px-1">
+                                    Tidak ada notifikasi untuk anda saat ini, masuk untuk melihat notifikasi di akun
+                                    membership anda.
+                                </p>
+                            </div>
                         </ul>
                     @endauth
                 </li>
@@ -371,6 +371,113 @@
                         </ul>
                     @endauth
                 </li>
+                <li class="nav-item mx-1 navbar-dropdown dropdown d-none d-md-block">
+                    <a class="nav-link dropdown-toggle navbar-chat" href="{{ route('notifications.index') }}">
+                        <i class="bi bi-chat-dots"></i>
+                        @auth
+                            @if (count($userChats) > 0)
+                                <span class="position-absolute top-5 start-100 translate-middle badge  bg-danger">
+                                    {{ count($userChats['userChatGroupped']) }}
+                                    <span class="visually-hidden">Chat</span>
+                                </span>
+                            @endif
+                        @endauth
+                    </a>
+                    @auth
+                        <ul class="dropdown-menu notification-dropdown-mobile notification-dropdown-logged-in-mobile">
+                            <div class="">
+                                <div class="d-flex fixed-top bg-transparent p-3">
+                                    <div class="">
+                                        Chat ({{ count($userChats['userChatGroupped']) }})
+                                    </div>
+                                    <div class="mx-3 ms-auto">
+                                        <a href="{{ route('order.index') }}"
+                                            class="text-decoration-none text-danger fw-bold">Lihat Semua</a>
+                                    </div>
+                                </div>
+                                <div class="nav-chat-items mt-5">
+                                    @if (count($userChats['userChatGroupped']) > 0)
+                                    @foreach ($userChats['userChatGroupped'] as $chat)
+                                        {{-- @foreach ($chats as $chat) --}}
+                                        <li>
+                                            <a class="dropdown-item my-2 chat-dropdown-item" href="{{ (!is_null($chat->last()->chat->order_id) ? route('order.show', $chat->last()->chat->order) : ((!is_null($chat->last()->chat->product_id)) ? route('product.show',$chat->last()->chat->product->slug) : '') ) }}">
+                                                <div class="row align-items-center">
+                                                    <div class="col-2">
+                                                        @if (!is_null($chat->last()->chat->order_id))
+                                                            @if (isset($chat->last()->chat->order))
+                                                                @if (Storage::exists($chat->last()->chat->order->orderitem[0]->orderproduct->orderproductimage[0]->name))
+                                                                    <img class="img-fluid w-100 border-radius-05rem"
+                                                                        src="{{ asset('/storage/' . $chat->last()->chat->order->orderitem[0]->orderproduct->orderproductimage[0]->name) }}"
+                                                                        alt="" width="40">
+                                                                @endif
+                                                            @else
+                                                                <img class="img-fluid w-100 border-radius-05rem cart-items-logo"
+                                                                    src="{{ asset('/assets/klikspl-logo.png') }}"
+                                                                    alt="" width="20">
+                                                            @endif
+                                                        @elseif(!is_null($chat->last()->chat->product_id))
+                                                            @if (count($chat->last()->chat->product->productimage) > 0)
+                                                                @if (Storage::exists($chat->last()->chat->product->productimage[0]->name))
+                                                                    <img class="img-fluid w-100 border-radius-05rem"
+                                                                        src="{{ asset('/storage/' . $chat->last()->chat->product->productimage[0]->name) }}"
+                                                                        alt="" width="40">
+                                                                @endif
+                                                            @endif
+                                                        @endif
+                                                    </div>
+                                                    <div class="col-10 ps-0 text-truncate" data-bs-toggle="tooltip"
+                                                        data-bs-placement="bottom"
+                                                        title="{{ is_null($chat->last()->chat->invoice_no) ? 'No.Invoice belum terbit' : $chat->last()->chat->invoice_no }}">
+                                                        <div class="fw-600 m-0 text-truncate">
+                                                            @if (!is_null($chat->last()->chat->order_id))
+                                                                Pesanan
+                                                                [
+                                                                {{ !empty($chat->last()->chat->order->invoice_no) ? $chat->last()->chat->order->invoice_no : '(Kedaluwarsa)' }}
+                                                                ]
+                                                            @elseif(!is_null($chat->last()->chat->product_id))
+                                                                Tanya Produk
+                                                                [
+                                                                {{ !empty($chat->last()->chat->product) ? $chat->last()->chat->product->name : '' }}
+                                                                ]
+                                                            @endif
+                                                        </div>
+                                                        <div class="fs-12 notification-description-navbar">
+                                                            {{ $chat->last()->chat_message }}
+                                                        </div>
+                                                        <div class="fs-12 text-secondary">
+                                                            {{ \Carbon\Carbon::parse($chat->last()->chat->created_at)->isoFormat('D MMM Y, HH:mm') }}
+                                                            WIB
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        {{-- @endforeach --}}
+                                    @endforeach
+                                @else
+                                        <div class="chat-no-auth pt-3 justify-content-center text-center rounded-3 px-3">
+                                            <img class="chat-img" src="{{ asset('/assets/klikspl-logo.png') }}"
+                                                alt="" width="100">
+                                            <p class="text-muted py-3 px-2">
+                                                Anda tidak memiliki obrolan saat ini, mulai obrolan dengan ADMIN KLIKSPL dengan bertanya tentang produk / pesanan anda
+                                            </p>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </ul>
+                    @else
+                        <ul class="dropdown-menu notification-dropdown">
+                            <li></li>
+                            <div class="nofitication-no-auth pt-3 justify-content-center text-center rounded-3 px-3">
+                                <i class="bi bi-bell fs-1 text-secondary"></i>
+                                <p class="text-muted pt-1 px-1">
+                                    Masuk/daftar membership untuk melihat obrolan anda.
+                                </p>
+                            </div>
+                        </ul>
+                    @endauth
+                </li>
                 <li class="nav-item mx-1 navbar-dropdown d-block d-md-none">
                     <button class="btn nav-link btn-show-pop-up-user shadow-none">
                         <i class="bi bi-list"></i>
@@ -379,11 +486,13 @@
             </ul>
 
             @auth
-                <div class="navbar-nav ms-auto navbar-account d-none d-lg-block">
+                <div class="navbar-nav ms-auto navbar-account d-none d-md-block">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle mx-1 nav-acc" href="#" id="navbarDropdown"
                             role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             @if (!empty(auth()->user()->profile_image))
+                                <img class="navbar-profile-image"
+                                    src="{{ asset('/storage/' . auth()->user()->profile_image) }}" alt="">
                             @else
                                 <i class="far fa-user-circle"></i>
                             @endif
@@ -431,18 +540,18 @@
 <div class="mt-5 pt-4 fixed-top pop-up-user d-none d-lg-none">
     <div class="card pop-up-user-card">
         <div class="card-body">
-                <ul class="list-unstyled">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <li>
-                                <h5 class="dropdown-item disabled text-dark fs-6">Produk</h5>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="/products">
-                                    <i class="bi bi-border-all"></i>&nbsp; Semua Produk
-                                </a>
-                            </li>
-                            <li>
+            <ul class="list-unstyled">
+                <div class="row">
+                    <div class="col-md-6">
+                        <li>
+                            <h5 class="dropdown-item disabled text-dark fs-6">Produk</h5>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/products">
+                                <i class="bi bi-border-all"></i>&nbsp; Semua Produk
+                            </a>
+                        </li>
+                        {{-- <li>
                                 <a class="dropdown-item" href="/products/latest">
                                     <i class="bi bi-megaphone"></i>&nbsp; Produk Terbaru
                                 </a>
@@ -456,46 +565,46 @@
                                 <a class="dropdown-item" href="/products/best-seller">
                                     <i class="bi bi-basket3"></i>&nbsp; Produk Terlaris
                                 </a>
-                            </li>
+                            </li> --}}
+                        <li>
+                            <h5 class="dropdown-item disabled text-dark fs-6 mt-3">Kategori</h5>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/category">
+                                <i class="bi bi-box"></i>&nbsp;
+                                Semua Kategori
+                            </a>
+                        </li>
+                        @foreach ($partialCategories as $category)
                             <li>
-                                <h5 class="dropdown-item disabled text-dark fs-6 mt-3">Kategori</h5>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="/category">
+                                <a class="dropdown-item" href="/category/{{ $category->slug }}">
                                     <i class="bi bi-box"></i>&nbsp;
-                                    Semua Kategori
+                                    {{ $category->name }}
                                 </a>
                             </li>
-                            @foreach ($partialCategories as $category)
-                                <li>
-                                    <a class="dropdown-item" href="/category/{{ $category->slug }}">
-                                        <i class="bi bi-box"></i>&nbsp;
-                                        {{ $category->name }}
-                                    </a>
-                                </li>
-                            @endforeach
-                        </div>
-                        <div class="col-md-6">
-                            <li>
-                                <h5 class="dropdown-item disabled text-dark fs-6 mt-3">Merk</h5>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="/merk">
-                                    <i class="bi bi-box"></i>&nbsp;
-                                    Semua Merk
-                                </a>
-                            </li>
-                            @foreach ($partialMerks as $merk)
-                                <li>
-                                    <a class="dropdown-item" href="/merk/{{ $merk->slug }}">
-                                        <img class="w-25" src="/{{ $merk->image }}" alt="">&nbsp;
-                                        {{ $merk->name }}
-                                    </a>
-                                </li>
-                            @endforeach
-                        </div>
+                        @endforeach
                     </div>
-                </ul>
+                    <div class="col-md-6">
+                        <li>
+                            <h5 class="dropdown-item disabled text-dark fs-6 mt-3">Merk</h5>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/merk">
+                                <i class="bi bi-box"></i>&nbsp;
+                                Semua Merk
+                            </a>
+                        </li>
+                        @foreach ($partialMerks as $merk)
+                            <li>
+                                <a class="dropdown-item" href="/merk/{{ $merk->slug }}">
+                                    <img class="w-25" src="/{{ $merk->image }}" alt="">&nbsp;
+                                    {{ $merk->name }}
+                                </a>
+                            </li>
+                        @endforeach
+                    </div>
+                </div>
+            </ul>
             @auth
                 <ul class="list-unstyled">
                     <li class="">

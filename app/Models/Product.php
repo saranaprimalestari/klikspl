@@ -131,5 +131,10 @@ class Product extends Model
         return $this->hasMany(ProductPromo::class);
     }
     
+    public function chat()
+    {
+        return $this->hasMany(Chat::class);
+    }
+
     
 }

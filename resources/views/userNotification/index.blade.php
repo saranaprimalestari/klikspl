@@ -36,7 +36,7 @@
                                 class="text-dark text-decoration-none">
                                 <div class="row">
                                     <div class="col-12">
-                                        <div class="heeader d-flex align-items-center">
+                                        <div class="header d-flex align-items-center">
                                             {{-- <h5 class="mt-0 notification-list-excerpt me-auto">{{ $notification->type }}
                                             </h5> --}}
         
@@ -44,30 +44,33 @@
                                     </div>
                                 </div>
                                 <div class="row align-items-center">
-                                    <div class="col-md-2">
+                                    <div class="col-md-2 col-3">
                                         @if (File::exists(public_path($notification->image)))
                                             <img src="{{ asset($notification->image) }}"
                                                 class="img-fluid w-100 border-radius-05rem" alt="...">
                                         @endif
                                     </div>
-                                    <div class="col-md-8">
-                                        <p class="fs-14 mb-1 fw-600">
+                                    <div class="col-md-8 col-7">
+                                        <p class="fs-14 mb-1 fw-600 text-truncate">
                                             [{{ $notification->type }}] {{ $notification->excerpt }}
                                         </p>
                                         <div class="fs-14 mb-1 notification-description-index">
                                             {!! $notification->description !!}
                                         </div>
-                                        <span class="d-md-flex fs-12 text-secondary">
-                                            <p class="m-0 me-1">
+                                        <div class="d-md-flex fs-12 text-secondary text-truncate">
+                                            <span class="m-0 me-1">
                                                 {{ \Carbon\Carbon::parse($notification->created_at)->isoFormat('D MMMM Y, HH:mm') }}
-                                                WIB</p>
-                                            <p class="m-0"> Sekitar
-                                                {{ $notification->created_at->diffForHumans() }}</p>
-                                        </span>
+                                                WIB</span>
+                                            <span class="m-0"> Sekitar
+                                                {{ $notification->created_at->diffForHumans() }}</span>
+                                        </div>
                                     </div>
-                                    <div class="col-md-2 text-end">
+                                    <div class="col-md-2 col-2 text-end">
                                         @if ($notification->is_read == 0)
-                                            <span class="ms-auto badge bg-danger mb-2">Belum dibaca</span>
+                                            <span class="ms-auto badge bg-danger mb-2 d-none d-lg-inline-block">Belum dibaca</span>
+                                            <span class="ms-auto badge bg-danger border-light p-2 rounded-circle mb-2 d-inline-block d-lg-none">
+                                                <span class="visually-hidden">Belum dibaca</span>
+                                            </span>
                                         @endif
                                         <form action="{{ route('notifications.destroy', $notification) }}" method="post">
                                             @csrf

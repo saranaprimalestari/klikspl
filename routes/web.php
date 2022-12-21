@@ -25,6 +25,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\testController;
 use App\Http\Controllers\UserAddressController;
+use App\Http\Controllers\UserChatController;
+use App\Http\Controllers\UserChatMessageController;
 use App\Http\Controllers\UserNotificationController;
 use App\Http\Controllers\UserPhoneController;
 use App\Http\Controllers\UserEmailController;
@@ -33,6 +35,7 @@ use App\Http\Controllers\UserPromoController;
 use App\Models\CartItem;
 use App\Models\ProductComment;
 use App\Models\UserAddress;
+use App\Models\UserChat;
 use Illuminate\Support\Facades\Mail;
 /*
 |--------------------------------------------------------------------------
@@ -200,9 +203,20 @@ Route::name('payment.order.bind.pdf')->get('/order/payment/{id}/payment-pdf', [O
 Route::name('confirm.order')->post('/order/confirm-order', [OrderController::class, 'confirmOrder'])->middleware('auth');
 // order resource
 Route::resource('/order', OrderController::class)->middleware(('auth'))->except(['edit', 'update']);
-
+// product comment & rating
 Route::resource('/rating', OrderItemRatingController::class)->middleware(('auth'));
 Route::resource('/comment', ProductCommentController::class)->middleware(('auth'));
+// chat message
+Route::name('chat.message.index')->get('/chat', [UserChatMessageController::class, 'index'])->middleware('auth');
+Route::name('send.chat')->post('/usersendchat', [UserChatMessageController::class, 'sendChat'])->middleware('auth');
+Route::name('load.chat')->get('/userloadchat', [UserChatMessageController::class, 'loadChat'])->middleware('auth');
+Route::name('load.chat.admin')->get('/userloadchatadminall', [UserChatMessageController::class, 'loadChatAdminAll'])->middleware('auth');
+Route::name('update.chat.status')->post('/updatechatstatus', [UserChatMessageController::class, 'updateChatStatus'])->middleware('auth');
+// chat
+Route::name('chat.index')->get('/chat', [UserChatController::class, 'index'])->middleware(('auth'));
+Route::name('load.chat.all')->get('/userloadchatall', [UserChatController::class, 'loadChatAll'])->middleware('auth');
+
+
 
 Route::name('TEST')->get(
     '/test',
@@ -276,6 +290,14 @@ Route::prefix('administrator')->group(function () {
     Route::resource('/adminnotifications', Admin\AdminNotificationController::class)->middleware('adminMiddle');
     Route::name('read.all.admin.notifications')->post('/adminnotifications/readallnotifications', [Admin\AdminNotificationController::class, 'allNotificationsIsReaded'])->middleware('adminMiddle');
 
+    // chat
+    Route::name('admin.chat.index')->get('/adminchatmessage', [Admin\AdminChatMessageController::class, 'index'])->middleware('adminMiddle');
+    Route::name('load.admin.chat.all')->get('/adminchatmessage/loadadminchatall', [Admin\AdminChatMessageController::class, 'loadAdminChatAll'])->middleware('adminMiddle');
+    Route::name('load.admin.chat.modal')->get('/adminchatmessage/loadadminchatmodal', [Admin\AdminChatMessageController::class, 'loadAdminChatModal'])->middleware('adminMiddle');
+    Route::name('send.admin.chat.modal')->post('/adminchatmessage/sendadminchatmodal', [Admin\AdminChatMessageController::class, 'sendAdminChatModal'])->middleware('adminMiddle');
+    Route::name('update.admin.chat.status')->post('/adminchatmessage/updateadminchatstatus', [Admin\AdminChatMessageController::class, 'updateAdminChatStatus'])->middleware('adminMiddle');
+
+
     // finance-admin
     Route::prefix('finance')->group(function () {
         Route::name('finance.home')->get('/', [Admin\Finance\FinanceHomeController::class, 'index']);
@@ -286,8 +308,5 @@ Route::prefix('administrator')->group(function () {
         Route::name('warehouselogistic.home')->get('/', [Admin\WarehouseLogistic\WarehouseLogisticHomeController::class, 'index']);
     });
 
-    Route::name('TEST')->get(
-        '/test',
-        [Admin\AdminTestController::class, 'index']
-    );
+    Route::name('TEST')->get('/test', [Admin\AdminTestController::class, 'index']);
 });

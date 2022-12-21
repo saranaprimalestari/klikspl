@@ -117,10 +117,12 @@ class adminnotificationController extends Controller
     public function allNotificationsIsReaded()
     {
         $notifications = AdminNotification::where('is_read', '=', '0')->get();
+        // dd($notifications);
         foreach ($notifications as $notification) {
             $notification->is_read = 1;
             $notification->save();
         }
+        // dd($notifications);
         return redirect()->back()->with('success', 'Berhasil menandai semua notifikasi telah dibaca');
     }
 }

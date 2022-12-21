@@ -32,7 +32,7 @@
                                         <div class="card-body px-4">
                                             <i class="bi bi-cart fs-3"></i>
                                             <p class="mb-2 mt-1">
-                                                Pesanan Dikeranjang
+                                                Produk Dikeranjang
                                             </p>
                                             <h3>
                                                 {{ count($cartItems) }}

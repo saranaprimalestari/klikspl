@@ -58,6 +58,11 @@ class User extends Authenticatable
         return $this->hasMany(ProductComment::class);
     }
 
+    public function chat()
+    {
+        return $this->hasMany(Chat::class);
+    }
+
     public function cartItem()
     {
         return $this->hasMany(CartItem::class);
