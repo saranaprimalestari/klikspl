@@ -27,7 +27,6 @@ class ChangePasswordController extends Controller
 
     public function changePasswordPost(Request $request)
     {
-        // dd($request);
         // mengambil data user dari database
         $user = User::findorfail($request->user_id);
         // dd($user);
@@ -55,12 +54,11 @@ class ChangePasswordController extends Controller
                 ]
             );
             $validatedData['newPassword'] = Hash::make($validatedData['newPassword']);
-            // dd($validatedData);
+            
             // $new_pass = ['password' => $validatedData['newPassword']];
             if ($user->update(['password' => $validatedData['newPassword']])) {
                 return  redirect()->back()->with('success','Berhasil mengganti password');
             }
-            // dd(User::where('id', $request->user_id)->get());
         }
 
         if (Str::contains($request->user, '@')) {
@@ -132,12 +130,13 @@ class ChangePasswordController extends Controller
             $verificationCode = random_int(100000, 999999);
             $details = ['id' => '1', 'email' => $request->value, 'title' => 'KLIK SPL: Reset Password', 'message' => 'Silakan masukkan kode berikut untuk mengganti password akun anda', 'verifCode' => $verificationCode, 'closing' => 'Kode bersifat rahasia dan jangan sebarkan kode ini kepada siapapun, termasuk pihak KLIKSPL.', 'footer' => ''];
             $detail = new Request($details);
-            // dd($details);
-            echo gettype($detail);
+            
             $request->session()->put(['verificationCode' => $verificationCode]);
 
-            $this->mailController = $mailController;
-            $this->mailController->sendMail($detail);
+            // $this->mailController = $mailController;
+            // $this->mailController->sendMail($detail);
+            $sendMailController = $mailController;
+            $sendMailController->sendMail($detail);
 
             return redirect()->route('forgot.password.verif.code');
         } else {
@@ -211,18 +210,15 @@ class ChangePasswordController extends Controller
                 ]
             );
             $validatedData['password'] = Hash::make($validatedData['password']);
-            // dd($validatedData);
             $new_pass = ['password' => $validatedData['password']];
             if ($user->update(['password' => $validatedData['password']])) {
                 return  redirect()->route('forgot.password.reset.complete');
             }
-            // dd(User::where('id', $request->user_id)->get());
         }
     }
 
     public function resetPasswordResetComplete(Request $request)
     {
-
         return view('login.reset-password-success', [
             'title' => 'Reset Password Sukses',
         ]);

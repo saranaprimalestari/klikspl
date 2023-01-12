@@ -196,6 +196,16 @@
             </div>
         </div>
     </div>
+    <div class="card mb-3 profile-card">
+        <div class="card-body p-4">
+            <form action="/logout" method="post">
+                @csrf
+                <button class="dropdown-item account-dropdown-item">
+                    <i class="bi bi-box-arrow-in-right me-1"></i> Keluar
+                </button>
+            </form>
+        </div>
+    </div>
     <div class="modal fade" id="upload-img-user-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="previewImgUserModal" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">

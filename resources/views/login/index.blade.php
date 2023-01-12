@@ -34,8 +34,7 @@
                         <form class="mt-1 user-login-form" method="POST" action="/login">
                             @csrf
                             <div class="mb-3">
-                                <label for="login-user" class="form-label login-user-label m-0">Alamat Email/ Username/ No
-                                    Telepon</label>
+                                <label for="login-user" class="form-label login-user-label m-0">Alamat Email/ Username</label>
                                 <input type="text" class="form-control shadow-none login-user-field" id="login-user"
                                     aria-describedby="loginHelp" name="user">
                                 <div id="loginHelp" class="form-text login-user-help">
@@ -46,7 +45,7 @@
                                 {{-- <input type="password" class="form-control shadow-none login-password-field" id="password" name="password"> --}}
                                 <div class="input-group" id="show_hide_password">
                                     <input type="password"
-                                        class="form-control shadow-none login-password-field @error('password') is-invalid @enderror"
+                                        class="form-control shadow-none login-password-field @error('password') is-invalid @enderror border-end-0"
                                         id="password" aria-describedby="passwordHelp" name="password" required value=""
                                         autocomplete="off">
                                     <span class="input-group-text bg-transparent border-left-0" id="showPass"><a href=""

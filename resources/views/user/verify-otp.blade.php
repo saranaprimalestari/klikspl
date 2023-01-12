@@ -13,6 +13,7 @@
     }
     $verifCode = Session::get('verificationCode');
     @endphp --}}
+    {{-- {{ dd($route) }} --}}
     @if (session()->has('verificationFailed'))
         <script>
             $(window).on('load', function() {
@@ -88,11 +89,16 @@
                                         Kode verifikasi dikirim melalui
                                         {{ $type }}
                                         "{{ isset($email) ? $email : (isset($telp_no) ? $telp_no : '') }}"
+                                        @if ($type == 'Email')
+                                            <p class="fs-14 text-danger">
+                                                cek folder spam apabila tidak menerima email verifikasi dari kami
+                                            </p>
+                                        @endif
                                     </span>
                                 </div>
                             </div>
                             {{-- {{ $verificationCode }} --}}
-                            <form action="" method="POST">
+                            <form action="{{ route($route) }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="id" value="{{ $id }}">
                                 <input type="hidden" name="username" value="{{ $username }}">

@@ -12,7 +12,7 @@ class UserPhoneController extends Controller
 
     public function addPhone(Request $request)
     {
-        if(is_null(auth()->user()->telp_no)){
+        if (is_null(auth()->user()->telp_no)) {
             return view('user.add-phone-email', [
                 'title' => 'Tambah Nomor Telepon',
                 'active' => 'profile',
@@ -22,7 +22,7 @@ class UserPhoneController extends Controller
                 'inputType' => 'number',
                 'route' => 'profile.add.phone.post'
             ]);
-        }else{
+        } else {
             return redirect()->route('profile.update.phone')->with(['failed' => 'Terdapat kesalahan silakan masukkan nomor telepon ulang (error: PRVBCKPGERR)']);
         }
     }
@@ -35,12 +35,13 @@ class UserPhoneController extends Controller
             ],
             [
                 'telp_no.required' => 'Nomor telepon harus diisi',
-                'telp_no.unique' => 'Nomor telepon yang kamu masukkan sudah digunakan',
+                'telp_no.unique' => 'Nomor telepon yang anda masukkan sudah digunakan',
                 'telp_no.min' => 'Nomor telepon minimal terdiri dari 12 digit',
                 'telp_no.max' => 'Nomor telepon maksimal terdiri dari 13 digit',
                 'telp_no.regex' => 'Format nomor telepon tidak valid! No telepon hanya dapat diisi dengan angka dan diawali dengan angka 0',
             ]
         );
+        $request->session()->forget('is_verified');
         $request->session()->put('telp_no', $validatedData['telp_no']);
         return redirect()->route('profile.add.phone.req.verify.method');
     }
@@ -69,7 +70,7 @@ class UserPhoneController extends Controller
                 'waRoute' => 'profile.add.phone.verify',
                 'telp_no' => $telp_no,
                 'verificationCode' => $verificationCode,
-                'waVerifMessage' => 'https://wa.me/6285248466297?text=Halo+' . auth()->user()->firstname . '+' . auth()->user()->lastname . '%2C%0D%0ASilakan+masukkan+kode+berikut+untuk+verifikasi+nomor+telepon+yang+kamu+tambahkan%0D%0A%0D%0A%2A' . $verificationCode . '%2A%0D%0A%0D%0AKode+diatas+bersifat+rahasia+dan+jangan+sebarkan+kode+kepada+siapapun.%0D%0A%0D%0APesan+ini+dibuat+otomatis%2C+jika+membutuhkan+bantuan%2C+silakan+hubungi+ADMIN+KLIKSPL+dengan+link+berikut%3A%0D%0Ahttps%3A%2F%2Fwa.me%2F6285248466297'
+                'waVerifMessage' => 'https://wa.me/628115102888?text=Halo+' . auth()->user()->firstname . '+' . auth()->user()->lastname . '%2C%0D%0ASilakan+masukkan+kode+berikut+untuk+verifikasi+nomor+telepon+yang+kamu+tambahkan%0D%0A%0D%0A%2A' . $verificationCode . '%2A%0D%0A%0D%0AKode+diatas+bersifat+rahasia+dan+jangan+sebarkan+kode+kepada+siapapun.%0D%0A%0D%0APesan+ini+dibuat+otomatis%2C+jika+membutuhkan+bantuan%2C+silakan+hubungi+ADMIN+KLIKSPL+dengan+link+berikut%3A%0D%0Ahttps%3A%2F%2Fwa.me%2F628115102888'
             ]);
         } else {
             return redirect()->route('profile.add.phone')->with(['failed' => 'Terdapat kesalahan silakan masukkan nomor telepon ulang (error: 0x621f)']);
@@ -102,7 +103,25 @@ class UserPhoneController extends Controller
 
         // }
     }
+    public function updateAndNotifications(Request $request, $id, $telp_no)
+    {
+        $request->session()->put('is_verified', 1);
+        $user = User::where('id', '=', $id)->first();
+        $user->telp_no = $telp_no;
+        $user->save();
 
+        $notifications = [
+            'user_id' => $user->id,
+            'slug' => 'nomor-telepon-berhasil-diperbarui-' . $user->username . '-' . Carbon::now(),
+            'type' => 'Notifikasi',
+            'description' => '<p class="m-0">Nomor Telepon berhasil diperbarui</p></br><p class="m-0">Nomor Telepon terbaru anda <strong>' . $user->telp_no . '</strong></p></br><p class="m-0">Selamat menikmati pengalaman berbelanja di klikspl.com.</p>',
+            'excerpt' => 'Nomor Telepon berhasil diperbarui',
+            'image' => 'assets\phone.png',
+            'is_read' => 0
+        ];
+
+        $notification = UserNotification::create($notifications);
+    }
     public function addPhoneVerify(Request $request)
     {
         // dd($request);
@@ -116,7 +135,8 @@ class UserPhoneController extends Controller
             if ($request->linkVerification) {
                 // dd($request->linkVerification);
                 if ($request->verificationCode == session()->get('verificationCodeTelpNo')) {
-                    dd($request);
+                    $this->updateAndNotifications($request, $request->id, $request->telp_no);
+                    return redirect()->route('profile.add.phone.verified');
                 } else {
                     return redirect()->route('profile.add.phone.req.verify.method')->with(['failed' => 'Terdapat kesalahan silakan meminta ulang kode verifikasi (OTP) (error: 0x621f)']);
                 }
@@ -152,22 +172,23 @@ class UserPhoneController extends Controller
     {
         // dd($request);
         if ($request->verifValue === $request->verifCode) {
-            $request->session()->put('is_verified', 1);
-            $user = User::where('id', '=', $request->id)->first();
-            $user->telp_no = $request->verifAccount;
-            $user->save();
+            $this->updateAndNotifications($request, $request->id, $request->verifAccount);
+            // $request->session()->put('is_verified', 1);
+            // $user = User::where('id', '=', $request->id)->first();
+            // $user->telp_no = $request->verifAccount;
+            // $user->save();
 
-            $notifications = [
-                'user_id' => $user->id,
-                'slug' => 'nomor-telepon-berhasil-diperbarui-'.$user->username.'-'.Carbon::now(),
-                'type' => 'Notifikasi',
-                'description' => '<p class="m-0">Nomor Telepon berhasil diperbarui</p></br><p class="m-0">Nomor Telepon terbaru kamu <strong>'.$user->telp_no.'</strong></p></br><p class="m-0">Selamat menikmati pengalaman berbelanja di klikspl.com.</p>',
-                'excerpt' => 'Nomor Telepon berhasil diperbarui',
-                'image' => 'assets\phone.png',
-                'is_read' => 0
-            ];
-            
-            $notification = UserNotification::create($notifications);
+            // $notifications = [
+            //     'user_id' => $user->id,
+            //     'slug' => 'nomor-telepon-berhasil-diperbarui-' . $user->username . '-' . Carbon::now(),
+            //     'type' => 'Notifikasi',
+            //     'description' => '<p class="m-0">Nomor Telepon berhasil diperbarui</p></br><p class="m-0">Nomor Telepon terbaru anda <strong>' . $user->telp_no . '</strong></p></br><p class="m-0">Selamat menikmati pengalaman berbelanja di klikspl.com.</p>',
+            //     'excerpt' => 'Nomor Telepon berhasil diperbarui',
+            //     'image' => 'assets\phone.png',
+            //     'is_read' => 0
+            // ];
+
+            // $notification = UserNotification::create($notifications);
             return redirect()->route('profile.add.phone.verified');
         } else {
             return back()->with(['verificationFailed' => 'Kode Verifikasi yang anda masukkan tidak sesuai']);
@@ -176,6 +197,7 @@ class UserPhoneController extends Controller
 
     public function addPhoneVerified(Request $request)
     {
+        // dd($request);
         if ($request->session()->has('is_verified') && session()->get('is_verified') == 1) {
             return view('user.verified-otp', [
                 'title' => 'Tambah Nomor Telepon',
@@ -187,7 +209,7 @@ class UserPhoneController extends Controller
                 'routeChange' => 'profile.index',
             ]);
         } else {
-            return redirect()->route('profile.add.phone.verify')->with(['verificationFailed' => 'Kode Verifikasi yang anda masukkan tidak sesuai, Pastikan Kode OTP yang dikirimkan dengan yang kamu masukkan sesuai, atau coba lakukan pengiriman ulang kode OTP kembali']);
+            return redirect()->route('profile.add.phone.verify')->with(['verificationFailed' => 'Kode Verifikasi yang anda masukkan tidak sesuai, Pastikan Kode OTP yang dikirimkan dengan yang anda masukkan sesuai, atau coba lakukan pengiriman ulang kode OTP kembali']);
         }
     }
 
@@ -246,10 +268,11 @@ class UserPhoneController extends Controller
     public function updatePhoneVerifyFirst(Request $request)
     {
         if ($request->session()->has('telp_no')) {
-
             if ($request->linkVerification) {
                 // dd($request->linkVerification);
                 if ($request->verificationCode == session()->get('verificationCodeTelpNo')) {
+                    // dd($request);
+                    $request->session()->put('is_verified', 1);
                     // dd($request);
                     return redirect()->route('profile.update.phone.verified.first');
                 } else {
@@ -311,14 +334,17 @@ class UserPhoneController extends Controller
                 'updateRoute' => 'profile.update.phone.fill.new',
             ]);
         } else {
-            return redirect()->route('profile.update.phone.verify')->with(['verificationFailed' => 'Kode Verifikasi yang anda masukkan tidak sesuai, Pastikan Kode OTP yang dikirimkan dengan yang kamu masukkan sesuai, atau coba lakukan pengiriman ulang kode OTP kembali']);
+            // dd($request);
+            // dd($request->session()->has('is_verified'));
+            return redirect()->route('profile.update.phone.verify.first')->with(['verificationFailed' => 'Kode Verifikasi yang anda masukkan tidak sesuai, Pastikan Kode OTP yang dikirimkan dengan yang anda masukkan sesuai, atau coba lakukan pengiriman ulang kode OTP kembali']);
         }
     }
 
     public function updatePhoneFillNew(Request $request)
     {
         // dd(session()->all());
-        if(session()->has('id') && session()->has('username') && session()->has('telp_no') && session()->has('verificationCodeTelpNo') && session()->has('is_verified')){
+        // $request->session()->forget('is_verified');
+        if (session()->has('id') && session()->has('username') && session()->has('telp_no') && session()->has('verificationCodeTelpNo') && session()->has('is_verified')) {
             return view('user.add-phone-email', [
                 'title' => 'Tambah Nomor Telepon',
                 'active' => 'profile',
@@ -328,9 +354,8 @@ class UserPhoneController extends Controller
                 'inputType' => 'number',
                 'route' => 'profile.add.phone.post'
             ]);
-        }else{
+        } else {
             return redirect()->route('profile.update.phone')->with(['failed' => 'Terdapat kesalahan silakan masukkan nomor telepon ulang (error: 0xUPFNERROR)']);
-            
         }
     }
 }

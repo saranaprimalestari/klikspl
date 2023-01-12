@@ -167,17 +167,17 @@
                             <div class="row d-flex align-items-center fs-13">  
                                 <div class="col-md-12 col-12 text-end my-2">
                                     {{-- {{ $comment->is_edit }} --}}
-                                    @if ($comment->is_edit != 1)
+                                    {{-- @if ($comment->is_edit != 1) --}}
                                         <a href="{{ route('productcomment.reply', $comment) }}"
                                             class="text-decoration-none btn btn-outline-danger fs-14">
                                             <i class="bi bi-reply"></i> Balas Komentar
                                         </a>
-                                    @else
+                                    {{-- @else
                                         <a href="{{ route('comment.show', $comment) }}"
                                             class="text-decoration-none btn btn-outline-danger fs-14">
                                             <i class="far fa-star"></i> Lihat Komentar
                                         </a>
-                                    @endif
+                                    @endif --}}
                                     {{-- <a href="{{ route('rating.show', $comment) }}" class="text-decoration-none btn btn-outline-danger fs-14 ms-1">
                                 <i class="far fa-trash-alt"></i> Hapus
                             </a> --}}

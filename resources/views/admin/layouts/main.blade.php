@@ -130,6 +130,9 @@
 
     <div class="container-fluid">
         <div class="row">
+            <input id="admin-company-id" type="hidden" name="company_id"
+                value="{{ auth()->guard('adminMiddle')->user()->company_id }}">
+            <input id="admin-id" type="hidden" name="admin_id" value="{{ auth()->guard('adminMiddle')->user()->id }}">
             @include('admin.layouts.partials.sidebar')
 
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-5 admin-container-main pt-5 mt-5">

@@ -2,12 +2,12 @@
 
 @section('container')
     @php
-    // print_r(session()->all());
-    if (Session::get('email') != '') {
-        $data = Session::get('email');
-    } else {
-        $data = Session::get('telp_no');
-    }
+        // print_r(session()->all());
+        if (Session::get('email') != '') {
+            $data = Session::get('email');
+        } else {
+            $data = Session::get('telp_no');
+        }
     @endphp
     <div class="register-container mt-3">
         <div class="col-12 d-flex justify-content-center">
@@ -82,43 +82,71 @@
                                 </span>
                             </div>
                         </div>
-                        <form action="{{ route('register.step.one.post') }}" method="POST">
+                        @if (Session::get('email') != '')
+                            <form action="{{ route('register.step.one.post') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="value" value="{{ $data }}">
+                                <button type="submit" class="text-decoration-none text-dark border-0 bg-transparent w-100">
+                                    <div class="card login-card register-act-login shadow-none">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-9 text-start">
+                                                    <p>
+                                                        <strong>
+                                                            kirim
+                                                            @if (Session::get('email') != '')
+                                                                Email
+                                                            @else
+                                                                Pesan Whatsapp
+                                                            @endif
+                                                            ke
+                                                        </strong>
+                                                    </p>
+                                                    <p>
+                                                        {{ $data }}
+                                                    </p>
+                                                </div>
+                                                <div class="col-md-3 d-flex align-items-center">
+                                                    @if (Session::get('email') != '')
+                                                        <i class="bi bi-envelope fs-1"></i>
+                                                    @else
+                                                        <i class="bi bi-whatsapp fs-1"></i>
+                                                    @endif
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </button>
+                            </form>
+                        @elseif (Session::get('telp_no') != '')
+                        <form action="{{ route('register.step.one.post') }}" method="POST" class="phone-verify-method-form-register">
                             @csrf
                             <input type="hidden" name="value" value="{{ $data }}">
-                            <button type="submit" class="text-decoration-none text-dark border-0 bg-transparent w-100">
-                                <div class="card login-card register-act-login shadow-none">
+                            <a href="https://wa.me/628115102888?text=Halo%2C%0D%0ASilakan+masukkan+kode+berikut+untuk+verifikasi+nomor+telepon+yang+kamu+gunakan+untuk+pendaftaran+akun+membership+di+KLIKSPL%0D%0A%0D%0A%2A{{ $verificationCode }}%2A%0D%0A%0D%0AKode+diatas+bersifat+rahasia+dan+jangan+sebarkan+kode+kepada+siapapun.%0D%0A%0D%0APesan+ini+dibuat+otomatis%2C+jika+membutuhkan+bantuan%2C+silakan+hubungi+ADMIN+KLIKSPL+dengan+link+berikut%3A%0D%0Ahttps%3A%2F%2Fwa.me%2F628115102888"
+                                target="_blank" class="text-decoration-none link-dark send-wa-otp-register fs-14">
+                                <div class="card border-radius-075rem box-shadow">
                                     <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-9 text-start">
-                                                <p>
+                                        <div class="row align-items-center">
+                                            <div class="col-md-9 col-9 text-start">
+                                                <p class="">
                                                     <strong>
-                                                        kirim
-                                                        @if (Session::get('email') != '')
-                                                            Email
-                                                        @else
-                                                            SMS
-                                                        @endif
-                                                        ke
+                                                        kirim Pesan Whatsapp ke
                                                     </strong>
                                                 </p>
-                                                <p>
+                                                <p class="">
                                                     {{ $data }}
                                                 </p>
                                             </div>
-                                            <div class="col-md-3 d-flex align-items-center">
-                                                @if (Session::get('email') != '')
-                                                    <i class="bi bi-envelope fs-1"></i>
-                                                @else
-                                                    <i class="bi bi-chat-left-text fs-1"></i>
-                                                @endif
-
+                                            <div class="col-md-3 col-3 d-flex align-items-center justify-content-center pe-4">
+                                                <i class="bi bi-whatsapp fs-1"></i>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </button>
-                            {{-- </a> --}}
+                            </a>
                         </form>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -127,4 +155,11 @@
             &copy; 2022, CV Sarana Prima Lestari
         </div>
     </div>
+    <script>
+        $(document).ready(function() {
+            $('.send-wa-otp-register').click(function() {
+                $('.phone-verify-method-form-register').submit();
+            })
+        })
+    </script>
 @endsection

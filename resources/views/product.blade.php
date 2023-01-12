@@ -1,9 +1,9 @@
 @extends('layouts.main')
-
 @section('container')
     <div class="container-fluid breadcrumb-products fs-14 text-truncate">
         {{ Breadcrumbs::render('product.show', $product) }}
     </div>
+    {{ request()->getClientIp() }}
     {{-- {{ "Now is " . date("Y-m-d h:i:s" , strtotime('+5 hours')); }}
     {{ "Now is " . date("Y-m-d h:i:s"); }} --}}
     {{-- {{ $product }} --}}
@@ -336,7 +336,8 @@
                                                     {{ $origin->city->name == 'Kotawaringin Timur' ? $origin->city->name . ' (Sampit)' : $origin->city->name }}
                                                     <input type="hidden" class="variant" id="{{  $origin->productvariant->id }}" value="{{ $origin->city_ids }}"> --}}
                                         @else
-                                            <option value="{{ $origin->senderaddress->id }}">
+                                            <option value="{{ $origin->senderaddress->id }}"
+                                                {{ $origin->senderaddress->id == $product->productorigin[0]->senderaddress->id ? 'selected' : '' }}>
                                                 {{ $origin->city->name == 'Kotawaringin Timur' ? $origin->city->name . ' (Sampit)' : $origin->city->name }}
                                                 -
                                                 ({{ $origin->senderaddress->address }})
@@ -660,7 +661,7 @@
                                                             </div>
                                                         @else
                                                             <div class="product-no-auth-shipment-check">
-                                                                Kamu belum menambahkan alamat, yuk
+                                                                anda belum menambahkan alamat, yuk
                                                                 <a href="{{ route('useraddress.index') }}"
                                                                     class="text-decoration-none fw-bold login-link">
                                                                     Tambahkan Alamat
@@ -670,7 +671,7 @@
                                                         @endif
                                                     @else
                                                         <div class="product-no-auth-shipment-check">
-                                                            Kamu belum masuk, yuk
+                                                            anda belum masuk, yuk
                                                             <a href="/login" class="text-decoration-none fw-bold login-link">
                                                                 Masuk
                                                             </a>
@@ -821,13 +822,13 @@
                                 {{ ($product->productvariant->stock) }}
                                 @if (empty($product->productvariant->stock))
                                     <p class="text-danger fs-12 text-start ps-md-5 ms-md-5 pt-md-2 mb-0">
-                                        Saat ini stock produk sedang kosong, kamu bisa memesan jika stock kembali ada.
+                                        Saat ini stock produk sedang kosong, anda bisa memesan jika stock kembali ada.
                                     </p>
                                 @endif
                             @else
                                 @if (empty($product->stock))
                                     <p class="text-danger fs-12 text-start ps-md-5 ms-md-5 pt-md-2 mb-0">
-                                        Stock produk ini sedang kosong, kamu tidak bisa checkout saat ini
+                                        Stock produk ini sedang kosong, anda tidak bisa checkout saat ini
                                     </p>
                                 @endif
                             @endif --}}
@@ -1135,7 +1136,7 @@
         {{-- {{ (json_encode($product)) }} --}}
         {{-- </div> --}}
     </div>
-   @include('chat')
+    @include('chat')
 
     <script>
         try {
@@ -1161,14 +1162,13 @@
                 var token = $('input[name="csrf-token"]').val();
                 var city_destinations = $('input[name="city_destinations"]').val();
                 var product = {!! json_encode($product) !!};
-                var origins = {!! json_encode($from_city->city_id) !!};
                 var courier = 'all';
                 window.varianIdGlobal = [];
 
                 // window.city_origins = {!! json_encode($product->productorigin->unique('sender_address_id')) !!}
                 window.city_origins = {!! json_encode($senderAddress) !!};
-                console.log(typeof(city_origins));
-                console.log(city_origins);
+                // console.log(typeof(city_origins));
+                // console.log(city_origins);
 
                 if (city_origins == '') {
                     window.location.reload();
@@ -1183,9 +1183,44 @@
                 // console.log({!! json_encode(json_decode($product)) !!});
                 console.log(product);
                 console.log(product['productvariant'].length);
-
+                window.city_id = '';
+                getCityOrigin();
+                // $('input[name="sender_address_id"]').val($('select[name="city_origin"]').val());
             });
 
+            function getCityOrigin() {
+                let senderAddressId = ($('select[name="city_origin"]').find(":selected").val());
+                console.log(senderAddressId);
+                $('input[name="sender_address_id"]').val(senderAddressId);
+                $('.sender_address_id_error').html('');
+                $('.add-to-cart-submit-button').attr('disabled', false);
+                $('.buy-now-submit-button').attr('disabled', false);
+                $('.add-to-cart-submit-button').children('.spinner-border').remove()
+                $('.buy-now-submit-button').children('.spinner-border').remove()
+                $.each(city_origins, function(key, value) {
+                    if (value['id'] == senderAddressId) {
+                        $('.send-from-city').text(value['city']['type'] + ' ' + value['city'][
+                            'name'
+                        ]);
+                        console.log(value['city']['city_id']);
+                        window.city_id = value['city']['city_id'];
+                        accordionShipmentId = [];
+                        $.each(varianIdGlobal, function(key, value) {
+                            console.log('variant ID : ' + value);
+                            $('.shipment-' + value).empty();
+                            $('.shipment-' + value).html(
+                                '<div class="modal-ongkir row d-flex align-items-center mb-3"> <div class="col-11">Memuat data...</div> <div class="col-1"><div class="spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span> </div> </div> </div>'
+                            );
+                        })
+
+                    }
+                });
+                if (senderAddressId == 0) {
+                    console.log('sender address 0 : ' + senderAddressId);
+                    $('.sender_address_id_error').html(
+                        '<p class="text-danger m-0 ps-2">Pilih alamat pengirim terlebih dahulu</p>');
+                }
+            }
             // $(document).on('click', function(e) {
             //     var container = $(".chat-container");
             //     if (!e.target.classList.contains('user-chat-button')) {
@@ -1197,7 +1232,7 @@
             // });
 
             $(document).ready(function() {
-
+                console.log(window.city_id);
                 // // console.log(moment().format('llll'));
                 // window.csrfToken = $("input[name='csrf_token']").val();
                 // window.userId = $("input[name='user_id']").val();
@@ -1413,39 +1448,40 @@
                     api1.swap($this.data('standard'), $this.attr('href'));
                 })
 
-                window.city_id = '';
+                // window.city_id = '';
                 $('select[name="city_origin"]').on('change', function() {
-                    let senderAddressId = ($('select[name="city_origin"]').find(":selected").val());
-                    console.log(senderAddressId);
-                    $('input[name="sender_address_id"]').val(senderAddressId);
-                    $('.sender_address_id_error').html('');
-                    $('.add-to-cart-submit-button').attr('disabled', false);
-                    $('.buy-now-submit-button').attr('disabled', false);
-                    $('.add-to-cart-submit-button').children('.spinner-border').remove()
-                    $('.buy-now-submit-button').children('.spinner-border').remove()
-                    $.each(city_origins, function(key, value) {
-                        if (value['id'] == senderAddressId) {
-                            $('.send-from-city').text(value['city']['type'] + ' ' + value['city'][
-                                'name'
-                            ]);
-                            console.log(value['city']['city_id']);
-                            city_id = value['city']['city_id'];
-                            accordionShipmentId = [];
-                            $.each(varianIdGlobal, function(key, value) {
-                                console.log('variant ID : ' + value);
-                                $('.shipment-' + value).empty();
-                                $('.shipment-' + value).html(
-                                    '<div class="modal-ongkir row d-flex align-items-center mb-3"> <div class="col-11">Memuat data...</div> <div class="col-1"><div class="spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span> </div> </div> </div>'
-                                );
-                            })
+                    getCityOrigin();
+                    // let senderAddressId = ($('select[name="city_origin"]').find(":selected").val());
+                    // console.log(senderAddressId);
+                    // $('input[name="sender_address_id"]').val(senderAddressId);
+                    // $('.sender_address_id_error').html('');
+                    // $('.add-to-cart-submit-button').attr('disabled', false);
+                    // $('.buy-now-submit-button').attr('disabled', false);
+                    // $('.add-to-cart-submit-button').children('.spinner-border').remove()
+                    // $('.buy-now-submit-button').children('.spinner-border').remove()
+                    // $.each(city_origins, function(key, value) {
+                    //     if (value['id'] == senderAddressId) {
+                    //         $('.send-from-city').text(value['city']['type'] + ' ' + value['city'][
+                    //             'name'
+                    //         ]);
+                    //         console.log(value['city']['city_id']);
+                    //         city_id = value['city']['city_id'];
+                    //         accordionShipmentId = [];
+                    //         $.each(varianIdGlobal, function(key, value) {
+                    //             console.log('variant ID : ' + value);
+                    //             $('.shipment-' + value).empty();
+                    //             $('.shipment-' + value).html(
+                    //                 '<div class="modal-ongkir row d-flex align-items-center mb-3"> <div class="col-11">Memuat data...</div> <div class="col-1"><div class="spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span> </div> </div> </div>'
+                    //             );
+                    //         })
 
-                        }
-                    });
-                    if (senderAddressId == 0) {
-                        console.log('sender address 0 : ' + senderAddressId);
-                        $('.sender_address_id_error').html(
-                            '<p class="text-danger m-0 ps-2">Pilih alamat pengirim terlebih dahulu</p>');
-                    }
+                    //     }
+                    // });
+                    // if (senderAddressId == 0) {
+                    //     console.log('sender address 0 : ' + senderAddressId);
+                    //     $('.sender_address_id_error').html(
+                    //         '<p class="text-danger m-0 ps-2">Pilih alamat pengirim terlebih dahulu</p>');
+                    // }
 
                 });
 
@@ -1575,7 +1611,7 @@
                                 }
                             });
                             var variantID = value['id'];
-                            console.log(value['weight_used']);
+                            // console.log(value['weight_used']);
                         });
                     } else {
                         var productID = product['id'];

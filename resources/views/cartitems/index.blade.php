@@ -159,7 +159,7 @@
                                                 </div>
                                             </a>
                                         </div>
-                                        <div class="col-lg-3 col-5 my-3 ps-3 mt-4 mt-lg-0">
+                                        <div class="col-lg-3 col-6 my-3 my-sm-0 ps-3 mt-4 mt-lg-0">
                                             <div class="ms-2">
                                                 <div class="input-group inline-group-qty-cart-items ms-1">
                                                     <div class="input-group-prepend">
@@ -224,13 +224,13 @@
                                                 Rp{{ price_format_rupiah($cart->subtotal) }}
                                             </p>
                                         </div>
-                                        <div class="col-md-1 col-2 my-3">
+                                        <div class="col-md-1 col-1 my-3">
                                             <div class="delete-btn">
                                                 <form action="{{ route('cart.destroy', $cart) }}" method="post"
                                                     class="d-inline">
                                                     @method('delete')
                                                     @csrf
-                                                    <button type="submit" class="btn shadow-none cart-items-delete-btn">
+                                                    <button type="submit" class="btn shadow-none cart-items-delete-btn px-0">
                                                         <i class="far fa-trash-alt"></i>
                                                     </button>
                                                 </form>
@@ -239,14 +239,14 @@
                                         @if (!is_null($cart->productvariant))
                                             @if (empty($cart->productvariant->stock))
                                                 <p class="text-danger fs-12 text-start ps-md-5 ms-md-5 pt-md-2 mb-0">
-                                                    Saat ini stock produk sedang kosong, kamu bisa memesan jika stock
+                                                    Saat ini stock produk sedang kosong, anda bisa memesan jika stock
                                                     kembali ada.
                                                 </p>
                                             @endif
                                         @else
                                             @if (empty($cart->product->stock))
                                                 <p class="text-danger fs-12 text-start ps-md-5 ms-md-5 pt-md-2 mb-0">
-                                                    Stock produk ini sedang kosong, kamu tidak bisa checkout saat ini
+                                                    Stock produk ini sedang kosong, anda tidak bisa checkout saat ini
                                                 </p>
                                             @endif
                                         @endif

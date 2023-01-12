@@ -100,9 +100,10 @@ class ForgotPasswordController extends Controller
             echo gettype($detail);
             $request->session()->put(['verificationCode' => $verificationCode]);
 
-             $this->mailController = $mailController;
-             $this->mailController->sendMail($detail);
-
+            //  $this->mailController = $mailController;
+            //  $this->mailController->sendMail($detail);
+             $sendMailController = $mailController;
+             $sendMailController->sendMail($detail);
             return redirect()->route('forgot.password.verif.code');
         } else {
 

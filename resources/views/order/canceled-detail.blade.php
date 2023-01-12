@@ -496,7 +496,7 @@
     <script>
         $(document).ready(function() {
             $('.expand-detail-order').click(function() {
-                console.log($('.order-detail'));
+                // console.log($('.order-detail'));
                 if ($('.order-detail').hasClass("d-none")) {
                     $('.order-detail').removeClass("d-none");
                 } else {
@@ -507,12 +507,12 @@
                     $('.expand-detail-order-chevron').removeClass("bi-chevron-up");
                     $('.expand-detail-order-chevron').addClass("bi-chevron-down");
 
-                    console.log($('.expand-detail-order-chevron'));
+                    // console.log($('.expand-detail-order-chevron'));
                 } else if ($('.expand-detail-order-chevron').hasClass("bi-chevron-down")) {
                     $('.expand-detail-order-text').text("Sembunyikan");
                     $('.expand-detail-order-chevron').removeClass("bi-chevron-down");
                     $('.expand-detail-order-chevron').addClass("bi-chevron-up");
-                    console.log($('.expand-detail-order-chevron'));
+                    // console.log($('.expand-detail-order-chevron'));
                 }
             });
             $('.expand-detail-shipment-order').click(function() {
@@ -523,17 +523,17 @@
                     $('.order-shipment-detail').addClass('d-none');
                 }
                 if ($('.expand-detail-shipment-order-chevron').hasClass("bi-chevron-up")) {
-                    console.log($('.expand-detail-shipment-order-text').text());
+                    // console.log($('.expand-detail-shipment-order-text').text());
                     $('.expand-detail-shipment-order-text').text("Lihat Selengkapnya");
                     $('.expand-detail-shipment-order-chevron').removeClass("bi-chevron-up");
                     $('.expand-detail-shipment-order-chevron').addClass("bi-chevron-down");
 
-                    console.log($('.expand-detail-shipment-order-chevron'));
+                    // console.log($('.expand-detail-shipment-order-chevron'));
                 } else if ($('.expand-detail-shipment-order-chevron').hasClass("bi-chevron-down")) {
                     $('.expand-detail-shipment-order-text').text("Sembunyikan");
                     $('.expand-detail-shipment-order-chevron').removeClass("bi-chevron-down");
                     $('.expand-detail-shipment-order-chevron').addClass("bi-chevron-up");
-                    console.log($('.expand-detail-shipment-order-chevron'));
+                    // console.log($('.expand-detail-shipment-order-chevron'));
                 }
             });
         });

@@ -144,7 +144,7 @@
                 <div class="text-center notification-empty">
                     <img class="my-4 cart-items-logo" src="/assets/footer-logo.png" width="300" alt="">
                     <p>
-                        Tidak ada produk yang belum kamu nilai saat ini, yuk cari produk menarik dan pesan sekarang
+                        Tidak ada produk yang belum anda nilai saat ini, yuk cari produk menarik dan pesan sekarang
                     </p>
                 </div>
             @endif

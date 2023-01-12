@@ -26,12 +26,12 @@
                     <div class="carousel-inner rounded-3 carousel-inner-index">
                         @if (count($promoBanner) > 0)
                             <div class="carousel-item active index-banner">
-                                <img src="{{ asset($promoBanner[0]->image) }}" class="d-block w-100"
+                                <img src="{{ asset('/storage/'.$promoBanner[0]->image) }}" class="d-block w-100"
                                     alt="https://source.unsplash.com/1200x400">
                             </div>
                             @foreach ($promoBanner->skip(1) as $promo)
                                 <div class="carousel-item index-banner">
-                                    <img src="{{ asset($promo->image) }}" class="d-block w-100"
+                                    <img src="{{ asset('/storage/'.$promo->image) }}" class="d-block w-100"
                                         alt="https://source.unsplash.com/1200x400">
                                 </div>
                             @endforeach
@@ -199,7 +199,7 @@
             </div>
         </div>
     </div>
-    <div class="container mb-5 index-product">
+    <div class="mb-5 index-product">
         <div class="row card-group">
             @foreach ($productsLatest as $productLatest)
                 <div class="col-md-3 col-6 col-lg-2 my-2 p-0 px-1 col-6 col-sm-4">
@@ -311,7 +311,7 @@
         </div>
         <div class="row row-cols-1"></div>
     </div>
-    <div class="containedr mb-5">
+    <div class="mb-5">
         <div class="row card-group">
             @foreach ($productsStar as $star)
                 <div class="col-md-3 col-6 col-lg-2 my-2 p-0 px-1 col-sm-4">
@@ -417,7 +417,7 @@
         </div>
         <div class="row row-cols-1"></div>
     </div>
-    <div class="containedr mb-5">
+    <div class="mb-5">
         <div class="row card-group">
             @foreach ($productsBestSeller as $productBS)
                 <div class="col-md-3 col-6 col-lg-2 my-2 p-0 px-1 col-sm-4">

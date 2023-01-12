@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Promo extends Model
 {
     use HasFactory;
+    use Sluggable;
     protected $guarded = ['id'];
     
     public function scopeFilterIndex($query, array $filters)
@@ -95,5 +97,12 @@ class Promo extends Model
     {
         return $this->belongsTo(Company::class, 'company_id');
     }
-    
+    public function sluggable(): array
+    {
+        return [
+            'slug' => [
+                'source' => 'name'
+            ]
+        ];
+    }
 }

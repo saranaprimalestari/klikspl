@@ -12,7 +12,7 @@
                             </div>
                         </div>
                         <div class="ms-auto">
-                            <button class="btn btn-danger fs-14 user-chat-close-button p-0 px-2 py-1">
+                            <button class="btn btn-danger fs-14 user-chat-page-close-button p-0 px-2 py-1">
                                 <i class="bi bi-x-lg"></i>
                             </button>
                         </div>
@@ -38,9 +38,14 @@
                         <input type="hidden" name="order_id_user_chat" value="">
                         <input type="hidden" name="product_id_user_chat" value="">
                         <input type="hidden" name="chat_id_user_chat" value="">
-                        <textarea class="form-control fs-14 mb-3 shadow-none" name="chat_user_chat" id="chat_user_chat" rows="2" required></textarea>
+                        <textarea class="form-control fs-14 mb-1 shadow-none" name="chat_user_chat" id="chat_user_chat" rows="2" required></textarea>
+                        <div class="d-flex mb-1">
+                            <div class="text-danger fs-11 m-0 fw-bold">
+                                    Chat akan dihapus otomatis setelah 30 hari dari chat awal dimulai
+                            </div>
+                        </div>
                         <div class="text-end">
-                            <button type="button" class="btn btn-danger bg-red-klikspl fs-14 send-chat-button">
+                            <button type="button" class="btn btn-danger bg-red-klikspl fs-14 send-chat-page-button">
                                 <div class="spinner-border spinner-border-sm send-chat-spinner d-none" role="status">
                                     <span class="visually-hidden">Loading...</span>
                                 </div>

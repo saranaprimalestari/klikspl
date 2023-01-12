@@ -100,7 +100,7 @@
                                 @else
                                     <div class="col-md-12">
                                         <div class="product-no-auth-shipment-check">
-                                            Kamu belum menambahkan alamat, yuk
+                                            anda belum menambahkan alamat, yuk
                                             <a href="{{ route('useraddress.index') }}" target="_blank"
                                                 class="text-decoration-none fw-bold login-link">
                                                 Tambahkan Alamat
@@ -233,7 +233,7 @@
                         <div class="header mb-2">
                             <h6 class="m-0">Alamat Pengirim</h6>
                             <p class="fs-12 text-grey m-0">
-                                Pilih darimana produk kamu akan dikirimkan
+                                Pilih darimana produk anda akan dikirimkan
                             </p>
                         </div>
                         <select class="form-select sender-address form-select-sm shadow-none fs-14 border-0"
@@ -268,7 +268,7 @@
                                             aria-hidden="true"></div> --}}
                                     @else
                                         <p class="m-0 checkout-courier-loading-text text-danger">
-                                            Tambahkan alamat kamu terlebih dahulu
+                                            Tambahkan alamat anda terlebih dahulu
                                         </p>
                                     @endif
                                 </div>
@@ -358,11 +358,11 @@
                                                             <div class=" mt-2 d-flex align-items-center">
                                                                 @if ($address->is_active != 1)
                                                                     <button type="submit"
-                                                                        class="btn m-0 p-0 text-decoration-none text-danger checkout-shipment-address-change-link shadow-none"
+                                                                        class="btn m-0 p-0 text-decoration-none text-danger checkout-shipment-address-change-link shadow-none me-2"
                                                                         data-bs-toggle="modal" role="button">
                                                                         Pilih Alamat
                                                                     </button>
-                                                                    <span class="text-secondary mx-1"> | </span>
+                                                                    {{-- <span class="text-secondary mx-1"> | </span> --}}
                                                                 @endif
                                                                 <a href="{{ route('useraddress.edit', $address) }}"
                                                                     target="_blank"

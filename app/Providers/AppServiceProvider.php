@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Chat;
 use App\Models\User;
 use App\Models\Order;
+use App\Models\Visitor;
 use App\Models\CartItem;
 use App\Models\ChatMessage;
 use App\Models\ProductMerk;
@@ -52,6 +53,14 @@ class AppServiceProvider extends ServiceProvider
         $partialMerks = ProductMerk::take(12)->get();
         View::share('merks', $merks);
         View::share('partialMerks', $partialMerks);
+
+        $visitorDay = Visitor::where('created_at', 'like', Carbon::now()->format('Y-m-d') .'%')->get();
+        $visitorThisMonth = Visitor::whereBetween('created_at', [Carbon::now()->startOfMonth()->format('Y-m-d'), Carbon::now()->endOfMonth()->format('Y-m-d')])->get();
+        $visitorTotal = Visitor::all();
+        View::share('visitorDay', $visitorDay);
+        View::share('visitorThisMonth', $visitorThisMonth);
+        View::share('visitorTotal', $visitorTotal);
+
         view()->composer('*', function ($view) {
             // dd($chats);
             if (Auth::check()) {
@@ -67,7 +76,7 @@ class AppServiceProvider extends ServiceProvider
                 // $userChatsGrouped = ['orderChats' =>$orderChats, 'productChats'=>$productChats];
                 // dd($userChatsGrouped);
                 // $chats = Chat::with(['chatmessage.chat'])->join('chat_messages', function($join){ $join->on('chats.id', '=', 'chat_messages.chat_id')->where('chat_messages.status', '=', 0)->whereNotNull('chat_messages.admin_id');})->get();
-                $chats = ChatMessage::where([['status','=',0], ['user_id','=', auth()->user()->id]])->whereNotNull('admin_id')->get();
+                $chats = ChatMessage::where([['status','=',0], ['user_id','=', auth()->user()->id]])->whereNotNull('admin_id')->orderBy('updated_at','desc')->get();
                 $view->with('userCartItems', CartItem::where('user_id', auth()->user()->id)->with(['product', 'productvariant'])->get()->sortByDesc('created_at'));
                 $view->with('userNotifications', UserNotification::where('user_id', auth()->user()->id)->where('is_read', '=', '0')->get()->sortByDesc('created_at'));
                 $view->with('userOrders', Order::where([['user_id' ,'=', auth()->user()->id], ['order_status', '!=', 'selesai']])->get()->sortByDesc('created_at'));
@@ -96,17 +105,3 @@ class AppServiceProvider extends ServiceProvider
         });
     }
 }
-
-// dd(session()->all());
-// dd(Auth::user());
-// dd(auth()->user());
-// $userCartItems = User::firstwhere('id',auth()->user())->with('cartItem')->get();
-// View::share('userCartItems',$userCartItems);
-// dd(User::where('id',auth()->user()->id)->with('cartItem')->get());
-// if (Auth::check()) {
-//     View::composer('*',function($view){
-//         $view->with('userCartItems',User::where('id',auth()->user()->id)->with('cartItem')->get());
-//     });
-// }else{
-
-// }

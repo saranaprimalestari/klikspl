@@ -119,7 +119,7 @@
                                 @else
                                     <div class="col-md-12">
                                         <div class="product-no-auth-shipment-check">
-                                            Kamu belum menambahkan alamat, yuk
+                                            anda belum menambahkan alamat, yuk
                                             <a href="{{ route('useraddress.index') }}" target="_blank"
                                                 class="text-decoration-none fw-bold login-link">
                                                 Tambahkan Alamat
@@ -252,7 +252,7 @@
                         <div class="header mb-2">
                             <p class="fs-14 fw-500 m-0">Alamat Pengirim</p>
                             <p class="fs-12 text-grey m-0">
-                                Pilih darimana produk kamu akan dikirimkan
+                                Pilih darimana produk anda akan dikirimkan
                             </p>
                         </div>
                         <select class="form-select sender-address form-select-sm shadow-none fs-14 border-0"
@@ -287,7 +287,7 @@
                                             aria-hidden="true"></div> --}}
                                     @else
                                         <p class="m-0 checkout-courier-loading-text text-danger">
-                                            Tambahkan alamat kamu terlebih dahulu
+                                            Tambahkan alamat anda terlebih dahulu
                                         </p>
                                     @endif
                                 </div>

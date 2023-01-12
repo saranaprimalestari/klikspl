@@ -97,7 +97,7 @@
                     <div class="col-12">
                         <label for="address" class="form-label">Alamat Lengkap Pengirim</label>
                         <textarea class="form-control user-account-input shadow-none @error('address') is-invalid @enderror"
-                            placeholder="Tuliskan alamat lengkap disertai nomor rumah, gang/blok, RT dan RW untuk memudahakan kurir pengirim menemukan alamat kamu"
+                            placeholder="Tuliskan alamat lengkap disertai nomor rumah, gang/blok, RT dan RW untuk memudahakan kurir pengirim menemukan alamat anda"
                             id="address" name="address" rows="3" required></textarea>
                         @error('address')
                             <div class="invalid-feedback">

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AdminNotification;
 use DateTime;
 use Carbon\Carbon;
 use App\Models\City;
+use App\Models\Admin;
 use App\Models\Order;
 use App\Models\Promo;
 use App\Models\Payment;
@@ -24,15 +24,17 @@ use App\Models\SenderAddress;
 use App\Models\ProductComment;
 use App\Models\ProductVariant;
 use App\Models\UserNotification;
+use App\Models\AdminNotification;
 use App\Models\OrderProductImage;
 use App\Models\OrderStatusDetail;
 use App\Models\UserPromoOrderUse;
-use Barryvdh\DomPDF\PDF as DomPDFPDF;
 use Illuminate\Support\Facades\Hash;
+use Barryvdh\DomPDF\PDF as DomPDFPDF;
 use Illuminate\Support\Facades\Crypt;
 use Intervention\Image\Facades\Image;
-use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\MailController;
 // use Pdf;
 
 class OrderController extends Controller
@@ -103,10 +105,8 @@ class OrderController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, MailController $mailController)
     {
-        // dd($request);
-
         $request->session()->put(['courier' => $request->courier]);
         $request->session()->put(['courier_package_type' => $request->courier_package_type]);
         $request->session()->put(['estimation' => $request->estimation]);
@@ -283,7 +283,7 @@ class OrderController extends Controller
         $orderStatus = OrderStatusDetail::create(
             [
                 'order_id' => $orderId,
-                'status' => 'Pesanan Dibuat',
+                'status' => 'Pesanan dibuat',
                 'status_detail' => $statusDetail,
                 'status_date' => date('Y-m-d H:i:s')
             ]
@@ -553,6 +553,15 @@ class OrderController extends Controller
             // dd($deleteCartItem);
         }
 
+        if (!is_null(auth()->user()->email)) {
+            $details = ['id' => '2', 'email' => auth()->user()->email, 'title' => 'KLIK SPL: Pesanan Anda Berhasil Dibuat', 'message' => 'Pesanan anda berhasil dibuat. Produk yang anda pesan berjumlah ' . $order->orderitem->count() . ' item. Silakan melakukan pembayaran pesanan menggunakan metode pembayaran yang dipilih dengan jumlah pembayaran yang tertera dipesanan. Untuk melihat detail pesanan, silakan klik tautan berikut:', 'verifCode' => '', 'url' => 'https://klikspl.com/order', 'closing' => '', 'footer' => ''];
+            $detail = new Request($details);
+            // $this->mailController = $mailController;
+            // $this->mailController->sendMail($detail); 
+            $sendMailController = $mailController;
+            $sendMailController->sendMail($detail);
+        }
+
         $description = '';
         $orderProductImageFirst = OrderProductImage::where('order_product_id', '=', $orderProductIds[0])->first();
         $shopBag = 'assets\shop-bag-success.png';
@@ -560,8 +569,8 @@ class OrderController extends Controller
             'user_id' => auth()->user()->id,
             'slug' => auth()->user()->username . '-' . Crypt::encryptString($order->id) . '-pesanan-berhasil-dibuat',
             'type' => 'Pesanan',
-            'description' => '<p class="m-0">Pesanan kamu berhasil dibuat. Produk yang kamu pesan berjumlah ' . $order->orderitem->count() . ' item.</p>',
-            'excerpt' => 'Pesanan kamu berhasil dibuat',
+            'description' => '<p class="m-0">Pesanan anda berhasil dibuat. Produk yang anda pesan berjumlah ' . $order->orderitem->count() . ' item. Silakan melakukan pembayaran pesanan menggunakan metode pembayaran yang dipilih dengan jumlah pembayaran yang tertera dipesanan.</p>',
+            'excerpt' => 'Pesanan anda berhasil dibuat',
             // 'image' => $shopBag,
             'image' => 'storage/' . $orderProductImageFirst->name,
             'is_read' => 0
@@ -621,12 +630,16 @@ class OrderController extends Controller
         // dd($id);
         $order = Order::withTrashed()->find($id);
         // dd($order);
-        if ($order->order_status === 'belum bayar') {
-            // dd(1);
-            return redirect()->route('payment.order.bind', ['id' => Crypt::encrypt($id)]);
-        } else {
-            // dd($order->id);
-            return redirect()->route('order.detail.bind', ['id' => Crypt::encrypt($id)]);
+        if (!is_null($order)) {
+            if ($order->order_status === 'belum bayar') {
+                // dd(1);
+                return redirect()->route('payment.order.bind', ['id' => Crypt::encrypt($id)]);
+            } else {
+                // dd($order->id);
+                return redirect()->route('order.detail.bind', ['id' => Crypt::encrypt($id)]);
+            }
+        }else{
+            abort(404);
         }
     }
 
@@ -820,7 +833,7 @@ class OrderController extends Controller
     }
 
 
-    public function paymentCompleted(Request $request)
+    public function paymentCompleted(Request $request, MailController $mailController)
     {
         $this->expiredCheck();
         if (!$this->stockCheckBeforePayment($request->order_id)) {
@@ -987,7 +1000,20 @@ class OrderController extends Controller
 
         // $copy = Storage::copy(auth()->user()->profile_image, $imageFullPathSave);
 
+
         $orderProduct = $order->orderitem[0]->orderProduct;
+        $sendAdminNotification = Admin::whereIn('admin_type', [2, 3])->where('company_id', '=', $orderProduct->company_id)->get();
+
+        foreach ($sendAdminNotification as $admin) {
+            if (!is_null($admin->email)) {
+                $details = ['id' => '2', 'email' => $admin->email, 'title' => 'KLIK SPL: Pesanan Dibayarkan', 'message' => 'Pesanan ' . $order->invoice_no . ' Sudah dibayarkan. Segera konfirmasi dan kirim pesanan ke ' . auth()->user()->username . '. Untuk melihat detail pesanan, silakan klik tautan berikut:', 'verifCode' => '', 'url' => 'https://klikspl.com/administrator/adminorder', 'closing' => '', 'footer' => ''];
+                $detail = new Request($details);
+                // $this->mailController = $mailController;
+                // $this->mailController->sendMail($detail); 
+                $sendMailController = $mailController;
+                $sendMailController->sendMail($detail);
+            }
+        }
         $shopBag = 'assets\shop-bag-success.png';
         $notifications = [
             // 'admin_id' => auth()->user()->id,
@@ -1429,7 +1455,7 @@ class OrderController extends Controller
         }
     }
 
-    public function confirmOrder(Request $request)
+    public function confirmOrder(Request $request, MailController $mailController)
     {
         $request->merge(['id' => $request->orderId]);
 
@@ -1464,11 +1490,34 @@ class OrderController extends Controller
         if ($OrderDelivered && $orderStatus) {
 
             $orderProduct = $order->orderitem[0]->orderProduct;
+
+            $sendAdminNotification = Admin::where('admin_type', '=', 2)->where('company_id', '=', $orderProduct->company_id)->get();
+
+            foreach ($sendAdminNotification as $admin) {
+                if (!is_null($admin->email)) {
+                    $details = ['id' => '2', 'email' => $admin->email, 'title' => 'KLIK SPL: Pesanan Sudah Diterima '.auth()->user()->username.'', 'message' => 'Pesanan ' . $order->invoice_no . ' Sudah diterima '.auth()->user()->username.'. Untuk melihat detail pesanan, silakan klik tautan berikut:', 'verifCode' => '', 'url' => 'https://klikspl.com/administrator/adminorder', 'closing' => '', 'footer' => ''];
+                    $detail = new Request($details);
+                    // $this->mailController = $mailController;
+                    // $this->mailController->sendMail($detail); 
+                    $sendMailController = $mailController;
+                    $sendMailController->sendMail($detail);
+                }
+            }
+
+            if (!is_null(auth()->user()->email)) {
+                $details = ['id' => '2', 'email' => auth()->user()->email, 'title' => 'KLIK SPL: Pesanan Sudah Diterima', 'message' => 'Pesanan ' . $order->invoice_no . ' Sudah anda diterima. Yuk beri ulasan untuk produk yang anda pesan, bantu KLIKSPL berkembang dengan ulasan anda. Untuk melihat detail pesanan, silakan klik tautan berikut:', 'verifCode' => '', 'url' => 'https://klikspl.com/order', 'closing' => '', 'footer' => ''];
+                $detail = new Request($details);
+                // $this->mailController = $mailController;
+                // $this->mailController->sendMail($detail); 
+                $sendMailController = $mailController;
+                $sendMailController->sendMail($detail);
+            }
+
             $notifications = [
                 'user_id' => auth()->user()->id,
                 'slug' => auth()->user()->username . '-' . Crypt::encryptString($order->id) . '-pesanan-selesai',
                 'type' => 'Pesanan',
-                'description' => '<p class="m-0">Pesanan ' . $order->invoice_no . ' Sudah kamu diterima. Yuk beri ulasan untuk produk yang kamu pesan, bantu KLIKSPL berkembang dengan ulasan kamu.</p>',
+                'description' => '<p class="m-0">Pesanan ' . $order->invoice_no . ' Sudah anda diterima. Yuk beri ulasan untuk produk yang anda pesan, bantu KLIKSPL berkembang dengan ulasan anda.</p>',
                 'excerpt' => 'Pesanan Selesai',
                 'image' => 'storage/' . $orderProduct->orderproductimage->first()->name,
                 'is_read' => 0
@@ -1479,7 +1528,7 @@ class OrderController extends Controller
             $notifications = [
                 // 'admin_id' => auth()->user()->id,
                 'order_id' => $order->id,
-                'admin_type' => 3,
+                'admin_type' => 2,
                 'company_id' => $orderProduct->company_id,
                 'slug' => Crypt::encryptString($order->id) . '-pesanan-selesai',
                 'type' => 'Pesanan',
@@ -1510,16 +1559,6 @@ class OrderController extends Controller
         $order = Order::find($id);
         // dd($order);
         // dd($orderProduct);
-        $city_origin = '36';
-        $Key = 'product-' . $orderProduct->id;
-        // if (!Session::has($Key)) {
-
-        //     DB::table('products')
-        //         ->where('id', $orderProduct->id)
-        //         ->increment('view', 1);
-        //     Session::put($Key, 1);
-        // }
-        // print_r(Session::all());
         $stock = 0;
 
         $stock = $orderProduct->stock;

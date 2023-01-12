@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\Admin\PaymentMethodController;
 use App\Http\Controllers\AdminLoginController;
 use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CartItemUserController;
@@ -14,8 +15,10 @@ use App\Http\Controllers\MerkController;
 use App\Http\Controllers\CheckOngkirController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ChangePasswordController;
+use App\Http\Controllers\indexHomeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderItemRatingController;
+use App\Http\Controllers\PaymentMethodController as ControllersPaymentMethodController;
 use App\Http\Controllers\ProductCommentController;
 use App\Models\Product;
 use App\Models\ProductMerk;
@@ -23,6 +26,7 @@ use App\Models\ProductCategory;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RefundOrderPaymentController;
 use App\Http\Controllers\testController;
 use App\Http\Controllers\UserAddressController;
 use App\Http\Controllers\UserChatController;
@@ -34,6 +38,7 @@ use App\Http\Controllers\userProfileController;
 use App\Http\Controllers\UserPromoController;
 use App\Models\CartItem;
 use App\Models\ProductComment;
+use App\Models\RefundOrderPayment;
 use App\Models\UserAddress;
 use App\Models\UserChat;
 use Illuminate\Support\Facades\Mail;
@@ -48,7 +53,7 @@ use Illuminate\Support\Facades\Mail;
 |
 */
 
-Route::name('home')->get('/', [indexController::class, 'index']);
+Route::name('home')->get('/', [indexHomeController::class, 'index']);
 Route::name('product')->get('/products', [ProductController::class, 'index']);
 Route::name('product.show')->get('/product/{product:slug}', [ProductController::class, 'show']);
 Route::name('category')->get('/category', [CategoryController::class, 'index']);
@@ -210,13 +215,14 @@ Route::resource('/comment', ProductCommentController::class)->middleware(('auth'
 Route::name('chat.message.index')->get('/chat', [UserChatMessageController::class, 'index'])->middleware('auth');
 Route::name('send.chat')->post('/usersendchat', [UserChatMessageController::class, 'sendChat'])->middleware('auth');
 Route::name('load.chat')->get('/userloadchat', [UserChatMessageController::class, 'loadChat'])->middleware('auth');
-Route::name('load.chat.admin')->get('/userloadchatadminall', [UserChatMessageController::class, 'loadChatAdminAll'])->middleware('auth');
 Route::name('update.chat.status')->post('/updatechatstatus', [UserChatMessageController::class, 'updateChatStatus'])->middleware('auth');
 // chat
 Route::name('chat.index')->get('/chat', [UserChatController::class, 'index'])->middleware(('auth'));
 Route::name('load.chat.all')->get('/userloadchatall', [UserChatController::class, 'loadChatAll'])->middleware('auth');
-
-
+// metode pembayaran
+Route::name('payment.method')->get('/paymentmethod', [ControllersPaymentMethodController::class, 'index'])->middleware('auth');
+// refund
+Route::resource('/refundorderpayments', RefundOrderPaymentController::class)->middleware('auth');
 
 Route::name('TEST')->get(
     '/test',
@@ -290,12 +296,20 @@ Route::prefix('administrator')->group(function () {
     Route::resource('/adminnotifications', Admin\AdminNotificationController::class)->middleware('adminMiddle');
     Route::name('read.all.admin.notifications')->post('/adminnotifications/readallnotifications', [Admin\AdminNotificationController::class, 'allNotificationsIsReaded'])->middleware('adminMiddle');
 
+    Route::name('admin.statistics')->get('/statistics', [Admin\AdminStatisticController::class,'index'])->middleware('adminMiddle');
+
     // chat
     Route::name('admin.chat.index')->get('/adminchatmessage', [Admin\AdminChatMessageController::class, 'index'])->middleware('adminMiddle');
     Route::name('load.admin.chat.all')->get('/adminchatmessage/loadadminchatall', [Admin\AdminChatMessageController::class, 'loadAdminChatAll'])->middleware('adminMiddle');
     Route::name('load.admin.chat.modal')->get('/adminchatmessage/loadadminchatmodal', [Admin\AdminChatMessageController::class, 'loadAdminChatModal'])->middleware('adminMiddle');
+    Route::name('delete.admin.chat.automatically')->get('/adminchatmessage/deleteadminchatautomatically', [Admin\AdminChatMessageController::class, 'deleteMessageAutomatically'])->middleware('adminMiddle');
     Route::name('send.admin.chat.modal')->post('/adminchatmessage/sendadminchatmodal', [Admin\AdminChatMessageController::class, 'sendAdminChatModal'])->middleware('adminMiddle');
     Route::name('update.admin.chat.status')->post('/adminchatmessage/updateadminchatstatus', [Admin\AdminChatMessageController::class, 'updateAdminChatStatus'])->middleware('adminMiddle');
+
+    // refund
+    Route::name('decline.refund.order.payment')->post('/adminorder/decline-refund-order-payment', [Admin\AdminRefundOrderPaymentController::class, 'declineRefundOrderPayment']);
+    Route::name('confirm.refund.order.payment')->post('/adminorder/confirm-refund-order-payment', [Admin\AdminRefundOrderPaymentController::class, 'confirmRefundOrderPayment']);
+    Route::name('send.proof.of.refund')->post('/adminorder/send-proof-of-refund', [Admin\AdminRefundOrderPaymentController::class, 'sendProofOfRefund']);
 
 
     // finance-admin

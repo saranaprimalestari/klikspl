@@ -50,4 +50,9 @@ class Admin extends Authenticatable
         return $this->hasMany(Chat::class);
     }
 
+    public function refund()
+    {
+        return $this->hasMany(RefundOrderPayment::class);
+    }
+
 }

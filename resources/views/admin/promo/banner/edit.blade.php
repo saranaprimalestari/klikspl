@@ -72,7 +72,7 @@
                             <p class="fs-14 fw-600 mb-2">
                                 Diupload
                             </p>
-                            <img class="w-100" src="{{ asset($promoBanner->image) }}" alt="">
+                            <img class="w-100" src="{{ asset('/storage/'.$promoBanner->image) }}" alt="">
                         </div>
                     </div>
                     <div class="col-sm-5">

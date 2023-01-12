@@ -4,6 +4,12 @@
     {{-- {{ print_r(session()->all()) }} --}}
     <div class="register-container mt-5">
         <div class="row d-flex justify-content-center">
+            @if (session()->has('failed'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('failed') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
             <div class="col-md-6">
                 @if (session()->has('registered'))
                     <script>
@@ -17,6 +23,7 @@
                         {{ session('registered') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div> --}}
+
                     <div class="modal fade mt-5" id="returnLogin" tabindex="-1" aria-labelledby="returnLoginModal"
                         aria-hidden="true">
                         <div class="modal-dialog">
@@ -44,7 +51,8 @@
             </div>
         </div>
         <div class="row justify-content-center mb-5">
-            <div class="col-md-6 d-flex login-left-col mt-5 mt-sm-0 mt-md-0 mt-lg-0 mt-xl-0 px-5 px-sm-0 px-md-0 px-lg-0 px-xl-0">
+            <div
+                class="col-md-6 d-flex login-left-col mt-5 mt-sm-0 mt-md-0 mt-lg-0 mt-xl-0 px-5 px-sm-0 px-md-0 px-lg-0 px-xl-0">
                 <img class="footer-logo w-100" src="/assets/footer-logo.svg" alt="">
                 {{-- <img class="" src="https://source.unsplash.com/500x500?market"> --}}
             </div>
@@ -71,8 +79,8 @@
                         <form action="{{ route('register.post') }}" method="POST">
                             @csrf
                             <div class="mb-3">
-                                <label for="emailAddr" class="form-label login-email-label m-0 register-modal-p login-user-label">Email / No
-                                    Telepon</label>
+                                <label for="emailAddr"
+                                    class="form-label login-email-label m-0 register-modal-p login-user-label">Email</label>
                                 @if (is_null('email'))
                                     {{ $taskError = 'email' }}
                                 @else
@@ -82,8 +90,8 @@
                                     id="emailPhone" aria-describedby="emailHelp" name="emailPhone" required
                                     value="{{ old('email') }}{{ old('telp_no') }}">
 
-                                <div id="emailHelp" class="form-text login-email-help fs-12">Contoh: email@klikspl.com /
-                                    081234567890
+                                <div id="emailHelp" class="form-text login-email-help fs-12">
+                                    Contoh: email@klikspl.com
                                 </div>
                                 @error('email')
                                     <div class="invalid-feedback">
@@ -107,7 +115,8 @@
                             <div class="footer">
                                 <p class="text-center register-agreement-bottom">
                                     Dengan mendaftar membership, saya menyetujui
-                                    <a class="text-decoration-none text-danger fw-bold" href="">Syarat dan Ketentuan</a>,
+                                    <a class="text-decoration-none text-danger fw-bold" href="">Syarat dan
+                                        Ketentuan</a>,
                                     serta
                                     <a class="text-decoration-none text-danger fw-bold" href="">Kebijakan Privasi</a>
                                 </p>
@@ -121,10 +130,10 @@
                                                 aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body px-5">
-                                            <h5 class="modal-title mb-3" id="registerModal">Apakah email / no telepon yang
+                                            <h5 class="modal-title mb-3" id="registerModal">Apakah email yang
                                                 anda masukkan sudah benar? </h5>
                                             <p class="register-modal-p">
-                                                Kami akan mengirimkan kode verifikasi ke email / no telepon berikut
+                                                Kami akan mengirimkan kode verifikasi ke email berikut
                                             </p>
                                             <input type="text"
                                                 class="form-control shadow-none login-email-field border-0 text-center"

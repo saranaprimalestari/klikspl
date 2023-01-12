@@ -17,12 +17,12 @@
             <div class="col-md-8 col-12 mx-auto">
                 <div class="row">
                     <div class="col-md-3 col-12">
-                        @if (File::exists(public_path($notification->image)))
-                            <img id="" class="user-notification-show-img" src="{{ asset($notification->image) }}"
+                        @if (!is_null($notification->image))
+                            <img id="" class="user-notification-show-img border-radius-075rem" src="{{ asset($notification->image) }}"
                                 class="img-fluid" alt="..." width="100%">
                         @else
-                            <img id="" class="user-notification-show-img"
-                                src="https://source.unsplash.com/1000x400?notification" class="img-fluid" alt="..."
+                            <img id="" class="user-notification-show-img border-radius-075rem"
+                                src="{{ asset('assets/pict.png') }}" class="img-fluid" alt="..."
                                 width="100%">
                         @endif
                     </div>

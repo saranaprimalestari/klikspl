@@ -12,7 +12,7 @@ class AdminChatMessageController extends Controller
 {
     function index(){
         // dd(Carbon::now());
-        $chats = Chat::with(['user','product.productimage','order.orderitem.orderproduct.orderproductimage','admin', 'company', 'chatmessage'])->where([['company_id','=',auth()->guard('adminMiddle')->user()->company->id]])->orderBy('updated_at','desc')->get();
+        // $chats = Chat::with(['user','product.productimage','order.orderitem.orderproduct.orderproductimage','admin', 'company', 'chatmessage'])->where([['company_id','=',auth()->guard('adminMiddle')->user()->company->id]])->orderBy('updated_at','desc')->get();
         // dd($chats);
         // $orderChats= $chats->sortByDesc('created_at')->groupBy('order_id');
         // $productChats= $chats->sortByDesc('created_at')->groupBy('product_id');
@@ -30,7 +30,12 @@ class AdminChatMessageController extends Controller
     }
 
     function loadAdminChatAll(Request $request){
-        $loadAdminChatAll = Chat::with(['user','product.productimage','order.orderitem.orderproduct.orderproductimage','admin', 'company', 'chatMessage'])->where([['company_id','=',$request->company_id]])->orderBy('updated_at','desc')->get();
+        if(!empty($request->company_id)){
+            $loadAdminChatAll = Chat::with(['user','product.productimage','order' => fn($q) => $q->withTrashed(),'order.orderitem.orderproduct.orderproductimage','admin', 'company', 'chatMessage'])->where([['company_id','=',$request->company_id]])->orderBy('updated_at','desc')->get();
+          
+        }elseif(empty($request->company_id) && auth()->guard('adminMiddle')->user()->admin_type == 1){
+            $loadAdminChatAll = Chat::with(['user','product.productimage','order' => fn($q) => $q->withTrashed(),'order.orderitem.orderproduct.orderproductimage','admin', 'company', 'chatMessage'])->orderBy('updated_at','desc')->get();
+        }
         // $orderChats= $loadAdminChatAll->groupBy('order_id');
         // $productChats= $loadAdminChatAll->groupBy('product_id');
         // $loadAdminChatAllGrouped = ['orderChats' =>$orderChats, 'productChats'=>$productChats];
@@ -41,7 +46,7 @@ class AdminChatMessageController extends Controller
         if (isset($request->product_id)) {
             $chatHistory = Chat::with(['user', 'product','product.productimage', 'admin', 'company', 'chatMessage'])->where([['id','=',$request->id], ['user_id', '=', $request->user_id], ['product_id', '=', $request->product_id], ['company_id', '=', $request->company_id]])->get();
         } elseif (isset($request->order_id)) {
-            $chatHistory = Chat::with(['user', 'order.orderitem.orderproduct.orderproductimage', 'order', 'admin', 'company', 'chatMessage'])->where([['id','=',$request->id], ['user_id', '=', $request->user_id], ['order_id', '=', $request->order_id], ['company_id', '=', $request->company_id]])->get();
+            $chatHistory = Chat::with(['user','order' => fn($q) => $q->withTrashed(),'order.orderitem.orderproduct.orderproductimage', 'admin', 'company', 'chatMessage'])->where([['id','=',$request->id], ['user_id', '=', $request->user_id], ['order_id', '=', $request->order_id], ['company_id', '=', $request->company_id]])->get();
         }
         return response()->json(['chatHistory'=>$chatHistory]);
     }
@@ -138,5 +143,24 @@ class AdminChatMessageController extends Controller
         }
 
         return response()->json($response);
+    }
+
+    function deleteMessageAutomatically(Request $request){
+        $chats = Chat::where([['company_id','=',$request->company_id]])->get();
+        $response = null;
+        $chatss = null;
+        foreach ($chats as $chat) {
+            $chatDate = Carbon::createFromFormat('Y-m-d H:s:i', $chat->created_at)->addDays(30);
+            $chatss[] = $chatDate;
+            if($chatDate < Carbon::now()){
+                $chatMessage = ChatMessage::where('chat_id', '=', $chat->id)->get();
+                foreach ($chatMessage as $msg) {
+                    $msg->delete();
+                }
+                $chat->delete();
+                $response = "Chats deleted";
+            }
+        }
+        return response()->json(['response' => $response, 'chats' =>$chatss]);
     }
 }

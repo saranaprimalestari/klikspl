@@ -10,10 +10,10 @@ use App\Http\Controllers\MailController;
 
 class UserEmailController extends Controller
 {
-    
+
     public function addEmail(Request $request)
     {
-        if(is_null(auth()->user()->email)){
+        if (is_null(auth()->user()->email)) {
             return view('user.add-phone-email', [
                 'title' => 'Tambah Email',
                 'active' => 'profile',
@@ -23,7 +23,7 @@ class UserEmailController extends Controller
                 'inputType' => 'email',
                 'route' => 'profile.add.email.post'
             ]);
-        }else{
+        } else {
             return redirect()->route('profile.update.email')->with(['failed' => 'Terdapat kesalahan silakan masukkan nomor telepon ulang (error: PRVBCKPGERR)']);
         }
     }
@@ -47,7 +47,6 @@ class UserEmailController extends Controller
 
     public function addEmailReqVerifyMethod(Request $request)
     {
-        // dd($request);
         if ($request->session()->has('email')) {
 
             $email = session()->get('email');
@@ -64,12 +63,11 @@ class UserEmailController extends Controller
                 'act' => 'add',
                 'varName' => 'email',
                 'inputType' => 'number',
-                // 'route' => 'profile.add.email.send.verify.method',
                 'route' => 'profile.add.email.send.verify.method',
                 'waRoute' => 'profile.add.email.verify',
                 'email' => $email,
                 'verificationCode' => $verificationCode,
-                'waVerifMessage' => 'https://wa.me/6285248466297?text=Halo+' . auth()->user()->firstname . '+' . auth()->user()->lastname . '%2C%0D%0ASilakan+masukkan+kode+berikut+untuk+verifikasi+nomor+telepon+yang+kamu+tambahkan%0D%0A%0D%0A%2A' . $verificationCode . '%2A%0D%0A%0D%0AKode+diatas+bersifat+rahasia+dan+jangan+sebarkan+kode+kepada+siapapun.%0D%0A%0D%0APesan+ini+dibuat+otomatis%2C+jika+membutuhkan+bantuan%2C+silakan+hubungi+ADMIN+KLIKSPL+dengan+link+berikut%3A%0D%0Ahttps%3A%2F%2Fwa.me%2F6285248466297'
+                'waVerifMessage' => 'https://wa.me/628115102888?text=Halo+' . auth()->user()->firstname . '+' . auth()->user()->lastname . '%2C%0D%0ASilakan+masukkan+kode+berikut+untuk+verifikasi+nomor+telepon+yang+kamu+tambahkan%0D%0A%0D%0A%2A' . $verificationCode . '%2A%0D%0A%0D%0AKode+diatas+bersifat+rahasia+dan+jangan+sebarkan+kode+kepada+siapapun.%0D%0A%0D%0APesan+ini+dibuat+otomatis%2C+jika+membutuhkan+bantuan%2C+silakan+hubungi+ADMIN+KLIKSPL+dengan+link+berikut%3A%0D%0Ahttps%3A%2F%2Fwa.me%2F628115102888'
             ]);
         } else {
             return redirect()->route('profile.add.email')->with(['failed' => 'Terdapat kesalahan silakan masukkan nomor telepon ulang (error: 0x621f)']);
@@ -78,19 +76,17 @@ class UserEmailController extends Controller
 
     public function addEmailSendVerifyMethod(Request $request, MailController $mailController)
     {
-
-        // dd(session()->all());
-        // dd($request);
         $request->session()->put('id', $request['id']);
         $request->session()->put('username', $request['username']);
         // $request->session()->put('verificationCode', $request['verificationCode']);
         $details = ['id' => '1', 'email' => session()->get('email'), 'title' => 'KLIK SPL: Menambahkan Email', 'message' => 'Silakan masukkan kode berikut untuk melanjutkan proses penambahan email', 'verifCode' => session()->get('verificationCodeEmail'), 'closing' => 'Kode bersifat rahasia dan jangan sebarkan kode ini kepada siapapun, termasuk pihak KLIKSPL.', 'footer' => ''];
 
-            $detail = new Request($details);
-            $this->mailController = $mailController;
-            $this->mailController->sendMail($detail);
-               
-        // dd(session()->all());
+        $detail = new Request($details);
+        // $this->mailController = $mailController;
+        // $this->mailController->sendMail($detail);
+        $sendMailController = $mailController;
+        $sendMailController->sendMail($detail);
+
         return redirect()->route('profile.add.email.verify');
         // dd($request->verificationCode);
         // dd(session()->get('verificationCodeEmail'));
@@ -111,14 +107,8 @@ class UserEmailController extends Controller
 
     public function addEmailVerify(Request $request)
     {
-        // dd($request);
-        // dd(session()->all());
-        // dd($request->verificationCode);
-        // dd(session()->get('verificationCodeEmail'));
-        // dd($request->verificationCode == session()->get('verificationCodeEmail'));
-        // dd($request);
         if ($request->session()->has('email')) {
-        
+
             if ($request->linkVerification) {
                 // dd($request->linkVerification);
                 if ($request->verificationCode == session()->get('verificationCodeEmail')) {
@@ -154,25 +144,33 @@ class UserEmailController extends Controller
         }
     }
 
-    public function addEmailVerifySubmit(Request $request)
+    public function addEmailVerifySubmit(Request $request, MailController $mailController)
     {
-        // dd($request);
         if ($request->verifValue === $request->verifCode) {
             $request->session()->put('is_verified', 1);
             $user = User::where('id', '=', $request->id)->first();
             $user->email = $request->verifAccount;
             $user->save();
-            
+
+            if (!is_null(auth()->user()->email)) {
+                $details = ['id' => '2', 'email' => auth()->user()->email, 'title' => 'KLIK SPL: Email berhasil diperbarui', 'message' => 'Email berhasil diperbarui, email terbaru anda' . $user->email . '.Selamat menikmati pengalaman berbelanja di klikspl.com. Untuk masuk dan berbelanja klik tautan berikut:', 'verifCode' => '', 'url' => 'https://klikspl.com/', 'closing' => '', 'footer' => ''];
+                $detail = new Request($details);
+                // $this->mailController = $mailController;
+                // $this->mailController->sendMail($detail); 
+                $sendMailController = $mailController;
+                $sendMailController->sendMail($detail);
+            }
+
             $notifications = [
                 'user_id' => $user->id,
-                'slug' => 'email-berhasil-diperbarui-'.$user->username.'-'.Carbon::now(),
+                'slug' => 'email-berhasil-diperbarui-' . $user->username . '-' . Carbon::now(),
                 'type' => 'Notifikasi',
-                'description' => '<p class="m-0">Email berhasil diperbarui</p></br><p class="m-0">Email terbaru kamu <strong>'.$user->email.'</strong></p></br><p class="m-0">Selamat menikmati pengalaman berbelanja di klikspl.com.</p>',
+                'description' => '<p class="m-0">Email berhasil diperbarui</p></br><p class="m-0">Email terbaru anda <strong>' . $user->email . '</strong></p></br><p class="m-0">Selamat menikmati pengalaman berbelanja di klikspl.com.</p>',
                 'excerpt' => 'Email berhasil diperbarui',
                 'image' => 'assets\email.png',
                 'is_read' => 0
             ];
-            
+
             $notification = UserNotification::create($notifications);
 
             return redirect()->route('profile.add.email.verified');
@@ -194,7 +192,7 @@ class UserEmailController extends Controller
                 'routeChange' => 'profile.index',
             ]);
         } else {
-            return redirect()->route('profile.add.email.verify')->with(['verificationFailed' => 'Kode Verifikasi yang anda masukkan tidak sesuai, Pastikan Kode OTP yang dikirimkan dengan yang kamu masukkan sesuai, atau coba lakukan pengiriman ulang kode OTP kembali']);
+            return redirect()->route('profile.add.email.verify')->with(['verificationFailed' => 'Kode Verifikasi yang anda masukkan tidak sesuai, Pastikan Kode OTP yang dikirimkan dengan yang anda masukkan sesuai, atau coba lakukan pengiriman ulang kode OTP kembali']);
         }
     }
 
@@ -240,17 +238,14 @@ class UserEmailController extends Controller
 
     public function updateEmailSendVerifyMethodFirst(Request $request, MailController $mailController)
     {
-        // dd(session()->all());
-        // dd($request);
         $request->session()->put('id', $request['id']);
         $request->session()->put('username', $request['username']);
         $request->session()->put('email', $request['email']);
-        // $request->session()->put('email', $validatedData['email']);
         $details = ['id' => '1', 'email' => session()->get('email'), 'title' => 'KLIK SPL: Menambahkan Email', 'message' => 'Silakan masukkan kode berikut untuk melanjutkan proses penambahan email', 'verifCode' => session()->get('verificationCodeEmail'), 'closing' => 'Kode bersifat rahasia dan jangan sebarkan kode ini kepada siapapun, termasuk pihak KLIKSPL.', 'footer' => ''];
 
         $detail = new Request($details);
-        $this->mailController = $mailController;
-        $this->mailController->sendMail($detail);
+        $sendMailController = $mailController;
+        $sendMailController->sendMail($detail);
 
         return redirect()->route('profile.update.email.verify.first');
     }
@@ -260,9 +255,7 @@ class UserEmailController extends Controller
         if ($request->session()->has('email')) {
 
             if ($request->linkVerification) {
-                // dd($request->linkVerification);
                 if ($request->verificationCode == session()->get('verificationCodeEmail')) {
-                    // dd($request);
                     return redirect()->route('profile.update.email.verified.first');
                 } else {
                     return redirect()->route('profile.update.email.req.verify.method')->with(['failed' => 'Terdapat kesalahan silakan meminta ulang kode verifikasi (OTP) (error: 0x621f)']);
@@ -281,7 +274,6 @@ class UserEmailController extends Controller
                     'act' => 'update',
                     'varName' => 'email',
                     'inputType' => 'number',
-                    // 'route' => 'profile.update.email.send.verify.method',
                     'route' => 'profile.update.email.verify.submit.first',
                     'reqVerifyRoute' => 'profile.update.email',
                     'id' => $request->id,
@@ -323,14 +315,13 @@ class UserEmailController extends Controller
                 'updateRoute' => 'profile.update.email.fill.new',
             ]);
         } else {
-            return redirect()->route('profile.update.email.verify')->with(['verificationFailed' => 'Kode Verifikasi yang anda masukkan tidak sesuai, Pastikan Kode OTP yang dikirimkan dengan yang kamu masukkan sesuai, atau coba lakukan pengiriman ulang kode OTP kembali']);
+            return redirect()->route('profile.update.email.verify')->with(['verificationFailed' => 'Kode Verifikasi yang anda masukkan tidak sesuai, Pastikan Kode OTP yang dikirimkan dengan yang anda masukkan sesuai, atau coba lakukan pengiriman ulang kode OTP kembali']);
         }
     }
 
     public function updateEmailFillNew(Request $request)
     {
-        // dd(session()->all());
-        if(session()->has('id') && session()->has('username') && session()->has('email') && session()->has('verificationCodeEmail') && session()->has('is_verified')){
+        if (session()->has('id') && session()->has('username') && session()->has('email') && session()->has('verificationCodeEmail') && session()->has('is_verified')) {
             return view('user.add-phone-email', [
                 'title' => 'Ubah Email',
                 'active' => 'profile',
@@ -340,9 +331,8 @@ class UserEmailController extends Controller
                 'inputType' => 'email',
                 'route' => 'profile.add.email.post'
             ]);
-        }else{
+        } else {
             return redirect()->route('profile.update.email')->with(['failed' => 'Terdapat kesalahan silakan masukkan ulang email (error: 0xEMUPERROR)']);
-            
         }
     }
 }

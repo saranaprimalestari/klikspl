@@ -39,7 +39,7 @@
                                 Tambahkan Foto Promo
                             </p>
                             <p class="text-grey fs-12 m-0">Format Gambar (.jpg, .jpeg, .png), ukuran maksimal 2MB,
-                                Cantumkan
+                                resolusi gambar 1200 x 600
                             </p>
 
                         </label>

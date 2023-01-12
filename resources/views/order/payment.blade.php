@@ -223,7 +223,7 @@
                                         Tekan tombol “Benar”
                                     </li>
                                     <li>
-                                        Transaksi berhasil dan kamu akan menerima struk serta kartu ATM-mu kembali
+                                        Transaksi berhasil dan anda akan menerima struk serta kartu ATM-mu kembali
                                     </li>
                                 </ul>
                             </div>
@@ -271,7 +271,7 @@
                                         Tekan tombol “Benar”
                                     </li>
                                     <li>
-                                        Transaksi berhasil dan kamu akan menerima struk serta kartu ATM-mu kembali
+                                        Transaksi berhasil dan anda akan menerima struk serta kartu ATM-mu kembali
                                     </li>
                                 </ul>
                             </div>
@@ -319,7 +319,7 @@
                                         Tekan tombol “Benar”
                                     </li>
                                     <li>
-                                        Transaksi berhasil dan kamu akan menerima struk serta kartu ATM-mu kembali
+                                        Transaksi berhasil dan anda akan menerima struk serta kartu ATM-mu kembali
                                     </li>
                                 </ul>
                             </div>
@@ -402,8 +402,8 @@
                                     <div class="modal-body text-center py-2 px-5">
                                         <h5 class="mb-3">Konfirmasi Pembatalan Pesanan</h5>
                                         <p class="fs-14 mb-0">
-                                            Apakah kamu yakin ingin membatalkan pesanan ini? Pesanan yang dibatalkan akan
-                                            dihapus dari daftar pesananmu. Mohon tuliskan alasan mengapa kamu membatalkan
+                                            Apakah anda yakin ingin membatalkan pesanan ini? Pesanan yang dibatalkan akan
+                                            dihapus dari daftar pesananmu. Mohon tuliskan alasan mengapa anda membatalkan
                                             pesananmu.
                                         </p>
                                         <div class="form-floating my-3">
@@ -770,6 +770,7 @@
             </div>
         </div>
     </div>
+    @include('chat')
     {{-- <div class="container-fluid fixed-bottom bg-white py-md-3 pb-5 pt-3 px-4 mb-3 mb-md-0 border-radius-075rem shadow-lg">
         <div class="container px-4">
             <div class="fs-14">
@@ -793,16 +794,16 @@
         //     window.location.reload();
         // });
         const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        console.log(timezone);
+        // console.log(timezone);
         if (timezone == 'Asia/Makassar') {
             var payment_due = new Date("{{ $orders[0]->payment_due_date }}").getTime() + 3600000;
-            console.log(payment_due);
+            // console.log(payment_due);
         } else if (timezone == 'Asia/Jakarta') {
             var payment_due = new Date("{{ $orders[0]->payment_due_date }}").getTime();
-            console.log(payment_due);
+            // console.log(payment_due);
         } else if (timezone == 'Asia/Manokwari') {
             var payment_due = new Date("{{ $orders[0]->payment_due_date }}").getTime() + 7200000;
-            console.log(payment_due);
+            // console.log(payment_due);
         }
         var x = setInterval(() => {
             var now = new Date().getTime();

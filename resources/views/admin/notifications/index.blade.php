@@ -48,7 +48,7 @@
                         </div>
                         <div class="row align-items-center">
                             <div class="col-md-1">
-                                @if (File::exists(public_path($notification->image)))
+                                @if (!is_null($notification->image))
                                     <img src="{{ asset($notification->image) }}"
                                         class="img-fluid w-100 border-radius-05rem" alt="...">
                                 @endif
@@ -91,7 +91,7 @@
         <div class="text-center notification-empty">
             <img class="my-4 cart-items-logo" src="/assets/footer-logo.png" width="300" alt="">
             <p>
-                Tidak ada notifikasi buat kamu sekarang ini
+                Tidak ada notifikasi untuk anda sekarang ini
             </p>
         </div>
     @endif

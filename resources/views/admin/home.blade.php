@@ -270,6 +270,63 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-12 col-12 mb-4">
+                <div class="card admin-card-dashboard border-radius-1-5rem box-shadow">
+                    <div class="card-body p-4">
+                        <h4>Pengujung</h4>
+                        <div class="row pt-2 pb-2 fs-14">
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-6 px-2 py-2">
+                                <a class="text-decoration-none link-dark color-red-klikspl-hover"
+                                    href="{{ route('admin.statistics') }}">
+                                    <div class="card admin-card-dashboard border-radius-075rem box-shadow">
+                                        <div class="card-body px-4">
+                                            <i class="bi bi-calendar2-event fs-3"></i>
+                                            <p class="mb-2 mt-1">
+                                                Hari ini
+                                            </p>
+                                            <h3>
+                                                {{ count($visitorDay) }}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-6 px-2 py-2">
+                                <a class="text-decoration-none link-dark color-red-klikspl-hover"
+                                    href="{{ route('admin.statistics') }}">
+                                    <div class="card admin-card-dashboard border-radius-075rem box-shadow">
+                                        <div class="card-body px-4">
+                                            <i class="bi bi-calendar2-week fs-3"></i>
+                                            <p class="mb-2 mt-1">
+                                                Bulan ini
+                                            </p>
+                                            <h3>
+                                                {{ count($visitorThisMonth) }}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-6 px-2 py-2">
+                                <a class="text-decoration-none link-dark color-red-klikspl-hover"
+                                    href="{{ route('admin.statistics') }}">
+                                    <div class="card admin-card-dashboard border-radius-075rem box-shadow">
+                                        <div class="card-body px-4">
+                                            <i class="bi bi-calendar2-range fs-3"></i>
+                                            <p class="mb-2 mt-1">
+                                                Total
+                                            </p>
+                                            <h3>
+                                                {{ count($visitorTotal) }}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         @endif
         @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
             auth()->guard('adminMiddle')->user()->admin_type == 2 || auth()->guard('adminMiddle')->user()->admin_type == 3)

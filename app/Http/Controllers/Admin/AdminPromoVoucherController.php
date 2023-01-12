@@ -581,7 +581,7 @@ class AdminPromoVoucherController extends Controller
     public function checkSlug(Request $request)
     {
         $this->isAdministrator();
-        $slug = SlugService::createSlug(Product::class, 'slug', $request->name);
+        $slug = SlugService::createSlug(Promo::class, 'slug', $request->name);
 
         return response()->json(['slug' => $slug]);
     }

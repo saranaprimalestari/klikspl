@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use Carbon\Carbon;
+use App\Models\Admin;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\CartItem;
@@ -15,6 +16,7 @@ use App\Models\AdminNotification;
 use App\Models\OrderStatusDetail;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Crypt;
+use App\Http\Controllers\MailController;
 
 class AdminOrderController extends Controller
 {
@@ -64,12 +66,20 @@ class AdminOrderController extends Controller
                 $header = 'Pesanan Dibatalkan';
             } else if (request(['status'])['status'] == 'pengajuan pembatalan') {
                 $header = 'Pengajuan Pembatalan';
+            } else if (request(['status'])['status'] == 'pengajuan pengembalian dana') {
+                $header = 'Pengajuan Pengembalian Dana';
             } else {
                 return redirect()->route('adminorder.index');
             }
         } elseif (auth()->guard('adminMiddle')->user()->admin_type == 3) {
             if (request(['status'])['status'] == 'pesanan dibayarkan') {
                 $header = 'Konfirmasi Pembayaran Pesanan';
+            } else if (request(['status'])['status'] == 'expired') {
+                $header = 'Pesanan Dibatalkan';
+            } else if (request(['status'])['status'] == 'pesanan dibatalkan') {
+                $header = 'Pesanan Dibatalkan';
+            } else if (request(['status'])['status'] == 'pengajuan pembatalan') {
+                $header = 'Pengajuan Pembatalan';
             } else {
                 abort(403);
             }
@@ -362,7 +372,7 @@ class AdminOrderController extends Controller
         return response()->download(storage_path("app/public") . '/' . $request->proofOfPayment, str_replace("/", "-", $request->inv_no) . '-' . auth()->guard('adminMiddle')->user()->username . '-proof-of-payment.png', $headers);
     }
 
-    public function confirmPayment(Request $request)
+    public function confirmPayment(Request $request, MailController $mailController)
     {
         $this->expiredCheck();
         // dd($request);
@@ -383,136 +393,139 @@ class AdminOrderController extends Controller
         if (is_null($order)) {
             $order = Order::withTrashed()->where('id', '=', $request->order_id)->first();
         }
-        $stockVariant = 0;
-        $soldVariant = 0;
-        foreach ($order->orderitem as $orderitem) {
-            $product = Product::where('id', '=', $orderitem->product_id)->first();
-            if (!empty($orderitem->product_variant_id)) {
-                $productVariantId = ProductVariant::where('id', '=', $orderitem->product_variant_id)->first();
-                // echo "product variant stock before : " .$productVariantId->stock;
-                // echo "<br>";
-                // echo "product variant sold before : " .$productVariantId->sold;
-                // echo "<br>";
-                $productVariantId->stock = (int)$productVariantId->stock - (int)$orderitem->quantity;
-                $productVariantId->sold = (int)$orderitem->quantity + (int)$productVariantId->sold;
-                // echo "product variant stock : " .$productVariantId->stock;
-                // echo "<br>";
-                // echo "product variant sold : " .$productVariantId->sold;
-                // echo "<br>";
-                // echo "order item qty : " .$orderitem->quantity;
-                // echo "<br>";
-                $stockVariant += $productVariantId->stock;
-                $soldVariant += $productVariantId->sold;
-                $productVariantId->save();
+        if (is_null($order->invoice_no)) {
+            $stockVariant = 0;
+            $soldVariant = 0;
+            foreach ($order->orderitem as $orderitem) {
+                $product = Product::where('id', '=', $orderitem->product_id)->first();
+                if (!empty($orderitem->product_variant_id)) {
+                    $productVariantId = ProductVariant::where('id', '=', $orderitem->product_variant_id)->first();
+                    // echo "product variant stock before : " .$productVariantId->stock;
+                    // echo "<br>";
+                    // echo "product variant sold before : " .$productVariantId->sold;
+                    // echo "<br>";
+                    $productVariantId->stock = (int)$productVariantId->stock - (int)$orderitem->quantity;
+                    $productVariantId->sold = (int)$orderitem->quantity + (int)$productVariantId->sold;
+                    // echo "product variant stock : " .$productVariantId->stock;
+                    // echo "<br>";
+                    // echo "product variant sold : " .$productVariantId->sold;
+                    // echo "<br>";
+                    // echo "order item qty : " .$orderitem->quantity;
+                    // echo "<br>";
+                    $stockVariant += $productVariantId->stock;
+                    $soldVariant += $productVariantId->sold;
+                    $productVariantId->save();
 
-                // $product->stock = $stockVariant;
-                // $product->sold = $soldVariant;
-                // $product->save();
-            } else {
-                $product->stock = (int)$product->stock - (int)$orderitem->quantity;
-                $product->sold = (int)$orderitem->quantity + (int)$product->sold;
-                // echo "product stock : " . $product->stock;
-                // echo "<br>";
-                // echo "product sold : " . $product->sold;
-                // echo "<br>";
-                // echo "order item qty : " . $orderitem->quantity;
-                // echo "<br>";
-                $product->save();
-            }
-            // echo "product id : " . $product->id;
-            // echo "<br>";
-            // echo "not empty : " . !empty($product->productvariant);
-            // echo "<br>";
-            // echo "not null : " . !is_null($product->productvariant);
-            // echo "<br>";
-            // echo "count : " . count($product->productvariant);
-            // echo "<br>";
-            if (count($product->productvariant) > 0) {
-                // echo ('ada product variant');
-                // echo "<br>";
-                $product->stock = $product->productvariant->sum('stock');
-                $product->sold = $product->productvariant->sum('sold');
-                $product->save();
-            }
-            // dd($request);
-        }
-
-        // dd(Order::whereNotNull('invoice_no')->exists());
-        // dd(Order::orderBy('invoice_no','desc')->whereNotNull('invoice_no')->pluck('invoice_no')->first());
-
-
-        if (Order::withTrashed()->whereNotNull('invoice_no')->exists()) {
-            // dd(Order::where('invoice_no','like','%0822%')->max('invoice_no'));
-            // $lastInvNo = Order::orderBy('invoice_no', 'desc')->whereNotNull('invoice_no')->pluck('invoice_no')->first();
-            $lastInvNo = Order::withTrashed()->where('invoice_no', 'like', '%' . date('my') . '%')->max('invoice_no');
-            // dd($lastInvNo);
-            // if(is_null($lastInvNo)){
-            //     $noInv = 'SPL/INVC/KLIKSPL/000001/'.date('my');
-            // }else{
-            // echo $lastInvNo;
-            // echo "<br><br>";
-            $exp = explode('/', $lastInvNo);
-            // dd($exp);
-            // echo($exp[4]);
-            // echo "<br><br>";
-            if (!is_null($lastInvNo)) {
-                if (($exp[4] != date('my'))) {
-                    $noInv = 'SPL/INVC/KLIKSPL/000001/' . date('my');
+                    // $product->stock = $stockVariant;
+                    // $product->sold = $soldVariant;
+                    // $product->save();
                 } else {
-                    // echo $exp[3];
-                    // echo "<br><br>";
-                    $seqTemp = ltrim($exp[3], '0');
-                    // echo $seqTemp;
-                    // echo "<br><br>";
-                    $seqTemp = $seqTemp + 1;
-                    $seq = sprintf("%'.06d", $seqTemp);
-                    // echo $seq;
-                    // echo "<br><br>";
-                    $noInv = implode("/", array($exp[0], $exp[1], $exp[2], $seq, date('my')));
-                    // echo $noInv;
-                    // echo "<br><br>";
+                    $product->stock = (int)$product->stock - (int)$orderitem->quantity;
+                    $product->sold = (int)$orderitem->quantity + (int)$product->sold;
+                    // echo "product stock : " . $product->stock;
+                    // echo "<br>";
+                    // echo "product sold : " . $product->sold;
+                    // echo "<br>";
+                    // echo "order item qty : " . $orderitem->quantity;
+                    // echo "<br>";
+                    $product->save();
                 }
+                // echo "product id : " . $product->id;
+                // echo "<br>";
+                // echo "not empty : " . !empty($product->productvariant);
+                // echo "<br>";
+                // echo "not null : " . !is_null($product->productvariant);
+                // echo "<br>";
+                // echo "count : " . count($product->productvariant);
+                // echo "<br>";
+                if (count($product->productvariant) > 0) {
+                    // echo ('ada product variant');
+                    // echo "<br>";
+                    $product->stock = $product->productvariant->sum('stock');
+                    $product->sold = $product->productvariant->sum('sold');
+                    $product->save();
+                }
+                // dd($request);
+            }
+
+            // dd(Order::whereNotNull('invoice_no')->exists());
+            // dd(Order::orderBy('invoice_no','desc')->whereNotNull('invoice_no')->pluck('invoice_no')->first());
+
+
+            if (Order::withTrashed()->whereNotNull('invoice_no')->exists()) {
+                // dd(Order::where('invoice_no','like','%0822%')->max('invoice_no'));
+                // $lastInvNo = Order::orderBy('invoice_no', 'desc')->whereNotNull('invoice_no')->pluck('invoice_no')->first();
+                $lastInvNo = Order::withTrashed()->where('invoice_no', 'like', '%' . date('my') . '%')->max('invoice_no');
+                // dd($lastInvNo);
+                // if(is_null($lastInvNo)){
+                //     $noInv = 'SPL/INVC/KLIKSPL/000001/'.date('my');
+                // }else{
+                // echo $lastInvNo;
+                // echo "<br><br>";
+                $exp = explode('/', $lastInvNo);
+                // dd($exp);
+                // echo($exp[4]);
+                // echo "<br><br>";
+                if (!is_null($lastInvNo)) {
+                    if (($exp[4] != date('my'))) {
+                        $noInv = 'SPL/INVC/KLIKSPL/000001/' . date('my');
+                    } else {
+                        // echo $exp[3];
+                        // echo "<br><br>";
+                        $seqTemp = ltrim($exp[3], '0');
+                        // echo $seqTemp;
+                        // echo "<br><br>";
+                        $seqTemp = $seqTemp + 1;
+                        $seq = sprintf("%'.06d", $seqTemp);
+                        // echo $seq;
+                        // echo "<br><br>";
+                        $noInv = implode("/", array($exp[0], $exp[1], $exp[2], $seq, date('my')));
+                        // echo $noInv;
+                        // echo "<br><br>";
+                    }
+                } else {
+                    $noInv = 'SPL/INVC/KLIKSPL/000001/' . date('my');
+                }
+                // }
             } else {
                 $noInv = 'SPL/INVC/KLIKSPL/000001/' . date('my');
             }
-            // }
-        } else {
-            $noInv = 'SPL/INVC/KLIKSPL/000001/' . date('my');
-        }
-        //commentes
-        // dd($request->file('proof_of_payment')->guessExtension());
-        if (!is_null($request->file('proof_of_payment')) || $request->file('proof_of_payment')) {
-            $folderPathSave = 'user/' . $order->users->username . '/order/' . $request->order_id . '/proof-of-payment';
+            //commentes
+            // dd($request->file('proof_of_payment')->guessExtension());
+            if (!is_null($request->file('proof_of_payment')) || $request->file('proof_of_payment')) {
+                $folderPathSave = 'user/' . $order->users->username . '/order/' . $request->order_id . '/proof-of-payment';
 
-            // echo $folderPathSave;
-            // echo "<br><br>";
-            // echo $request->order_id;
+                // echo $folderPathSave;
+                // echo "<br><br>";
+                // echo $request->order_id;
 
-            if ($request->file('proof_of_payment')) {
-                // echo 'if req proof';
-                $validatedData['proof_of_payment'] = $request->file('proof_of_payment')->store($folderPathSave);
-                // echo $validatedData['proof_of_payment'];
+                if ($request->file('proof_of_payment')) {
+                    // echo 'if req proof';
+                    $validatedData['proof_of_payment'] = $request->file('proof_of_payment')->store($folderPathSave);
+                    // echo $validatedData['proof_of_payment'];
+                }
+                $order->proof_of_payment = $validatedData['proof_of_payment'];
             }
-            $order->proof_of_payment = $validatedData['proof_of_payment'];
-        }
-        $order->invoice_no = $noInv;
-        $order->order_status = 'pesanan dibayarkan';
-        $orderSave = $order->save();
+            $order->invoice_no = $noInv;
+            $order->order_status = 'pesanan dibayarkan';
+            $orderSave = $order->save();
 
-        if ($orderSave) {
-            foreach ($order->orderitem as $item) {
-                $item->order_item_status = 'pesanan dibayarkan';
-                $item->save();
+            if ($orderSave) {
+                foreach ($order->orderitem as $item) {
+                    $item->order_item_status = 'pesanan dibayarkan';
+                    $item->save();
+                }
             }
+            $orderStatus = OrderStatusDetail::create(
+                [
+                    'order_id' => $order->id,
+                    'status' => 'pesanan dibayarkan',
+                    'status_detail' => 'Menunggu Verifikasi Pembayaran oleh Admin KLIKSPL',
+                    'status_date' => date('Y-m-d H:i:s')
+                ]
+            );
         }
-        $orderStatus = OrderStatusDetail::create(
-            [
-                'order_id' => $order->id,
-                'status' => 'pesanan dibayarkan',
-                'status_detail' => 'Menunggu Verifikasi Pembayaran oleh Admin KLIKSPL',
-                'status_date' => date('Y-m-d H:i:s')
-            ]
-        );
+
         $status = str_replace(" ", "+", $request->session()->get('status'));
         // dd($request);
 
@@ -539,11 +552,20 @@ class AdminOrderController extends Controller
         $orderProduct = $order->orderitem[0]->orderProduct;
         $shopBag = 'assets\shop-bag-success.png';
 
+        if (!is_null($order->users->email)) {
+            $details = ['id' => '2', 'email' => $order->users->email, 'title' => 'KLIK SPL: Pembayaran Dikonfirmasi', 'message' => 'Pembayaran pesanan ' . $order->invoice_no . ' dikonfirmasi oleh ADMIN KLIKSPL. Pesanan anda sedang disiapkan dan segera dikirimkan. Untuk melihat detail pesanan, silakan klik tautan berikut:', 'verifCode' => '', 'url' => 'https://klikspl.com/order', 'closing' => '', 'footer' => ''];
+            $detail = new Request($details);
+            // $this->mailController = $mailController;
+            // $this->mailController->sendMail($detail); 
+            $sendMailController = $mailController;
+            $sendMailController->sendMail($detail);
+        }
+
         $notifications = [
             'user_id' => $order->user_id,
             'slug' => $order->users->username . '-' . Crypt::encryptString($order->id) . '-pembayaran-dikonfirmasi',
             'type' => 'Pesanan',
-            'description' => '<p class="m-0">Pembayaran pesanan ' . $order->invoice_no . ' dikonfirmasi oleh ADMIN KLIKSPL. Pesanan kamu sedang disiapkan dan segera dikirimkan.</p>',
+            'description' => '<p class="m-0">Pembayaran pesanan ' . $order->invoice_no . ' dikonfirmasi oleh ADMIN KLIKSPL. Pesanan anda sedang disiapkan dan segera dikirimkan.</p>',
             'excerpt' => 'Pembayaran Dikonfirmasi',
             // 'image' => $shopBag,
             'image' => 'storage/' . $orderProduct->orderproductimage->first()->name,
@@ -551,6 +573,19 @@ class AdminOrderController extends Controller
         ];
         // membuat notifikasi pembuatan pesanan untuk user
         $notification = UserNotification::create($notifications);
+
+        $sendAdminNotification = Admin::whereIn('admin_type', [2, 4])->where('company_id', '=', $orderProduct->company_id)->get();
+
+        foreach ($sendAdminNotification as $admin) {
+            if (!is_null($admin->email)) {
+                $details = ['id' => '2', 'email' => $admin->email, 'title' => 'KLIK SPL: Pembayaran Dikonfirmasi', 'message' => 'Pembayaran pesanan ' . $order->invoice_no . ' sudah dikonfirmasi. Segera siapkan dan kirim pesanan ke ' . $order->users->username . '. Untuk melihat detail pesanan, silakan klik tautan berikut:', 'verifCode' => '', 'url' => 'https://klikspl.com/administrator/adminorder', 'closing' => '', 'footer' => ''];
+                $detail = new Request($details);
+                // $this->mailController = $mailController;
+                // $this->mailController->sendMail($detail); 
+                $sendMailController = $mailController;
+                $sendMailController->sendMail($detail);
+            }
+        }
 
         $adminNotifications = [
             'order_id' => $order->id,
@@ -606,7 +641,7 @@ class AdminOrderController extends Controller
         }
     }
 
-    public function deliveOrder(Request $request)
+    public function deliveOrder(Request $request, MailController $mailController)
     {
         // dd($request);
         // dd($request->session()->get('status'));
@@ -636,6 +671,15 @@ class AdminOrderController extends Controller
         if ($orderStatus) {
             $orderProduct = $order->orderitem[0]->orderProduct;
 
+            if (!is_null($order->users->email)) {
+                $details = ['id' => '2', 'email' => $order->users->email, 'title' => 'KLIK SPL: Pesanan Dikirim', 'message' => 'Pesanan ' . $order->invoice_no . ' dikirimkan ke Kurir ' . $order->courier . ' dengan layanan ' . $order->courier_package_type . '. Nomor Resi akan terupdate jika proses di kurir selesai. Untuk melihat detail pesanan, silakan klik tautan berikut:', 'verifCode' => '', 'url' => 'https://klikspl.com/order', 'closing' => '', 'footer' => ''];
+                $detail = new Request($details);
+                // $this->mailController = $mailController;
+                // $this->mailController->sendMail($detail); 
+                $sendMailController = $mailController;
+                $sendMailController->sendMail($detail);
+            }
+
             $notifications = [
                 'user_id' => $order->user_id,
                 'slug' => $order->users->username . '-' . Crypt::encryptString($order->id) . '-pesanan-dikirim',
@@ -648,6 +692,19 @@ class AdminOrderController extends Controller
             ];
             // membuat notifikasi pembuatan pesanan untuk user
             $notification = UserNotification::create($notifications);
+
+            $sendAdminNotification = Admin::whereIn('admin_type', [2, 4])->where('company_id', '=', $orderProduct->company_id)->get();
+
+            foreach ($sendAdminNotification as $admin) {
+                if (!is_null($admin->email)) {
+                    $details = ['id' => '2', 'email' => $admin->email, 'title' => 'KLIK SPL: Pesanan Dikirim', 'message' => 'Pesanan ' . $order->invoice_no . ' dikirimkan ke Kurir ' . $order->courier . ' dengan layanan ' . $order->courier_package_type . '. Setelah berhasil mengantar ke kurir segera isi nomor resi pengiriman pesanan!. Untuk melihat detail pesanan, silakan klik tautan berikut:', 'verifCode' => '', 'url' => 'https://klikspl.com/administrator/adminorder', 'closing' => '', 'footer' => ''];
+                    $detail = new Request($details);
+                    // $this->mailController = $mailController;
+                    // $this->mailController->sendMail($detail); 
+                    $sendMailController = $mailController;
+                    $sendMailController->sendMail($detail);
+                }
+            }
 
             $adminNotifications = [
                 'order_id' => $order->id,
@@ -704,7 +761,7 @@ class AdminOrderController extends Controller
         }
     }
 
-    public function shippingReceiptUpload(Request $request)
+    public function shippingReceiptUpload(Request $request, MailController $mailController)
     {
         // dd($request);
         $request->merge(['id' => $request->order_id]);
@@ -735,6 +792,15 @@ class AdminOrderController extends Controller
 
             $orderProduct = $order->orderitem[0]->orderProduct;
 
+            if (!is_null($order->users->email)) {
+                $details = ['id' => '2', 'email' => $order->users->email, 'title' => 'KLIK SPL: Pesanan Dikirim', 'message' => 'Pesanan ' . $order->invoice_no . ' sudah dikirim  dengan kurir ' . $order->courier . ' ' . $order->courier_package_type . ' dengan estimasi waktu ' . $order->estimation_day . ' hari, perkiraan tiba pada ' . \Carbon\Carbon::parse($order->estimation_date)->isoFormat('D MMMM Y') . '. Nomor Resi pesanan anda adalah ' . $order->resi . '. Silakan konfirmasi apabila pesanan sudah diterima. Untuk melihat detail pesanan, silakan klik tautan berikut:', 'verifCode' => '', 'url' => 'https://klikspl.com/order', 'closing' => '', 'footer' => ''];
+                $detail = new Request($details);
+                // $this->mailController = $mailController;
+                // $this->mailController->sendMail($detail); 
+                $sendMailController = $mailController;
+                $sendMailController->sendMail($detail);
+            }
+
             $notifications = [
                 'user_id' => $order->user_id,
                 'slug' => $order->users->username . '-' . Crypt::encryptString($order->id) . '-pesanan-dikirim',
@@ -762,7 +828,7 @@ class AdminOrderController extends Controller
         }
     }
 
-    public function shippingReceiptUpdate(Request $request)
+    public function shippingReceiptUpdate(Request $request, MailController $mailController)
     {
         // dd($request);
         $request->merge(['id' => $request->order_id]);
@@ -792,6 +858,15 @@ class AdminOrderController extends Controller
         }
         if ($update && $orderStatus) {
             $orderProduct = $order->orderitem[0]->orderProduct;
+
+            if (!is_null($order->users->email)) {
+                $details = ['id' => '2', 'email' => $order->users->email, 'title' => 'KLIK SPL: No.Resi Pesanan Diperbarui', 'message' => 'Nomor resi pesanan ' . $order->invoice_no . ' diperbarui oleh ADMIN KLIKSPL. Nomor resi terbaru pesanan anda : ' . $order->resi . '. Silakan konfirmasi apabila pesanan sudah diterima. Untuk melihat detail pesanan, silakan klik tautan berikut:', 'verifCode' => '', 'url' => 'https://klikspl.com/order', 'closing' => '', 'footer' => ''];
+                $detail = new Request($details);
+                // $this->mailController = $mailController;
+                // $this->mailController->sendMail($detail); 
+                $sendMailController = $mailController;
+                $sendMailController->sendMail($detail);
+            }
 
             $notifications = [
                 'user_id' => $order->user_id,
@@ -831,7 +906,7 @@ class AdminOrderController extends Controller
         }
     }
 
-    public function confirmCancellationOrder(Request $request)
+    public function confirmCancellationOrder(Request $request, MailController $mailController)
     {
         $this->expiredCheck();
         $order = Order::where('id', '=', $request->order_id)->first();
@@ -894,27 +969,79 @@ class AdminOrderController extends Controller
             }
             // dd($request);
         }
-        $order->order_status = 'pesanan dibatalkan';
+        $order->order_status = 'pengajuan pembatalan dikonfirmasi';
         $order->save();
         if ($order->save()) {
+            
             foreach ($order->orderitem as $item) {
-                $item->order_item_status = 'pesanan dibatalkan';
+                $item->order_item_status = 'pengajuan pembatalan dikonfirmasi';
                 $item->save();
             }
-            $order->delete();
+            $orderProduct = $order->orderitem[0]->orderProduct;
+            // $order->delete();
+            if (!is_null($order->users->email)) {
+                $details = ['id' => '2', 'email' => $order->users->email, 'title' => 'KLIK SPL: Pengajuan Pembatalan Dikonfirmasi', 'message' => 'Pengajuan Pembatalan Dikonfirmasi oleh Admin KLIKSPL. Alasan pembatalan: ' . $cancel_order_detail[1] . '. Silakan isi form pengembalian dana agar admin dapat segera melakukan pengembalian dana. Untuk melihat detail pesanan, silakan klik tautan berikut:', 'verifCode' => '', 'url' => 'https://klikspl.com/order', 'closing' => '', 'footer' => ''];
+                $detail = new Request($details);
+                // $this->mailController = $mailController;
+                // $this->mailController->sendMail($detail); 
+                $sendMailController = $mailController;
+                $sendMailController->sendMail($detail);
+            }
+
+            $notifications = [
+                'user_id' => $order->user_id,
+                'slug' => $order->users->username . '-' . Crypt::encryptString($order->id) . '-pengajuan-pembatalan-dikonfirmasi',
+                'type' => 'Pesanan',
+                'description' => '<p class="m-0">Pengajuan Pembatalan Dikonfirmasi oleh Admin KLIKSPL. Alasan pembatalan: ' . $cancel_order_detail[1] . '. Silakan isi form pengembalian dana agar admin dapat segera melakukan pengembalian dana.</p>',
+                'excerpt' => 'Pengajuan Pembatalan Dikonfirmasi',
+                // 'image' => $shopBag,
+                'image' => 'storage/' . $orderProduct->orderproductimage->first()->name,
+                'is_read' => 0
+            ];
+            // membuat notifikasi pembuatan pesanan untuk user
+            $notification = UserNotification::create($notifications);
+
+            $sendAdminNotification = Admin::whereIn('admin_type', [2, 3])->where('company_id', '=', $orderProduct->company_id)->get();
+            foreach ($sendAdminNotification as $admin) {
+                if (!is_null($admin->email)) {
+                    $details = ['id' => '2', 'email' => $admin->email, 'title' => 'KLIK SPL: Pengajuan Pembatalan Dikonfirmasi', 'message' => 'Pengajuan Pembatalan Dikonfirmasi oleh Admin KLIKSPL. Alasan pembatalan: ' . $cancel_order_detail[1] . '. Silakan tunggu user mengisi form pengembalian dana kemudian lakukan pengembalian dana. Untuk melihat detail pesanan, silakan klik tautan berikut:', 'verifCode' => '', 'url' => 'https://klikspl.com/administrator/adminorder', 'closing' => '', 'footer' => ''];
+                    $detail = new Request($details);
+                    // $this->mailController = $mailController;
+                    // $this->mailController->sendMail($detail); 
+                    $sendMailController = $mailController;
+                    $sendMailController->sendMail($detail);
+                }
+            }
+            
+            $adminNotifications = [
+                'order_id' => $order->id,
+                'admin_id' => auth()->guard('adminMiddle')->user()->id,
+                'admin_type' => 3,
+                'company_id' => $orderProduct->company_id,
+                'slug' => Crypt::encryptString($order->id) . '-pengajuan-pembatalan-dikonfirmasi',
+                'type' => 'Pesanan',
+                'description' => '<p class="m-0">Pengajuan Pembatalan Dikonfirmasi oleh Admin KLIKSPL. Alasan pembatalan: ' . $cancel_order_detail[1] . '. Silakan tunggu user mengisi form pengembalian dana kemudian lakukan pengembalian dana.</p>',
+                'excerpt' => 'Pengajuan Pembatalan Dikonfirmasi',
+                // 'image' => $shopBag,
+                'image' => 'storage/' . $orderProduct->orderproductimage->first()->name,
+                'is_read' => 0
+            ];
+            // membuat notifikasi pembuatan pesanan untuk admin
+            $adminNotification = AdminNotification::create($adminNotifications);
+
             $orderStatus = OrderStatusDetail::create(
                 [
                     'order_id' => $order->id,
-                    'status' => 'Pesanan Dibatalkan',
+                    'status' => 'Pengajuan Pembatalan Dikonfirmasi',
                     // 'status_detail' => 'Pembatalan Dikonfirmasi oleh Admin KLIKSPL.',
-                    'status_detail' => 'Pengajuan Pembatalan Dikonfirmasi oleh Admin KLIKSPL. Alasan pembatalan: ' . $cancel_order_detail[1] . '. Dana yang sudah dibayarkan akan dikembalikan ke nonor rekening yang digunakan saat melakukan pembayaran',
+                    'status_detail' => 'Pengajuan Pembatalan Dikonfirmasi oleh Admin KLIKSPL. Alasan pembatalan: ' . $cancel_order_detail[1] . '. Silakan isi form pengembalian dana agar admin dapat segera melakukan pengembalian dana',
                     'status_date' => date('Y-m-d H:i:s')
+                    // Dana yang sudah dibayarkan akan dikembalikan ke nomor rekening yang digunakan saat melakukan pembayaran
                 ]
             );
             return redirect()->route('adminorder.index')->with('success', 'Berhasil mengonfirmasi pembatalan pesanan.');
         }
     }
-
     public function cancelOrder(Request $request)
     {
         // dd($request);
@@ -966,7 +1093,7 @@ class AdminOrderController extends Controller
                     'order_id' => $order->id,
                     'status' => 'Pesanan Dibatalkan',
                     // 'status_detail' => 'Pembatalan Dikonfirmasi oleh Admin KLIKSPL.',
-                    'status_detail' => 'Pesanan dibatalkan oleh Admin KLIKSPL. Alasan pembatalan: ' . $cancel_order_detail . '. Dana yang sudah dibayarkan akan dikembalikan ke nonor rekening yang digunakan saat melakukan pembayaran',
+                    'status_detail' => 'Pesanan dibatalkan oleh Admin KLIKSPL. Alasan pembatalan: ' . $cancel_order_detail . '. Dana yang sudah dibayarkan akan dikembalikan ke nomor rekening yang digunakan saat melakukan pembayaran',
                     'status_date' => date('Y-m-d H:i:s')
                 ]
             );

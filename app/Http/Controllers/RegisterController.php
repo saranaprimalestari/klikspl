@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
+
     public function index(Request $request)
     {
         if (!is_null($request->session()->get('email')) || !is_null($request->session()->get('telp_no')) || !is_null($request->session()->get('verificationCode')) || !is_null($request->session()->get('is_verified'))) {
@@ -63,6 +64,7 @@ class RegisterController extends Controller
                 echo $email;
             }
         } else {
+            return redirect()->route('register')->with(['failed' => 'email tidak valid']);
             // dd($request);
             if (User::where('telp_no', '=', $request->emailPhone)->exists()) {
                 echo $request->emailPhone;
@@ -98,17 +100,26 @@ class RegisterController extends Controller
 
     public function createStepOne(Request $request)
     {
+        $verificationCode = '';
+        if($request->session()->get('telp_no')){
+            return redirect()->route('register')->with(['failed' => 'email tidak valid']);
+            $verificationCode = random_int(100000, 999999);
+            $request->session()->put(['verificationCode' => $verificationCode]);
+        }
         return view('register.create-step-one', [
             'title' => 'Pendaftaran Membership',
-            'request' => $request
+            'verificationCode' => $verificationCode
+            // 'request' => $request
         ]);
     }
-    public function resendMail(Request $request, MailController $mailController, array $array)
-    {
-        $request = new Request($array);
-        $this->mailController = $mailController;
-        $this->mailController->sendMail($request);
-    }
+
+    // public function resendMail(Request $request, MailController $mailController, array $array)
+    // {
+    //     $request = new Request($array);
+    //     $this->mailController = $mailController;
+    //     $this->mailController->sendMail($request);
+    // }
+
     public function postStepOne(Request $request, MailController $mailController)
     {
         $verificationCode = random_int(100000, 999999);
@@ -120,11 +131,14 @@ class RegisterController extends Controller
             $request->session()->put(['verificationCode' => $verificationCode]);
             $request->session()->put(['value' => $request->value]);
             
-            $this->mailController = $mailController;
-            $this->mailController->sendMail($detail);
+            // $this->mailController = $mailController;
+            // $this->mailController->sendMail($detail);
+            $sendMailController = $mailController;
+            $sendMailController->sendMail($detail);
         }elseif(preg_match("/^[0][0-9]*$/",$request->value)){
+            return redirect()->route('register')->with(['failed' => 'email tidak valid']);
             // dd($request);
-            $request->session()->put(['verificationCode' => $verificationCode]);
+            // $request->session()->put(['verificationCode' => $verificationCode]);
             $request->session()->put(['value' => $request->value]);
         }
 
@@ -205,10 +219,12 @@ class RegisterController extends Controller
         $user = User::create($validatedData);
 
         if (Str::contains($request->session()->get('value'), '@')) {
-            $details = ['id' => '2', 'email' => $request->session()->get('value'), 'title' => 'KLIK SPL: Pendaftaran Membership Berhasil', 'message' => 'Pendaftaran membership kamu berhasil! Selamat menikmati pengalaman berbelanja di klikspl.com. Untuk masuk dan berbelanja klik tautan berikut:', 'verifCode' => '','url' =>'http://klikspl.test/', 'closing' => '', 'footer' => ''];
+            $details = ['id' => '2', 'email' => $request->session()->get('value'), 'title' => 'KLIK SPL: Pendaftaran Membership Berhasil', 'message' => 'Pendaftaran membership anda berhasil! Selamat menikmati pengalaman berbelanja di klikspl.com. Untuk masuk dan berbelanja klik tautan berikut:', 'verifCode' => '','url' =>'https://klikspl.com/', 'closing' => '', 'footer' => ''];
             $detail = new Request($details);
-            $this->mailController = $mailController;
-            $this->mailController->sendMail($detail);    
+            // $this->mailController = $mailController;
+            // $this->mailController->sendMail($detail);    
+            $sendMailController = $mailController;
+            $sendMailController->sendMail($detail);
         }elseif(preg_match("/^[0][0-9]*$/",$request->session()->get('value'))){
 
         }
@@ -216,8 +232,8 @@ class RegisterController extends Controller
             'user_id' => $user->id,
             'slug' => 'pendaftaran-membership-berhasil-'.$user->username,
             'type' => 'Notifikasi',
-            'description' => '<p class="m-0">Pendaftaran membership kamu berhasil! Selamat menikmati pengalaman berbelanja di klikspl.com.</p>',
-            'excerpt' => 'Pendaftaran membership kamu berhasil',
+            'description' => '<p class="m-0">Pendaftaran membership anda berhasil! Selamat menikmati pengalaman berbelanja di klikspl.com.</p>',
+            'excerpt' => 'Pendaftaran membership anda berhasil',
             'image' => 'assets\footer-logo.png',
             'is_read' => 0
         ];

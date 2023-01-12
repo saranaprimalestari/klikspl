@@ -253,7 +253,7 @@
                                             <img class="cart-img" src="{{ asset('/assets/klikspl-logo.png') }}"
                                                 alt="" width="100">
                                             <p class="text-muted py-3 px-2">
-                                                Keranjang belanja anda kosong, yuk cari produk menarik dan masukkan ke
+                                                Keranjang belanja anda kosong, cari produk menarik dan masukkan ke
                                                 keranjang anda
                                             </p>
                                         </div>
@@ -312,20 +312,13 @@
                                                     href="{{ route('notifications.show', $notification) }}">
                                                     <div class="row align-items-center">
                                                         <div class="col-2">
-                                                            {{-- <i class="bi bi-box"></i>&nbsp; --}}
-                                                            {{-- <img src="https://source.unsplash.com/350x350?notification" alt="" width="40"> --}}
                                                             @if (File::exists(public_path($notification->image)))
                                                                 <img src="{{ asset($notification->image) }}"
                                                                     class="img-fluid w-100 border-radius-05rem"
                                                                     alt="...">
-                                                            @else
-                                                                {{-- <img src="https://source.unsplash.com/400x400?product-1"
-                                                                    class="img-fluid w-100 border-radius-05rem"
-                                                                    alt="..."> --}}
                                                             @endif
                                                         </div>
                                                         <div class="col-10 ps-0 text-truncate notification-dropdown-text">
-                                                            {{-- {{ $notification->excerpt }} --}}
                                                             <div class="fw-600 m-0">
                                                                 {{ $notification->excerpt }}
                                                             </div>
@@ -337,9 +330,6 @@
                                                                 WIB
                                                             </div>
                                                         </div>
-                                                        {{-- <div class="col-4 text-end text-danger">
-                                                        Rp{{ price_format_rupiah($notification->product->price) }}
-                                                    </div> --}}
                                                     </div>
                                                 </a>
                                             </li>
@@ -349,7 +339,7 @@
                                             <img class="cart-img" src="{{ asset('/assets/klikspl-logo.png') }}"
                                                 alt="" width="100">
                                             <p class="text-muted py-3 px-2">
-                                                Tidak ada notifikasi buat anda sekarang ini
+                                                Tidak ada notifikasi untuk anda sekarang ini
                                             </p>
                                         </div>
                                     @endif
@@ -371,15 +361,6 @@
                     @endauth
                 </li>
                 <li class="nav-item mx-1 navbar-dropdown dropdown">
-                    {{-- <a class="nav-link dropdown-toggle navbar-cart" href="{{ route('cartitems.index') }}">
-                        <i class="bi bi-cart"></i>
-                        @auth
-                            <span class="position-absolute top-5 start-100 translate-middle badge  bg-danger">
-                                {{ count($userCartItems) }}
-                                <span class="visually-hidden">cart items</span>
-                            </span>
-                        @endauth
-                    </a> --}}
                     <a class="nav-link dropdown-toggle navbar-cart" href="{{ route('order.index') }}">
                         <i class="bi bi-bag"></i>
                         @auth
@@ -413,16 +394,10 @@
                                                     href="{{ route('order.show', $order) }}">
                                                     <div class="row align-items-center">
                                                         <div class="col-2">
-                                                            {{-- <i class="bi bi-box"></i>&nbsp; --}}
-                                                            {{-- <img src="https://source.unsplash.com/400x400?product-2" alt="" width="40"> --}}
                                                             @if (isset($order->orderitem[0]->orderproduct->orderproductimage))
                                                                 <img src="{{ asset('/storage/' . $order->orderitem[0]->orderproduct->orderproductimage->first()->name) }}"
                                                                     class="w-100 border-radius-5px" alt="">
                                                             @endif
-                                                            {{-- @if (!is_null($order->orderitem[0]->orderproduct->orderproductimage->first()))
-                                                                <img src="{{ asset('/storage/' . $order->orderitem[0]->orderproduct->orderproductimage->first()->name) }}"
-                                                                    class="w-100 border-radius-5px" alt="">
-                                                            @endif --}}
                                                         </div>
                                                         <div class="col-5 ps-0 text-truncate" data-bs-toggle="tooltip"
                                                             data-bs-placement="bottom"
@@ -449,7 +424,7 @@
                                             <img class="cart-img" src="{{ asset('/assets/klikspl-logo.png') }}"
                                                 alt="" width="100">
                                             <p class="text-muted py-3 px-2">
-                                                Tidak ada pesanan aktif anda saat ini, yuk cari produk menarik dan pesan
+                                                Tidak ada pesanan aktif anda saat ini, cari produk menarik dan pesan
                                                 sekarang
                                             </p>
                                         </div>
@@ -475,7 +450,7 @@
                     <a class="nav-link dropdown-toggle navbar-chat" href="{{ route('chat.index') }}">
                         <i class="bi bi-chat-dots"></i>
                         @auth
-                            @if (count($userChats) > 0)
+                            @if (count($userChats['userChatGroupped']) > 0)
                                 <span class="position-absolute top-5 start-100 translate-middle badge  bg-danger">
                                     {{ count($userChats['userChatGroupped']) }}
                                     <span class="visually-hidden">Chat</span>
@@ -499,16 +474,18 @@
                                 <div class="nav-chat-items mt-5">
                                     @if (count($userChats['userChatGroupped']) > 0)
                                         @foreach ($userChats['userChatGroupped'] as $chat)
-                                            {{-- @foreach ($chats as $chat) --}}
                                             <li>
-                                                <a class="dropdown-item my-2 chat-dropdown-item" href="{{ (!is_null($chat->last()->chat->order_id) ? route('order.show', $chat->last()->chat->order) : ((!is_null($chat->last()->chat->product_id)) ? route('product.show',$chat->last()->chat->product->slug) : '') ) }}">
+                                                <a class="dropdown-item my-2 chat-dropdown-item"
+                                                    href="{{ !is_null($chat->last()->chat->order_id)? (!is_null($chat->last()->chat->order()->withTrashed()->first())? route('order.show',$chat->last()->chat->order()->withTrashed()->first()): ''): (!is_null($chat->last()->chat->product_id)? route('product.show', $chat->last()->chat->product->slug): '') }}">
                                                     <div class="row align-items-center">
                                                         <div class="col-2">
                                                             @if (!is_null($chat->last()->chat->order_id))
-                                                                @if (isset($chat->last()->chat->order))
-                                                                    @if (Storage::exists($chat->last()->chat->order->orderitem[0]->orderproduct->orderproductimage[0]->name))
+                                                                @if (!is_null(
+                                                                    $chat->last()->chat->order()->withTrashed()->first()))
+                                                                    @if (Storage::exists(
+                                                                        $chat->last()->chat->order()->withTrashed()->first()->orderitem[0]->orderproduct->orderproductimage[0]->name))
                                                                         <img class="img-fluid w-100 border-radius-05rem"
-                                                                            src="{{ asset('/storage/' . $chat->last()->chat->order->orderitem[0]->orderproduct->orderproductimage[0]->name) }}"
+                                                                            src="{{ asset('/storage/' .$chat->last()->chat->order()->withTrashed()->first()->orderitem[0]->orderproduct->orderproductimage[0]->name) }}"
                                                                             alt="" width="40">
                                                                     @endif
                                                                 @else
@@ -531,9 +508,14 @@
                                                             title="{{ is_null($chat->last()->chat->invoice_no) ? 'No.Invoice belum terbit' : $chat->last()->chat->invoice_no }}">
                                                             <div class="fw-600 m-0 text-truncate">
                                                                 @if (!is_null($chat->last()->chat->order_id))
-                                                                    Pesanan
+                                                                    @if (!is_null(
+                                                                        $chat->last()->chat->order()->withTrashed()->first()->deleted_at))
+                                                                        Pesanan Kedaluwarsa
+                                                                    @else
+                                                                        Pesanan
+                                                                    @endif
                                                                     [
-                                                                    {{ !empty($chat->last()->chat->order->invoice_no) ? $chat->last()->chat->order->invoice_no : '(Kedaluwarsa)' }}
+                                                                    {{ !empty($chat->last()->chat->order->invoice_no) ? $chat->last()->chat->order->invoice_no : 'No. Invoice belum terbit' }}
                                                                     ]
                                                                 @elseif(!is_null($chat->last()->chat->product_id))
                                                                     Tanya Produk
@@ -560,7 +542,8 @@
                                             <img class="chat-img" src="{{ asset('/assets/klikspl-logo.png') }}"
                                                 alt="" width="100">
                                             <p class="text-muted py-3 px-2">
-                                                Anda tidak memiliki obrolan saat ini, mulai obrolan dengan ADMIN KLIKSPL dengan bertanya tentang produk / pesanan anda
+                                                Anda tidak memiliki obrolan saat ini, mulai obrolan dengan ADMIN KLIKSPL
+                                                dengan bertanya tentang produk / pesanan anda
                                             </p>
                                         </div>
                                     @endif
@@ -664,7 +647,7 @@
                     Sites</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="https://wa.me/625113269593"><i class="bi bi-chat-dots"></i> Customer
+                <a class="nav-link" href="https://wa.me/628115102888"><i class="bi bi-chat-dots"></i> Customer
                     Care
                 </a>
             </li>

@@ -316,7 +316,7 @@ class AdminPromoBannerController extends Controller
     public function checkSlug(Request $request)
     {
         $this->isAdministrator();
-        $slug = SlugService::createSlug(Product::class, 'slug', $request->name);
+        $slug = SlugService::createSlug(PromoBanner::class, 'slug', $request->name);
 
         return response()->json(['slug' => $slug]);
     }

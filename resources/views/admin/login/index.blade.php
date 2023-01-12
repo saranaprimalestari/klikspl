@@ -52,7 +52,7 @@
                                 {{-- <input type="password" class="form-control shadow-none login-password-field" id="password" name="password"> --}}
                                 <div class="input-group" id="show_hide_password">
                                     <input type="password"
-                                        class="form-control shadow-none login-password-field @error('password') is-invalid @enderror"
+                                        class="form-control shadow-none login-password-field @error('password') is-invalid @enderror border-end-0"
                                         id="password" aria-describedby="passwordHelp" name="password" required value=""
                                         autocomplete="off">
                                     <span class="input-group-text bg-transparent border-left-0" id="showPass"><a href=""

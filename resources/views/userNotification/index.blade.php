@@ -1,5 +1,4 @@
 @extends('user.layout')
-{{-- @section('container') --}}
 @section('account')
     <div class="col-12">
         @if (session()->has('success') or session()->has('success'))
@@ -20,9 +19,11 @@
         <div class="ms-auto">
             <form action="{{ route('read.all.notifications') }}" method="POST">
                 @csrf
-                <button type="submit" class="btn btn-danger fs-14">
-                    Tandai semua telah dibaca
-                </button>
+                @if ($notifications->count() > 0)
+                    <button type="submit" class="btn btn-danger fs-14">
+                        Tandai semua telah dibaca
+                    </button>
+                @endif
             </form>
         </div>
     </div>
@@ -37,16 +38,16 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="header d-flex align-items-center">
-                                            {{-- <h5 class="mt-0 notification-list-excerpt me-auto">{{ $notification->type }}
-                                            </h5> --}}
-        
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row align-items-center">
                                     <div class="col-md-2 col-3">
-                                        @if (File::exists(public_path($notification->image)))
+                                        @if (!is_null($notification->image))
                                             <img src="{{ asset($notification->image) }}"
+                                                class="img-fluid w-100 border-radius-05rem" alt="...">
+                                        @else
+                                            <img src="{{ asset('assets/pict.png') }}"
                                                 class="img-fluid w-100 border-radius-05rem" alt="...">
                                         @endif
                                     </div>
@@ -67,8 +68,10 @@
                                     </div>
                                     <div class="col-md-2 col-2 text-end">
                                         @if ($notification->is_read == 0)
-                                            <span class="ms-auto badge bg-danger mb-2 d-none d-lg-inline-block">Belum dibaca</span>
-                                            <span class="ms-auto badge bg-danger border-light p-2 rounded-circle mb-2 d-inline-block d-lg-none">
+                                            <span class="ms-auto badge bg-danger mb-2 d-none d-lg-inline-block">Belum
+                                                dibaca</span>
+                                            <span
+                                                class="ms-auto badge bg-danger border-light p-2 rounded-circle mb-2 d-inline-block d-lg-none">
                                                 <span class="visually-hidden">Belum dibaca</span>
                                             </span>
                                         @endif
@@ -91,7 +94,7 @@
                 <div class="text-center notification-empty">
                     <img class="my-4 cart-items-logo" src="/assets/footer-logo.png" width="300" alt="">
                     <p>
-                        Tidak ada notifikasi buat kamu sekarang ini
+                        Tidak ada notifikasi untuk anda sekarang ini
                     </p>
                 </div>
             @endif

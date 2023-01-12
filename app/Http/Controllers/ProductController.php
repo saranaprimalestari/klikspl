@@ -79,9 +79,10 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function show(Product $product)
+    public function show(Product $product, Request $request)
     {
-        $city_origin = '36';
+        // dd($request->ip());
+        // $city_origin = '36';
         $Key = 'product-' . $product->id;
         if (!Session::has($Key)) {
 
@@ -117,7 +118,7 @@ class ProductController extends Controller
             "star" => ProductComment::where('product_id','=',$product->id)->where('star','!=','0')->avg('star'),
             "count_comments" => ProductComment::where('product_id','=',$product->id)->where('star','!=','0')->count(),
             "provinces" => Province::pluck('name', 'province_id'),
-            "from_city" => City::where('city_id','=',$city_origin)->first(),
+            // "from_city" => City::where('city_id','=',$city_origin)->first(),
             "origin" => $origin,
             "senderAddress" => $senderAddress
         ]);

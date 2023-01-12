@@ -24,10 +24,15 @@
             @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
                 auth()->guard('adminMiddle')->user()->admin_type == 2 ||
                 auth()->guard('adminMiddle')->user()->admin_type == 4)
-                 <li class="nav-item">
-                    <a class="nav-link {{ isset($active) ? ($active == 'chat' ? 'active' : '') : '' }}"
+                <li class="nav-item">
+                    <a class="nav-link {{ isset($active) ? ($active == 'chat' ? 'active' : '') : '' }} chat-sidebar"
                         href="{{ route('admin.chat.index') }}">
                         <i class="bi bi-chat-dots"></i> Chat
+                        {{-- <span class="position-absolute translate-middle p-1 bg-danger border border-light rounded-circle">
+                            <span class="visually-hidden">New alerts</span>
+                          </span> --}}
+                          {{-- <span class="badge bg-danger p-1 d-inline-block rounded-circle">10</span> --}}
+                          <span class="chat-sidebar-badge"></span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -211,11 +216,11 @@
                                         method="GET">
                                         <input type="hidden" name="status" value="sampai tujuan">
                                         {{-- @if (request('date_start'))
-                                    <input type="hidden" name="date_start" value="{{ request('date_start') }}">
-                                @endif
-                                @if (request('date_end'))
-                                    <input type="hidden" name="date_end" value="{{ request('date_end') }}">
-                                @endif --}}
+                                                <input type="hidden" name="date_start" value="{{ request('date_start') }}">
+                                            @endif
+                                            @if (request('date_end'))
+                                                <input type="hidden" name="date_end" value="{{ request('date_end') }}">
+                                            @endif --}}
                                         <input type="submit"
                                             class="text-decoration-none shadow-none link-dark ms-4 py-1 ps-3 d-inline-flex nav-link border-0 bg-transparent {{ isset($status) ? ($status == 'sampai tujuan' ? 'active' : '') : '' }}"
                                             value="Sampai Tujuan">
@@ -235,38 +240,55 @@
                                 </li>
 
                                 {{-- <li class="nav-item w-100">
-                            <a href="{{ route('adminorder.index') }}"
-                                class="text-decoration-none link-dark ms-4 py-1 ps-3 d-inline-flex nav-link {{ isset($active) ? ($active == 'order' ? 'active' : '') : '' }}">Selesai</a>
-                            </li> --}}
-                                <li class="nav-item w-100">
-                                    <form class="status-form" action="{{ route('adminorder.index') }}"
-                                        method="GET">
-                                        <input type="hidden" name="status" value="pengajuan pembatalan">
-                                        <input type="submit"
-                                            class="text-decoration-none shadow-none link-dark ms-4 py-1 ps-3 d-inline-flex nav-link border-0 bg-transparent {{ isset($status) ? ($status == 'pengajuan pembatalan' ? 'active' : '') : '' }}"
-                                            value="pengajuan pembatalan">
-                                    </form>
-                                </li>
-                                <li class="nav-item w-100">
-                                    <form class="status-form" action="{{ route('adminorder.index') }}"
-                                        method="GET">
-                                        <input type="hidden" name="status" value="expired">
-                                        {{-- @if (request('date_start'))
-                                    <input type="hidden" name="date_start" value="{{ request('date_start') }}">
-                                @endif
-                                @if (request('date_end'))
-                                    <input type="hidden" name="date_end" value="{{ request('date_end') }}">
-                                @endif --}}
-                                        <input type="submit"
-                                            class="text-decoration-none shadow-none link-dark ms-4 py-1 ps-3 d-inline-flex nav-link border-0 bg-transparent {{ isset($status) ? ($status == 'expired' ? 'active' : '') : '' }}"
-                                            value="Dibatalkan">
-                                        {{-- Dibatalkan
-                                </input> --}}
-                                    </form>
-                                </li>
+                                    <a href="{{ route('adminorder.index') }}"
+                                        class="text-decoration-none link-dark ms-4 py-1 ps-3 d-inline-flex nav-link {{ isset($active) ? ($active == 'order' ? 'active' : '') : '' }}">Selesai</a>
+                                    </li> --}}
                             @endif
                         @endif
-
+                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+                            auth()->guard('adminMiddle')->user()->admin_type == 2 ||
+                            auth()->guard('adminMiddle')->user()->admin_type == 3)
+                            <li class="nav-item w-100">
+                                <form class="status-form" action="{{ route('adminorder.index') }}" method="GET">
+                                    <input type="hidden" name="status" value="pengajuan pembatalan">
+                                    <input type="submit"
+                                        class="text-decoration-none shadow-none link-dark ms-4 py-1 ps-3 d-inline-flex nav-link border-0 bg-transparent {{ isset($status) ? ($status == 'pengajuan pembatalan' ? 'active' : '') : '' }}"
+                                        value="Pengajuan Pembatalan">
+                                </form>
+                            </li>
+                        @endif
+                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+                            auth()->guard('adminMiddle')->user()->admin_type == 2 ||
+                            auth()->guard('adminMiddle')->user()->admin_type == 3)
+                            <li class="nav-item w-100">
+                                <form class="status-form" action="{{ route('adminorder.index') }}" method="GET">
+                                    <input type="hidden" name="status" value="pengajuan pengembalian dana">
+                                    <input type="submit"
+                                        class="text-decoration-none shadow-none link-dark ms-4 py-1 ps-3 d-inline-flex nav-link border-0 bg-transparent {{ isset($status) ? ($status == 'pengajuan pengembalian dana' ? 'active' : '') : '' }}"
+                                        value="Pengembalian Dana">
+                                </form>
+                            </li>
+                        @endif
+                        @if (auth()->guard('adminMiddle')->user()->admin_type == 1 ||
+                            auth()->guard('adminMiddle')->user()->admin_type == 2 ||
+                            auth()->guard('adminMiddle')->user()->admin_type == 3)
+                            <li class="nav-item w-100">
+                                <form class="status-form" action="{{ route('adminorder.index') }}" method="GET">
+                                    <input type="hidden" name="status" value="expired">
+                                    {{-- @if (request('date_start'))
+                                                <input type="hidden" name="date_start" value="{{ request('date_start') }}">
+                                            @endif
+                                            @if (request('date_end'))
+                                                <input type="hidden" name="date_end" value="{{ request('date_end') }}">
+                                            @endif --}}
+                                    <input type="submit"
+                                        class="text-decoration-none shadow-none link-dark ms-4 py-1 ps-3 d-inline-flex nav-link border-0 bg-transparent {{ isset($status) ? ($status == 'expired' ? 'active' : '') : '' }}"
+                                        value="Dibatalkan">
+                                    {{-- Dibatalkan
+                                            </input> --}}
+                                </form>
+                            </li>
+                        @endif
                     </ul>
                 </div>
             </li>
@@ -344,7 +366,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link {{ isset($active) ? ($active == 'statistic' ? 'active' : '') : '' }}" href="{{ route('admin.statistics') }}">
                         <i class="bi bi-graph-up"></i> Statistik
                     </a>
                 </li>

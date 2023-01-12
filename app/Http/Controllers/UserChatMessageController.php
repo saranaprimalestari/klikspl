@@ -81,7 +81,7 @@ class UserChatMessageController extends Controller
 
             // $unreadChat = Chat::with(['user','product','order','admin','company'])->where([['user_id', '=', $request->user_id], ['product_id', '=', $request->product_id], ['company_id', '=', $request->company_id]])->whereNotNull('admin_id')->where('status', '=', 0)->get()->count();
             // // ['admin_id','=',$request->admin_id],
-            $chatHistory = Chat::with(['user', 'product', 'order', 'admin', 'company', 'chatMessage'])->where([['user_id', '=', $request->user_id], ['product_id', '=', $request->product_id], ['company_id', '=', $request->company_id]])->get();
+            $chatHistory = Chat::with(['user', 'product','product.productimage', 'order', 'admin', 'company', 'chatMessage'])->where([['user_id', '=', $request->user_id], ['product_id', '=', $request->product_id], ['company_id', '=', $request->company_id]])->get();
             $unreadChat = 0;
             foreach ($chatHistory as $key => $chat) {
                 foreach ($chat->chatMessage as $key => $message) {
@@ -99,7 +99,7 @@ class UserChatMessageController extends Controller
             // $unreadChat = Chat::with(['user','product','order','admin','company'])->where([['user_id', '=', $request->user_id], ['order_id', '=', $request->order_id], ['company_id', '=', $request->company_id]])->whereNotNull('admin_id')->where('status', '=', 0)->get()->count();
             // // ['admin_id','=',$request->admin_id],
             // $json = ['chatHistory' => $chatHistory, 'unreadChat' => $unreadChat];
-            $chatHistory = Chat::with(['user', 'product', 'order', 'admin', 'company', 'chatMessage'])->where([['user_id', '=', $request->user_id], ['order_id', '=', $request->order_id], ['company_id', '=', $request->company_id]])->get();
+            $chatHistory = Chat::with(['user', 'product', 'order' => fn($q) => $q->withTrashed(), 'order.orderitem.orderproduct.orderproductimage','admin', 'company', 'chatMessage'])->where([['user_id', '=', $request->user_id], ['order_id', '=', $request->order_id], ['company_id', '=', $request->company_id]])->get();
             $unreadChat = 0;
             foreach ($chatHistory as $key => $chat) {
                 foreach ($chat->chatMessage as $key => $message) {
@@ -113,15 +113,6 @@ class UserChatMessageController extends Controller
             $json = ['chatHistory' => $chatHistory, 'unreadChat' => $unreadChat];
         }
         return response()->json($json);
-    }
-
-    function loadChatAdminAll(Request $request)
-    {
-        $loadAdminChatAll = Chat::with(['user', 'product.productimage', 'order.orderitem.orderproduct.orderproductimage', 'admin', 'company', 'chatMessage'])->where([['company_id', '=', $request->company_id]])->orderBy('updated_at', 'desc')->get();
-        // $orderChats= $loadAdminChatAll->groupBy('order_id');
-        // $productChats= $loadAdminChatAll->groupBy('product_id');
-        // $loadAdminChatAllGrouped = ['orderChats' =>$orderChats, 'productChats'=>$productChats];
-        return response()->json($loadAdminChatAll);
     }
 
     function updateChatStatus(Request $request)

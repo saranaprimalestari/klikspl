@@ -211,7 +211,7 @@
                                                     </span>
                                                 </span>
                                             </div>
-                                        @elseif($order->order_status === 'belum bayar' || $order->order_status === 'pembayaran ditolak' || $order->order_status === 'pengajuan pembatalan')
+                                        @elseif($order->order_status === 'belum bayar' || $order->order_status === 'pembayaran ditolak' || $order->order_status === 'pengajuan pembatalan' || $order->order_status === 'pengajuan pembatalan dikonfirmasi' || $order->order_status === 'pengajuan pengembalian dana')
                                             <div>
                                                 <span class="badge bg-danger">
                                                     {{ ucfirst($order->order_status) }}
@@ -303,9 +303,9 @@
                                 @if ($itemNotReviewed > 0)
                                     <div class="row d-flex align-items-center fs-13">
                                         <div class="col-md-9 col-12 my-2 d-none d-sm-block">
-                                            Pesanan kamu sudah selesai, yuk <strong>Beri Nilai dan Ulasan</strong> produk
+                                            Pesanan anda sudah selesai, yuk <strong>Beri Nilai dan Ulasan</strong> produk
                                             yang
-                                            kamu pesan. Penilaian kamu sangat berharga untuk perkembangan KLIKSPL
+                                            anda pesan. Penilaian anda sangat berharga untuk perkembangan KLIKSPL
                                         </div>
                                         <div class="col-md-3 col-12 text-end my-2">
                                             <a href="{{ route('order.show', $order) }}"

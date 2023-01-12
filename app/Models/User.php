@@ -88,6 +88,11 @@ class User extends Authenticatable
         return $this->hasMany(UserPromoOrderUse::class);
     }
     
+    public function refund()
+    {
+        return $this->hasMany(RefundOrderPayment::class);
+    }
+
     public function getRouteKeyName()
     {
         return 'username';

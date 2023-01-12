@@ -251,7 +251,7 @@
                                             <img class="cart-img" src="/assets/klikspl-logo.png" alt=""
                                                 width="100">
                                             <p class="text-muted pt-1 px-1">
-                                                Tidak ada notifikasi buat kamu sekarang ini
+                                                Tidak ada notifikasi untuk anda sekarang ini
                                             </p>
                                         </div>
                                     @endif
@@ -400,7 +400,7 @@
                                     @foreach ($userChats['userChatGroupped'] as $chat)
                                         {{-- @foreach ($chats as $chat) --}}
                                         <li>
-                                            <a class="dropdown-item my-2 chat-dropdown-item" href="{{ (!is_null($chat->last()->chat->order_id) ? route('order.show', $chat->last()->chat->order) : ((!is_null($chat->last()->chat->product_id)) ? route('product.show',$chat->last()->chat->product->slug) : '') ) }}">
+                                            <a class="dropdown-item my-2 chat-dropdown-item" href="{{ (!is_null($chat->last()->chat->order_id) ?  : ((!is_null($chat->last()->chat->product_id)) ? route('product.show',$chat->last()->chat->product->slug) : '') ) }}">
                                                 <div class="row align-items-center">
                                                     <div class="col-2">
                                                         @if (!is_null($chat->last()->chat->order_id))

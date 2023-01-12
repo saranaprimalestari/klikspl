@@ -40,4 +40,9 @@ class Company extends Model
         return $this->hasMany(Chat::class);
     }
 
+    public function company()
+    {
+        return $this->hasMany(RefundOrderPayment::class);
+    }
+
 }

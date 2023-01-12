@@ -8,8 +8,9 @@
         $icon = 'bi bi-envelope';
     } else {
         $data = Session::get('telp_no');
-        $type = 'Nomor Telepon';
-        $icon = 'bi bi-chat-left-text';
+        $type = 'Pesan Whatsapp';
+        $icon = 'bi bi-whatsapp';
+        // $icon = 'bi bi-chat-left-text';
     }
     $verifCode = Session::get('verificationCode');
     @endphp
@@ -118,7 +119,12 @@
                             </div>
                             <div class="text-center">
                                 <span class="register-act-login">
-                                    Kode verifikasi dikirim melalui {{ $type }} ke {{ $data }} {{ session()->get('verificationCode') }}
+                                    Kode verifikasi dikirim melalui {{ $type }} ke {{ $data }} 
+                                    @if ($type == 'email')
+                                    <p class="fs-14 text-danger">
+                                        cek folder spam apabila tidak menerima email verifikasi dari kami
+                                    </p>
+                                @endif
                                 </span>
                             </div>
                         </div>

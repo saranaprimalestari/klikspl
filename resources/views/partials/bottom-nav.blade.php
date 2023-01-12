@@ -27,7 +27,7 @@
                 <a href="{{ route('chat.index') }}" class="nav-link text-center text-dark">
                     <i class="bi bi-chat-dots"></i>
                     @auth
-                        @if (count($userOrders) > 0)
+                        @if (count($userChats['userChatGroupped']) > 0)
                             <span class="position-absolute top-5 start-100 bot-nav-badge badge bg-danger">
                                 {{ count($userChats['userChatGroupped']) }}
                                 <span class="visually-hidden">Chat</span>

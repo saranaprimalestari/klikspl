@@ -110,8 +110,8 @@
                            
                             <div class="row d-flex align-items-center fs-13">
                                 <div class="col-md-9 col-12 my-2">
-                                    Pesanan kamu sudah selesai, yuk <strong>Beri Nilai dan Ulasan</strong> produk yang kamu
-                                    pesan. Penilaian kamu sangat berharga untuk perkembangan KLIKSPL
+                                    Pesanan anda sudah selesai, yuk <strong>Beri Nilai dan Ulasan</strong> produk yang anda
+                                    pesan. Penilaian anda sangat berharga untuk perkembangan KLIKSPL
                                 </div>
                                 <div class="col-md-3 col-12 text-end my-2">
                                     <a href="{{ route('rating.show',$order) }}" class="btn btn-danger fs-13">
@@ -197,7 +197,7 @@
                 <div class="text-center notification-empty">
                     <img class="my-4 cart-items-logo" src="/assets/footer-logo.png" width="300" alt="">
                     <p>
-                        Tidak ada produk yang belum kamu nilai saat ini, yuk cari produk menarik dan pesan sekarang
+                        Tidak ada produk yang belum anda nilai saat ini, yuk cari produk menarik dan pesan sekarang
                     </p>
                 </div>
             @endif

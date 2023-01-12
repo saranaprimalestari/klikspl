@@ -2,16 +2,29 @@ var baseURL = 'http://klikspl.test/';
 
 $(document).ready(function() {
     window.company_id = $('#admin-company-id').val();
-    if (typeof(window.company_id) !== 'undefined') {
-        load_chat_admin_all($('meta[name="csrf-token"]').attr('content'), window.company_id);
-    }
-    console.log(window.company_id);
-    if (typeof(window.company_id) !== 'undefined') {
-        setInterval(() => {
+    window.adminId = $('#admin-id').val();
+    window.onChatPage = $('#on-chat-page').val();
+
+    if ((typeof(window.company_id) !== 'undefined' || typeof(window.adminId) !== 'undefined')) {
+        if (typeof(window.onChatPage) !== 'undefined') {
             load_chat_admin_all($('meta[name="csrf-token"]').attr('content'), window.company_id);
-        }, 5500);
+            delete_admin_chat_automatically($('meta[name="csrf-token"]').attr('content'), window.company_id);
+
+            setInterval(() => {
+                load_chat_admin_all($('meta[name="csrf-token"]').attr('content'), window.company_id);
+            }, 5500);
+        } else {
+            setInterval(() => {
+                load_chat_admin_all($('meta[name="csrf-token"]').attr('content'), window.company_id);
+            }, 10000);
+
+        }
     }
+
+
 });
+window.latestChat = [];
+window.unreadTotal = 0;
 
 function load_chat_admin_all(csrfToken, companyId) {
     $.ajax({
@@ -24,28 +37,76 @@ function load_chat_admin_all(csrfToken, companyId) {
         },
         success: function(response) {
             if (response != '') {
+                console.log(response);
                 $('.inner-admin-chat-all').html('');
+                // var latestChat = [];
                 $.each(response, function(id, chatResponse) {
                     // console.log(chatResponse);
                     // console.log(chatResponse['id']);
                     var unread = 0;
+                    var chatUnread = 0;
+                    var latestChatUnreadSum = 0;
+                    var latestChatUnreadValues = [];
                     $.each(chatResponse['chat_message'], function(idChatUnique,
                         chatUnique) {
                         if (chatUnique['status'] == 0 &&
                             chatUnique['admin_id'] == null
                         ) {
                             unread += 1;
+                            // ids = chatResponse['id'];
+                            // console.log(ids);
+                            // element = { ids: unread };
+                            window.latestChat[chatResponse['id']] = unread;
+                            // chatNotificationRingtone();
+                        } else {
+                            // ids = chatResponse['id'];
+                            // element = { ids: unread };
+                            window.latestChat[chatResponse['id']] = unread;
                         }
                     });
+                    setTimeout(() => {
+                        latestChatUnreadValues = Object.values(window.latestChat);
+                        latestChatUnreadSum = latestChatUnreadValues.reduce((accumulator, value) => {
+                            return accumulator + value;
+                        }, 0);
+                        console.log(window.latestChat);
+                        console.log(latestChatUnreadValues);
 
-                    if (chatResponse['order_id'] != null) {
+                        for (let i = 0; i < latestChatUnreadValues.length; i++) {
+                            if (latestChatUnreadValues[i] > 0) {
+                                chatUnread += 1;
+                            }
+                        }
+                        // console.log('latestChatUnreadSum : ' + latestChatUnreadSum);
+                        // console.log('unreadtotal : ' + window.unreadTotal);
+                        if (window.unreadTotal != latestChatUnreadSum) {
+                            if (latestChatUnreadSum >= window.unreadTotal && window.unreadTotal != 0) {
+                                // console.log('-- latestChatUnreadSum : ' + latestChatUnreadSum);
+                                // console.log('-- unreadtotal : ' + window.unreadTotal);
+                                chatNotificationRingtone();
+                            }
+                            window.unreadTotal = latestChatUnreadSum;
+                        }
+                        if (latestChatUnreadSum > 0) {
+                            $('.chat-sidebar-badge').html('<span class="badge bg-danger d-inline-block">' + chatUnread + '</span>');
+                        }
+                    }, 500);
+
+                    if (chatResponse['order'] != null) {
                         image = chatResponse['order']['orderitem'][0]['orderproduct']['orderproductimage'][0]['name'];
-                        type = 'Pesanan';
+
+                        if (chatResponse['order']['deleted_at'] != null) {
+                            type = 'Pesanan Kedaluwarsa';
+                        } else {
+                            type = 'Pesanan';
+                        }
+
                         if (chatResponse['order']['invoice_no'] != null) {
                             detail = chatResponse['order']['invoice_no'];
                         } else {
                             detail = 'No.Invoice belum terbit';
                         }
+
                     } else if (chatResponse['product_id'] != null) {
                         image = chatResponse['product']['productimage'][0]['name'];
                         type = 'Tanya Produk';
@@ -69,50 +130,54 @@ function load_chat_admin_all(csrfToken, companyId) {
                     var is_sent_read = '';
 
                     if (lastChat['admin_id'] != null) {
-                        console.log(lastChat['admin_id']);
+                        // console.log(lastChat['admin_id']);
                         if (lastChat['status'] == 0) {
                             is_sent_read = '<i class="me-1 bi bi-check2"></i>'
                         } else {
                             is_sent_read = '<i class="me-1 bi bi-check2-all"></i>'
                         }
                     }
+                    // console.log((chatResponse['order_id'] != null && chatResponse['order'] != null));
+                    if ((chatResponse['order_id'] != null && chatResponse['order'] != null) || (chatResponse['product_id'] != null && chatResponse['product'] != null)) {
 
-                    $('.inner-admin-chat-all').append(
-                        '<button type="button" class="inner-admin-chat-list list-group-item list-group-item-action chat-all-container px-0"aria-current="true" data-id="' +
-                        chatResponse['id'] + '" data-uid="' +
-                        chatResponse['user_id'] + '" data-pid="' +
-                        chatResponse['product_id'] + '" data-oid="' +
-                        chatResponse['order_id'] + '" data-cid="' +
-                        chatResponse['company_id'] + '">' +
-                        '<div class="row align-items-center m-0">' +
-                        '<div class="col-lg-1 col-md-2 col-2 px-0 px-sm-2">' +
-                        '<img class="img-fluid w-100 border-radius-05rem" src="' +
-                        imgURL + '" alt="" width="20">' +
-                        '</div>' +
-                        '<div class="col-lg-10 col-md-9 col-8">' +
-                        '<div class="ps-0" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">' +
-                        '<div class="fw-600 m-0 text-truncate" data-bs-toggle="tooltip" data-bs-placement="bottom" title="' + ' [' + type + ' - ' + detail + ']' + '">' +
-                        chatResponse['user']['username'] +
-                        ' [' + type + ' - ' + detail + ']' +
-                        '</div>' +
-                        '<div class="fs-12 notification-description-navbar">' +
-                        is_sent_read +
-                        chatResponse['chat_message'][chatResponse[
-                            'chat_message'].length - 1]['chat_message'] +
-                        '</div>' +
-                        '<div class="fs-12 text-secondary">' +
-                        moment(chatResponse['chat_message'][chatResponse[
-                            'chat_message'].length - 1]['created_at'])
-                        .fromNow() +
-                        '</div>' +
-                        '</div>' +
-                        '</div>' +
-                        badge +
-                        '</div>' +
-                        '</button>'
-                    );
+                        $('.inner-admin-chat-all').append(
+                            '<button type="button" class="inner-admin-chat-list list-group-item list-group-item-action chat-all-container px-0"aria-current="true" data-id="' +
+                            chatResponse['id'] + '" data-uid="' +
+                            chatResponse['user_id'] + '" data-pid="' +
+                            chatResponse['product_id'] + '" data-oid="' +
+                            chatResponse['order_id'] + '" data-cid="' +
+                            chatResponse['company_id'] + '">' +
+                            '<div class="row align-items-center m-0">' +
+                            '<div class="col-lg-1 col-md-2 col-2 px-0 px-sm-2">' +
+                            '<img class="img-fluid w-100 border-radius-05rem" src="' +
+                            imgURL + '" alt="" width="20">' +
+                            '</div>' +
+                            '<div class="col-lg-10 col-md-9 col-8">' +
+                            '<div class="ps-0" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">' +
+                            '<div class="fw-600 m-0 text-truncate" data-bs-toggle="tooltip" data-bs-placement="bottom" title="' + ' [' + type + ' - ' + detail + ']' + '">' +
+                            chatResponse['user']['username'] +
+                            ' [' + type + ' - ' + detail + ']' +
+                            '</div>' +
+                            '<div class="fs-12 text-truncate">' +
+                            is_sent_read +
+                            chatResponse['chat_message'][chatResponse[
+                                'chat_message'].length - 1]['chat_message'] +
+                            '</div>' +
+                            '<div class="fs-12 text-secondary">' +
+                            moment(chatResponse['chat_message'][chatResponse[
+                                'chat_message'].length - 1]['created_at'])
+                            .fromNow() +
+                            '</div>' +
+                            '</div>' +
+                            '</div>' +
+                            badge +
+                            '</div>' +
+                            '</button>'
+                        );
+                    }
 
                 });
+
             } else {
                 $('.inner-admin-chat-all').html('');
                 $('.inner-admin-chat-all').html(
@@ -128,6 +193,7 @@ function load_chat_admin_all(csrfToken, companyId) {
                 );
 
             }
+            console.log(latestChat);
             // var $wrapper = $('.inner-admin-chat-all');
             // console.log($wrapper);
             // $wrapper.find('.inner-admin-chat-list').sort(function(a, b) {
@@ -164,4 +230,28 @@ function update_admin_chat_status(csrfToken, chatId, userId, productId, orderId,
         },
         dataType: "json"
     });
+}
+
+function delete_admin_chat_automatically(csrfToken, companyId) {
+    console.log(csrfToken);
+    console.log(companyId);
+    $.ajax({
+        // url: "{{ url('/updatechatstatus') }}",
+        url: window.location.origin + "/administrator/adminchatmessage/deleteadminchatautomatically",
+        type: 'get',
+        data: {
+            _token: csrfToken,
+            company_id: companyId,
+        },
+        success: function(response) {
+            console.log(response);
+        },
+        dataType: "json"
+    });
+}
+
+function chatNotificationRingtone() {
+    console.log('it should be ringing');
+    var snd = new Audio('/assets/sound/notification_message_2.mp3');
+    snd.play();
 }

@@ -113,6 +113,140 @@
                                 </div>
                             </div>
                         @endif
+
+                        @if (count($order->refund) > 0)
+                            @if ($order->order_status == 'pengajuan pengembalian dana' || $order->order_status == 'pesanan dibatalkan')
+                                @foreach ($order->refund as $refund)
+                                    <div class="col-md-12 col-12">
+                                        <div class="card fs-14 border-radius-075rem mb-4 box-shadow">
+                                            <div class="card-body p-4">
+                                                <p class=" fs-14 fw-bold m-0 mb-3">Detail
+                                                    {{ $order->order_status == 'pengajuan pengembalian dana' ? 'Pengajuan' : '' }}
+                                                    Pengembalian Dana</p>
+                                                <div class="row mb-2">
+                                                    <div class="col-md-3 col-6">
+                                                        Nama Lengkap
+                                                    </div>
+                                                    <div class="col-md-9 col-6">
+                                                        {{ $refund->name }}
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-md-3 col-6">
+                                                        Bank
+                                                    </div>
+                                                    <div class="col-md-9 col-6">
+                                                        {{ $refund->bank_name }}
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-md-3 col-6">
+                                                        Nomor Rekening
+                                                    </div>
+                                                    <div class="col-md-9 col-6">
+                                                        {{ $refund->account_number }}
+                                                    </div>
+                                                </div>
+                                                @if (!is_null($refund->email))
+                                                    <div class="row mb-2">
+                                                        <div class="col-md-3 col-6">
+                                                            Email
+                                                        </div>
+                                                        <div class="col-md-9 col-6">
+                                                            {{ $refund->email }}
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                                @if (!is_null($refund->telp_no))
+                                                    <div class="row mb-2">
+                                                        <div class="col-md-3 col-6">
+                                                            No Telepon
+                                                        </div>
+                                                        <div class="col-md-9 col-6">
+                                                            {{ $refund->telp_no }}
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                                @if ($order->order_status == 'pesanan dibatalkan' && !is_null($refund->proof_of_payment))
+                                                    <div class="row mb-2">
+                                                        <div class="col-md-3 col-6">
+                                                            Bukti Transfer
+                                                        </div>
+                                                        <div class="col-md-9 col-12">
+                                                            <div class="accordion accordion-flush"
+                                                                id="accordionProofOfRefund">
+                                                                <div class="accordion-item">
+                                                                    <h2 class="accordion-header"
+                                                                        id="flush-proof-of-refund-heading">
+                                                                        <button
+                                                                            class="accordion-button collapsed p-0 fs-14 shadow-none text-danger"
+                                                                            type="button" data-bs-toggle="collapse"
+                                                                            data-bs-target="#flush-proof-of-refund"
+                                                                            aria-expanded="false"
+                                                                            aria-controls="flush-proof-of-refund">
+                                                                            Lihat Selengkapnya
+                                                                        </button>
+                                                                    </h2>
+                                                                    <div id="flush-proof-of-refund"
+                                                                        class="accordion-collapse collapse"
+                                                                        aria-labelledby="flush-proof-of-refund-heading"
+                                                                        data-bs-parent="#accordionProofOfRefund">
+                                                                        <div class="accordion-body p-0 py-3">
+                                                                            <img src="{{ asset('/storage/' . $refund->proof_of_payment) }}"
+                                                                                class="w-100 border-radius-5px"
+                                                                                alt="">
+                                                                            <div class="d-md-flex d-grid gap-2 mt-2">
+                                                                                <form
+                                                                                    action="{{ route('order.detail.proof.of.payment') }} "
+                                                                                    method="post" class="me-md-2"
+                                                                                    target="_blank">
+                                                                                    @csrf
+                                                                                    <input type="hidden"
+                                                                                        name="proofOfPayment"
+                                                                                        value="{{ $refund->proof_of_payment }}">
+                                                                                    <div class="d-grid">
+                                                                                        <button type="submit"
+                                                                                            class="btn btn-danger fs-14 my-md-3">
+                                                                                            <i
+                                                                                                class="bi bi-box-arrow-up-right"></i>
+                                                                                            Buka
+                                                                                            di
+                                                                                            Halaman Baru
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </form>
+                                                                                <form
+                                                                                    action="{{ route('order.detail.proof.of.payment.download') }}"
+                                                                                    method="post">
+                                                                                    @csrf
+                                                                                    <input type="hidden"
+                                                                                        name="proofOfPayment"
+                                                                                        value="{{ $refund->proof_of_payment }}">
+                                                                                    <input type="hidden" name="inv_no"
+                                                                                        value="bukti-pengembalian-dana-{{ $order->invoice_no }}">
+                                                                                    <div class="d-grid">
+                                                                                        <button type="submit"
+                                                                                            class="btn btn-danger fs-14 my-md-3">
+                                                                                            <i class="bi bi-download"></i>
+                                                                                            Download
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </form>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
+                            @endif
+                        @endif
                         <div class="col-md-12 col-12">
                             <div class="card fs-14 border-radius-075rem mb-4 box-shadow">
                                 <div class="card-body p-4">
@@ -259,7 +393,7 @@
                                             <div class="col-md-12 col-12">
                                                 <p class="mb-1 fs-14 fw-bold">Upload Ulang Bukti Pembayaran</p>
                                                 <p class="fs-12 m-0">
-                                                    bukti pembayaran yang kamu upload ditolak oleh Admin KLIKSPL,
+                                                    bukti pembayaran yang anda upload ditolak oleh Admin KLIKSPL,
                                                     silakan
                                                     upload bukti pembayran yang lebih valid
                                                 </p>
@@ -288,6 +422,22 @@
                                                 <button type="button" class="btn btn-danger fs-14 my-2 shadow-none"
                                                     data-bs-toggle="modal" data-bs-target="#confirmOrder">Pesanan
                                                     Diterima</button>
+                                            </div>
+                                        </div>
+                                    @elseif ($order->order_status == 'pengajuan pembatalan dikonfirmasi' ||
+                                        $order->order_status == 'pengajuan pengembalian dana ditolak')
+                                        <div class="row mb-2 mt-4">
+                                            <div class="col-md-12 col-12">
+                                                <p class="mb-1 fs-14 fw-bold">{{ ucWords($order->order_status) }}</p>
+                                                <p class="fs-12 m-0">
+                                                    Tekan tombol <strong>Isi Form Pengembalian Dana</strong> di bawah ini
+                                                    untuk melanjutkan ke proses pengembalian dana pesanan anda
+                                                </p>
+                                            </div>
+                                            <div class="col-md-12 col-12 text-end">
+                                                <button type="button" class="btn btn-danger fs-14 my-2 shadow-none"
+                                                    data-bs-toggle="modal" data-bs-target="#orderRefund">Isi Form
+                                                    Pengembalian Dana</button>
                                             </div>
                                         </div>
                                     @endif
@@ -574,36 +724,38 @@
                                     </div>
                                     @if (!is_null($order->proof_of_payment))
                                         <div class="row mb-2">
-                                            <div class="accordion accordion-flush" id="accordionFlushExample">
+                                            <div class="accordion accordion-flush" id="accordionFlushProofOfPayment">
                                                 <div class="accordion-item">
                                                     <h2 class="accordion-header" id="flush-headingOne">
                                                         <button
                                                             class="accordion-button collapsed p-0 fs-14 shadow-none text-danger"
                                                             type="button" data-bs-toggle="collapse"
-                                                            data-bs-target="#flush-collapseOne" aria-expanded="false"
-                                                            aria-controls="flush-collapseOne">
+                                                            data-bs-target="#flush-proof-of-payment" aria-expanded="false"
+                                                            aria-controls="flush-proof-of-payment">
                                                             Bukti Pembayaran
                                                         </button>
                                                     </h2>
-                                                    <div id="flush-collapseOne" class="accordion-collapse collapse"
+                                                    <div id="flush-proof-of-payment" class="accordion-collapse collapse"
                                                         aria-labelledby="flush-headingOne"
-                                                        data-bs-parent="#accordionFlushExample">
+                                                        data-bs-parent="#accordionFlushProofOfPayment">
                                                         <div class="accordion-body p-0 py-3">
                                                             <img src="{{ asset('/storage/' . $order->proof_of_payment) }}"
                                                                 class="w-100 border-radius-5px" alt="">
                                                             <div class="d-md-flex d-grid gap-2 mt-2">
                                                                 <form
                                                                     action="{{ route('order.detail.proof.of.payment') }} "
-                                                                    method="post" class="me-2" target="_blank">
+                                                                    method="post" class="me-md-2" target="_blank">
                                                                     @csrf
                                                                     <input type="hidden" name="proofOfPayment"
                                                                         value="{{ $order->proof_of_payment }}">
-                                                                    <button type="submit"
-                                                                        class="btn btn-danger fs-14 my-md-3">
-                                                                        <i class="bi bi-box-arrow-up-right"></i> Buka
-                                                                        di
-                                                                        Halaman Baru
-                                                                    </button>
+                                                                    <div class="d-grid">
+                                                                        <button type="submit"
+                                                                            class="btn btn-danger fs-14 my-md-3">
+                                                                            <i class="bi bi-box-arrow-up-right"></i> Buka
+                                                                            di
+                                                                            Halaman Baru
+                                                                        </button>
+                                                                    </div>
                                                                 </form>
                                                                 <form
                                                                     action="{{ route('order.detail.proof.of.payment.download') }}"
@@ -613,10 +765,12 @@
                                                                         value="{{ $order->proof_of_payment }}">
                                                                     <input type="hidden" name="inv_no"
                                                                         value="{{ $order->invoice_no }}">
-                                                                    <button type="submit"
-                                                                        class="btn btn-danger fs-14 my-md-3">
-                                                                        <i class="bi bi-download"></i> Download
-                                                                    </button>
+                                                                    <div class="d-grid">
+                                                                        <button type="submit"
+                                                                            class="btn btn-danger fs-14 my-md-3">
+                                                                            <i class="bi bi-download"></i> Download
+                                                                        </button>
+                                                                    </div>
                                                                 </form>
                                                             </div>
                                                         </div>
@@ -726,9 +880,9 @@
                                             <div class="modal-body text-center py-2 px-5">
                                                 <h5 class="mb-3">Konfirmasi Pembatalan Pesanan</h5>
                                                 <p class="fs-14 mb-0">
-                                                    Apakah kamu yakin ingin membatalkan pesanan ini? Pesanan yang dibatalkan
+                                                    Apakah anda yakin ingin membatalkan pesanan ini? Pesanan yang dibatalkan
                                                     akan
-                                                    dihapus dari daftar pesananmu. Mohon tuliskan alasan mengapa kamu
+                                                    dihapus dari daftar pesananmu. Mohon tuliskan alasan mengapa anda
                                                     membatalkan
                                                     pesananmu.
                                                 </p>
@@ -859,6 +1013,161 @@
                         <button type="submit" class="btn btn-danger shadow-none fs-14">Konfirmasi</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="orderRefund" tabindex="-1" aria-labelledby="orderRefundModalLabel" aria-hidden="true"
+        data-bs-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-radius-075rem">
+                <div class="modal-header border-bottom-0 px-4">
+                    <h5 class="modal-title" id="orderRefundModalLabel">Form Pengembalian Dana</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body px-4">
+                    <div class="row fs-14">
+                        <div class="col-md-12 col-12">
+                            <p class="mb-2 fs-14">
+                                Isi form pengembalian dana di bawah ini untuk mengembalikan dana pembayaran pesanan
+                                anda.
+                            </p>
+                        </div>
+                        <div class="col-md-12 order-2">
+                            <form class="refund-order-payment-form" action="{{ route('refundorderpayments.store') }}"
+                                method="POST">
+                                @csrf
+                                <div class="row mb-3 align-items-center">
+                                    <label for="name" class="col-sm-2 col-md-3 col-form-label">
+                                        <div>
+                                            <span>
+                                                Nama Lengkap
+                                            </span>
+                                            <span class="text-danger">
+                                                *
+                                            </span>
+                                        </div>
+                                        <p class="text-grey fs-12 m-0">
+                                            Nama lengkap pemilik rekening
+                                        </p>
+                                    </label>
+                                    <div class="col-sm-10 col-md-9">
+                                        <input type="text"
+                                            class="form-control user-account-input shadow-nonamene my-1 border-radius-05rem py-2 px-3 @error('firstname') is-invalid @enderror"
+                                            id="name" value="" placeholder="Nama lengkap" name="name"
+                                            required>
+                                        @error('firstname')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="row mb-3 align-items-center">
+                                    <label for="bank" class="col-sm-2 col-md-3 col-form-label">
+                                        <div>
+                                            <span>
+                                                Bank
+                                            </span>
+                                            <span class="text-danger">
+                                                *
+                                            </span>
+                                        </div>
+                                        <p class="text-grey fs-12 m-0">
+                                            MANDIRI / BNI / BNI / BCA / CIMB / DLL
+                                        </p>
+                                    </label>
+                                    <div class="col-sm-10 col-md-9">
+                                        <input type="text"
+                                            class="form-control user-account-input shadow-none my-1 border-radius-05rem py-2 px-3 @error('bank_name') is-invalid @enderror"
+                                            id="bank" value="" placeholder="Nama bank" name="bank_name"
+                                            required>
+                                        @error('bank_name')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="row mb-3 align-items-center">
+                                    <label for="account_number" class="col-sm-2 col-md-3 col-form-label">
+                                        <div>
+                                            <span>
+                                                Nomor Rekening
+                                            </span>
+                                            <span class="text-danger">
+                                                *
+                                            </span>
+                                        </div>
+                                    </label>
+                                    <div class="col-sm-10 col-md-9">
+                                        <input type="text"
+                                            class="form-control user-account-input shadow-none my-1 border-radius-05rem py-2 px-3 @error('account_number') is-invalid @enderror"
+                                            id="account_number" value="" placeholder="Nomor rekening bank"
+                                            name="account_number" required>
+                                        @error('account_number')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="row mb-3 align-items-center">
+                                    <label for="inputEmail" class="col-sm-2 col-md-3 col-form-label">
+                                        <div>
+                                            Email
+                                        </div>
+                                        <p class="text-grey fs-12 m-0">
+                                            Digunakan untuk mengirim notifikasi ketika pengembalian dana sudah diproses
+                                        </p>
+                                    </label>
+                                    <div class="col-sm-10 col-md-9">
+                                        <input type="text"
+                                            class="form-control user-account-input shadow-none my-1 border-radius-05rem py-2 px-3 @error('email') is-invalid @enderror"
+                                            id="inputEmail" value="" placeholder="Email" name="email">
+                                        @error('email')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="row mb-3 align-items-center">
+                                    <label for="inputTelpNo" class="col-sm-2 col-md-3 col-form-label">
+                                        <div>
+                                            Nomor Telepon/WA
+                                        </div>
+                                        <p class="text-grey fs-12 m-0">
+                                            Digunakan untuk mengirim notifikasi ketika pengembalian dana sudah diproses
+                                        </p>
+                                    </label>
+                                    <div class="col-sm-10 col-md-9">
+                                        <input type="text"
+                                            class="form-control user-account-input shadow-none my-1 border-radius-05rem py-2 px-3 @error('telp_no') is-invalid @enderror"
+                                            id="inputTelpNo" value="" placeholder="Nomor telepon" name="telp_no">
+                                        @error('telp_no')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+                                <input type="hidden" name="order_id" value="{{ $orders[0]->id }}">
+                                <input type="hidden" name="company_id"
+                                    value="{{ $orders[0]->orderitem[0]->orderproduct->company_id }}">
+                                <div class="text-end">
+                                    <button type="button" class="btn btn-secondary fs-14"
+                                        data-bs-dismiss="modal">Tutup</button>
+                                    <button type="submit"
+                                        class="btn btn-danger shadow-none fs-14 refund-order-payment-submit-button">Kirim</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 px-4 pb-4 justify-content-end">
+                </div>
             </div>
         </div>
     </div>
@@ -1092,9 +1401,9 @@
             //         $('.chat-container').addClass('d-none');
             //     }
             // });
-            
+
             $('.expand-detail-order').click(function() {
-                console.log($('.order-detail'));
+                // console.log($('.order-detail'));
                 if ($('.order-detail').hasClass("d-none")) {
                     $('.order-detail').removeClass("d-none");
                 } else {
@@ -1105,35 +1414,44 @@
                     $('.expand-detail-order-chevron').removeClass("bi-chevron-up");
                     $('.expand-detail-order-chevron').addClass("bi-chevron-down");
 
-                    console.log($('.expand-detail-order-chevron'));
+                    // console.log($('.expand-detail-order-chevron'));
                 } else if ($('.expand-detail-order-chevron').hasClass("bi-chevron-down")) {
                     $('.expand-detail-order-text').text("Sembunyikan");
                     $('.expand-detail-order-chevron').removeClass("bi-chevron-down");
                     $('.expand-detail-order-chevron').addClass("bi-chevron-up");
-                    console.log($('.expand-detail-order-chevron'));
+                    // console.log($('.expand-detail-order-chevron'));
                 }
             });
             $('.expand-detail-shipment-order').click(function() {
-                console.log($('.order-shipment-detail'));
+                // console.log($('.order-shipment-detail'));
                 if ($('.order-shipment-detail').hasClass("d-none")) {
                     $('.order-shipment-detail').removeClass("d-none");
                 } else {
                     $('.order-shipment-detail').addClass('d-none');
                 }
                 if ($('.expand-detail-shipment-order-chevron').hasClass("bi-chevron-up")) {
-                    console.log($('.expand-detail-shipment-order-text').text());
+                    // console.log($('.expand-detail-shipment-order-text').text());
                     $('.expand-detail-shipment-order-text').text("Lihat Selengkapnya");
                     $('.expand-detail-shipment-order-chevron').removeClass("bi-chevron-up");
                     $('.expand-detail-shipment-order-chevron').addClass("bi-chevron-down");
 
-                    console.log($('.expand-detail-shipment-order-chevron'));
+                    // console.log($('.expand-detail-shipment-order-chevron'));
                 } else if ($('.expand-detail-shipment-order-chevron').hasClass("bi-chevron-down")) {
                     $('.expand-detail-shipment-order-text').text("Sembunyikan");
                     $('.expand-detail-shipment-order-chevron').removeClass("bi-chevron-down");
                     $('.expand-detail-shipment-order-chevron').addClass("bi-chevron-up");
-                    console.log($('.expand-detail-shipment-order-chevron'));
+                    // console.log($('.expand-detail-shipment-order-chevron'));
                 }
             });
+        });
+        $('.refund-order-payment-form').submit(function(e) {
+            console.log(e);
+            $('.refund-order-payment-submit-button').append(
+                '<span class="ms-2 spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+            );
+            $('.refund-order-payment-submit-button').attr('disabled', true);
+
+            // e.preventDefault();
         });
 
         function previewImagePayment() {

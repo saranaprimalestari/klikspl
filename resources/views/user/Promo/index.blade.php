@@ -90,7 +90,7 @@
                 <div class="text-center notification-empty">
                     <img class="my-4 cart-items-logo" src="/assets/footer-logo.png" width="300" alt="">
                     <p>
-                        Tidak ada voucher promo buat kamu sekarang ini
+                        Tidak ada voucher promo untuk anda sekarang ini
                     </p>
                 </div>
             @endif

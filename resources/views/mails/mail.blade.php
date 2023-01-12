@@ -34,7 +34,7 @@
                 {{-- <h4>KLIK SPL: Pendaftaran Membership</h4> --}}
                 <p class="m-0">Halo,</p>
                 <p>{{ $details['body'] }}</p>
-                {{-- <p>Pendaftaran membership kamu berhasil! Selamat menikmati pengalaman berbelanja di klikspl.com. Untuk masuk dan berbelanja klik tautan berikut:</p> --}}
+                {{-- <p>Pendaftaran membership anda berhasil! Selamat menikmati pengalaman berbelanja di klikspl.com. Untuk masuk dan berbelanja klik tautan berikut:</p> --}}
                 <h1 style="text-align: center">{{ $details['verification'] }}</h1>
                 <div style="text-align: center; margin: 50px;">
                     @if ($details['url'])
@@ -51,7 +51,7 @@
                 <p>{{ $details['footer'] }}</p>
                 {{-- <p>footer section</p> --}}
                 <p>Email ini dibuat otomatis mohon untuk tidak membalas, jika membutuhkan bantuan, silakan hubungi <a
-                        href="wa.me/625113269593" style="color:#db162f;text-decoration: none">ADMIN KLIKSPL</a></p>
+                        href="wa.me/628115102888" style="color:#db162f;text-decoration: none">ADMIN KLIKSPL</a></p>
             </div>
             {{-- <div class="footer col-12 text-center">
                 <p class="fw-bold m-0">

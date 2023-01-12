@@ -19,6 +19,8 @@
             ),
         ) !!}
     @endif
+    {{ \Carbon\Carbon::now()->addDays(30); }}
+    {{ \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', $promoBanners[0]->created_at)->addDays(30) }}
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-1">
         <h1 class="h2 m-0">Promo Banner</h1>
         <a class="btn btn-danger fs-14 add-payment-method-btn" href="{{ route('promobanner.create') }}">
@@ -84,7 +86,7 @@
                             <a href="{{ route('promobanner.edit', $promo) }}" class="text-dark text-decoration-none">
 
                                 @if (Storage::exists($promo->image))
-                                    <img src="{{ asset($promo->image) }}"
+                                    <img src="{{ asset('/storage/'.$promo->image) }}"
                                         class="img-fluid w-100 border-radius-075rem {{ $promo->is_active ? '' : 'grayscale-filter' }} promo_banner_image_{{ $promo->id }}"
                                         alt="...">
                                 @else

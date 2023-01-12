@@ -105,10 +105,13 @@
                                 <div class="col-12 mb-2">
                                     <div class="d-flex align-items-start flex-column">
                                         <label for="commentImage" class="form-label">Tambahkan Foto</label>
-                                        <div class="btn user-account-profile-img-btn btn-secondary">
-                                            <i class="bi bi-camera"></i> Pilih Foto
-                                            <input class="add-file-photo" type="file" name="comment_image"
-                                                id="commentImage">
+                                        <div class="d-flex">
+                                            <div class="btn user-account-profile-img-btn btn-secondary">
+                                                <i class="bi bi-camera"></i> Pilih Foto
+                                                <input class="add-file-photo" type="file" name="comment_image"
+                                                    id="commentImage">
+                                            </div>
+                                            <div class="del-img"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -181,11 +184,21 @@
                         previewImageComment();
                     }
                     console.log($('.img-preview'));
-                }else{
+                    $('.del-img').html(
+                        '<button type="button" class="btn btn-danger fs-14 mx-2 delete-rating-image"><i class="bi bi-trash3"></i> Hapus Foto</button>'
+                        );
+                } else {
                     $('.img-preview').removeAttr('src');
                     console.log($('.img-preview'));
                 }
                 // Allowing file type
+            });
+
+            $('body').on('click','.delete-rating-image', function() {
+                console.log('delete-rating-image on click');
+                $('.img-preview').removeAttr('src');
+                $('.add-file-photo').val('');
+                $(this).remove();
             });
 
             $('.add-rating-form').submit(function(e) {

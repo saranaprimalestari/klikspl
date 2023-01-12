@@ -515,7 +515,7 @@ alert("Crop image successfully uploaded");
 
     <p>{{ $details['footer'] }}</p>
     <p>Email ini dibuat otomatis mohon untuk tidak membalas, jika membutuhkan bantuan, silakan hubungi <a
-            href="wa.me/625113269593" style="color:#db162f;text-decoration: none">ADMIN KLIKSPL</a></p>
+            href="wa.me/628115102888" style="color:#db162f;text-decoration: none">ADMIN KLIKSPL</a></p>
 </div>
 
 
@@ -531,7 +531,7 @@ alert("Crop image successfully uploaded");
             <h4>KLIK SPL: Pendaftaran Membership</h4>
             <p class="m-0">Halo,</p>
             {{-- <p>{{ $details['body'] }}</p> --}}
-            <p>Pendaftaran membership kamu berhasil! Selamat menikmati pengalaman berbelanja di klikspl.com. Untuk masuk
+            <p>Pendaftaran membership anda berhasil! Selamat menikmati pengalaman berbelanja di klikspl.com. Untuk masuk
                 dan berbelanja klik tautan berikut:</p>
             {{-- <h1 style="text-align: center">{{ $details['verification'] }}</h1> --}}
             <div style="text-align: center; margin: 50px;">
@@ -549,7 +549,7 @@ alert("Crop image successfully uploaded");
             {{-- <p>{{ $details['footer'] }}</p> --}}
             <p>footer section</p>
             <p>Email ini dibuat otomatis mohon untuk tidak membalas, jika membutuhkan bantuan, silakan hubungi <a
-                    href="wa.me/625113269593" style="color:#db162f;text-decoration: none">ADMIN KLIKSPL</a></p>
+                    href="wa.me/628115102888" style="color:#db162f;text-decoration: none">ADMIN KLIKSPL</a></p>
         </div>
         <div class="footer col-12 text-center">
             <p class="fw-bold m-0">
@@ -1426,7 +1426,7 @@ console.log('WITA datetime: ' + nowWIB);
                                 @else
                                     <div class="col-md-12">
                                         <div class="product-no-auth-shipment-check">
-                                            Kamu belum menambahkan alamat, yuk
+                                            anda belum menambahkan alamat, yuk
                                             <a href="{{ route('useraddress.index') }}"
                                                 class="text-decoration-none fw-bold login-link">
                                                 Tambahkan Alamat
@@ -2333,7 +2333,7 @@ public function changeEmailSendOTP(Request $request, MailController $mailControl
 // dd($request);
 $verificationCode = random_int(100000, 999999);
 $details = ['id' => '1', 'email' => $request->value, 'title' => 'KLIK SPL: Ubah Email', 'message' => 'Silakan masukkan
-kode berikut untuk mengubah email kamu saat ini', 'verifCode' => $verificationCode, 'closing' => 'Kode bersifat rahasia
+kode berikut untuk mengubah email anda saat ini', 'verifCode' => $verificationCode, 'closing' => 'Kode bersifat rahasia
 dan jangan sebarkan kode ini kepada siapapun, termasuk pihak KLIKSPL.', 'footer' => ''];
 $detail = new Request($details);
 // dd($details);
@@ -2446,7 +2446,7 @@ $validatedData = $request->validate(
 ],
 [
 'telp_no.required' => 'Nomor telepon harus diisi',
-'telp_no.unique' => 'Nomor telepon yang kamu masukkan sudah digunakan',
+'telp_no.unique' => 'Nomor telepon yang anda masukkan sudah digunakan',
 'telp_no.min' => 'Nomor telepon minimal terdiri dari 12 digit',
 'telp_no.max' => 'Nomor telepon maksimal terdiri dari 13 digit',
 'telp_no.regex' => 'Format nomor telepon tidak valid! No telepon hanya dapat diisi dengan angka dan diawali dengan angka
@@ -2470,11 +2470,11 @@ return view('user.verify-method', [
 'act' => 'add',
 'telp_no' => $request->session()->get('telp_no'),
 'verificationCode' => $verificationCode,
-'waVerifMessage' => 'https://wa.me/6285248466297?text=Halo+' . auth()->user()->firstname . '+' .
+'waVerifMessage' => 'https://wa.me/628115102888?text=Halo+' . auth()->user()->firstname . '+' .
 auth()->user()->lastname .
 '%2C%0D%0ASilakan+masukkan+kode+berikut+untuk+verifikasi+nomor+telepon+yang+kamu+tambahkan%0D%0A%0D%0A%2A' .
 $verificationCode .
-'%2A%0D%0A%0D%0AKode+diatas+bersifat+rahasia+dan+jangan+sebarkan+kode+kepada+siapapun.%0D%0A%0D%0APesan+ini+dibuat+otomatis%2C+jika+membutuhkan+bantuan%2C+silakan+hubungi+ADMIN+KLIKSPL+dengan+link+berikut%3A%0D%0Ahttps%3A%2F%2Fwa.me%2F6285248466297'
+'%2A%0D%0A%0D%0AKode+diatas+bersifat+rahasia+dan+jangan+sebarkan+kode+kepada+siapapun.%0D%0A%0D%0APesan+ini+dibuat+otomatis%2C+jika+membutuhkan+bantuan%2C+silakan+hubungi+ADMIN+KLIKSPL+dengan+link+berikut%3A%0D%0Ahttps%3A%2F%2Fwa.me%2F628115102888'
 ]);
 }
 
@@ -2528,7 +2528,7 @@ angka 0',
 // }
 }
 } else {
-return redirect()->back()->with('failed', 'Kode Verifikasi yang kamu masukkan tidak valid. Silakan kirim kirim ulang
+return redirect()->back()->with('failed', 'Kode Verifikasi yang anda masukkan tidak valid. Silakan kirim kirim ulang
 permintaan kode OTP.');
 }
 }
@@ -2721,7 +2721,7 @@ Route::name('profile.add.phone.verified')->get('/user/account/phone-verified',[u
                                     <input type="hidden" name="username" value="{{ auth()->user()->username }}">
                                     <input type="hidden" name="value" value="{{ $telp_no }}">
                                     <input type="hidden" name="verificationCode" value="{{ $verificationCode }}">
-                                    <a href="https://wa.me/6285248466297?text=Halo+{{ auth()->user()->firstname }}+{{ auth()->user()->lastname }}%2C%0D%0ASilakan+masukkan+kode+berikut+untuk+verifikasi+nomor+telepon+yang+kamu+tambahkan%0D%0A%0D%0A%2A{{ $verificationCode }}%2A%0D%0A%0D%0AKode+diatas+bersifat+rahasia+dan+jangan+sebarkan+kode+kepada+siapapun.%0D%0A%0D%0Aatau+kamu+dapat+klik+link+berikut+untuk+melanjutkan+verifikasi.%0D%0A%0D%0Ahttp%3A%2F%2Fklikspl.test%2Fuser%2Faccount%2Fphone-verify-code%3F_token%3D{{ csrf_token() }}%26id%3D{{ auth()->user()->id }}%26username%3D{{ auth()->user()->username }}%26value%3D{{ $telp_no }}%26verificationCode%3D{{ $verificationCode }}%26linkVerification%3D1%0D%0A%0D%0APesan+ini+dibuat+otomatis%2C+jika+membutuhkan+bantuan%2C+silakan+hubungi+ADMIN+KLIKSPL+dengan+link+berikut%3A%0D%0Ahttps%3A%2F%2Fwa.me%2F6285248466297"
+                                    <a href="https://wa.me/628115102888?text=Halo+{{ auth()->user()->firstname }}+{{ auth()->user()->lastname }}%2C%0D%0ASilakan+masukkan+kode+berikut+untuk+verifikasi+nomor+telepon+yang+kamu+tambahkan%0D%0A%0D%0A%2A{{ $verificationCode }}%2A%0D%0A%0D%0AKode+diatas+bersifat+rahasia+dan+jangan+sebarkan+kode+kepada+siapapun.%0D%0A%0D%0Aatau+kamu+dapat+klik+link+berikut+untuk+melanjutkan+verifikasi.%0D%0A%0D%0Ahttp%3A%2F%2Fklikspl.test%2Fuser%2Faccount%2Fphone-verify-code%3F_token%3D{{ csrf_token() }}%26id%3D{{ auth()->user()->id }}%26username%3D{{ auth()->user()->username }}%26value%3D{{ $telp_no }}%26verificationCode%3D{{ $verificationCode }}%26linkVerification%3D1%0D%0A%0D%0APesan+ini+dibuat+otomatis%2C+jika+membutuhkan+bantuan%2C+silakan+hubungi+ADMIN+KLIKSPL+dengan+link+berikut%3A%0D%0Ahttps%3A%2F%2Fwa.me%2F628115102888"
                                         target="_blank" class="text-decoration-none link-dark send-wa-otp">
                                         <div class="card border-radius-075rem box-shadow">
                                             <div class="card-body">
@@ -4978,7 +4978,7 @@ echo "</br>";
                                             @else
                                                 <div class="col-md-12">
                                                     <div class="product-no-auth-shipment-check">
-                                                        Kamu belum menambahkan alamat, yuk
+                                                        anda belum menambahkan alamat, yuk
                                                         <a href="{{ route('useraddress.index') }}"
                                                             target="_blank"
                                                             class="text-decoration-none fw-bold login-link">
@@ -5064,7 +5064,7 @@ echo "</br>";
         <div class="text-center cart-items-empty">
             <img class="my-4 cart-items-logo" src="/assets/footer-logo.png" width="300" alt="">
             <p>
-                Tidak ada notifikasi buat kamu sekarang ini
+                Tidak ada notifikasi untuk anda sekarang ini
             </p>
         </div>
     @endif

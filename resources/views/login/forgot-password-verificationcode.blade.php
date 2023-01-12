@@ -84,6 +84,11 @@
                             <div class="text-center">
                                 <span class="register-act-login">
                                     Kode verifikasi dikirim melalui {{ $type }} ke {{ $data }}
+                                    @if ($type == 'email')
+                                            <p class="fs-14 text-danger">
+                                                cek folder spam apabila tidak menerima email verifikasi dari kami
+                                            </p>
+                                        @endif
                                 </span>
                             </div>
                         </div>

@@ -45,7 +45,7 @@
                                                 @endif
                                             </div>
                                             <div class="col-10 ps-0">
-                                                <div class="product-name">
+                                                <div class="product-name text-truncate">
                                                     {{ $product->name }}
                                                 </div>
                                             </div>
@@ -70,7 +70,7 @@
                                             @endif
                                         </div>
                                         <div class="col-10 ps-0">
-                                            <div class="product-name">
+                                            <div class="order-invoice-no text-truncate">
                                                 @if (!is_null($order->invoice_no))
                                                     {{ $order->invoice_no }}
                                                 @else
@@ -101,7 +101,12 @@
                                 <input type="hidden" name="admin_id_chat" value="">
                             </div>
 
-                            <textarea class="form-control fs-14 mb-3 shadow-none" name="chat_user_chat" id="chat_user_chat" rows="2" required></textarea>
+                            <textarea class="form-control fs-14 mb-1 shadow-none" name="chat_user_chat" id="chat_user_chat" rows="2" required></textarea>
+                            <div class="d-flex mb-1">
+                                <div class="text-danger fs-11 m-0 fw-bold">
+                                        Chat akan dihapus otomatis setelah 30 hari dari chat awal dimulai
+                                </div>
+                            </div>
                             <div class="text-end">
                                 <button type="button" class="btn btn-danger bg-red-klikspl fs-14 send-chat-button">
                                     <div class="spinner-border spinner-border-sm send-chat-spinner d-none" role="status">

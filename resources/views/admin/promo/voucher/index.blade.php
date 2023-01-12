@@ -99,7 +99,7 @@
                                                 @if ($promo->image)
                                                     <img id="main-image"
                                                         class="border-radius-05rem promo-voucher-image-{{ $promo->id }} {{ $promo->is_active ? '' : 'grayscale-filter' }}"
-                                                        src="{{ asset($promo->image) }}" class="img-fluid" alt="..."
+                                                        src="{{ asset('/storage/'.$promo->image) }}" class="img-fluid" alt="..."
                                                         width="60">
                                                 @else
                                                     <img id="main-image"

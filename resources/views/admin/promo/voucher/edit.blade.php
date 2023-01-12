@@ -475,7 +475,7 @@
                                     <p class="fs-14 fw-600 mb-2">
                                         Diupload
                                     </p>
-                                    <img class="w-100" src="{{ asset($promo->image) }}" alt="">
+                                    <img class="w-100" src="{{ asset('/storage/'.$promo->image) }}" alt="">
                                     <input type="hidden" name="promo_voucher_id" value="{{ $promo->id }}">
                                     <button type="button" class="btn btn-danger fs-14 mt-2 btn-delete-image"
                                         id="{{ $promo->id }}">

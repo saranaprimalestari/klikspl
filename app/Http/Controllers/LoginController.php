@@ -30,7 +30,7 @@ class LoginController extends Controller
             $telp_no = $request->user;
             $request->merge(['telp_no' => $telp_no]);
             $credentials = $request->validate([
-                'telp_no' => 'required|min:12|max:13',
+                'telp_no' => 'required|min:10|max:13',
                 'password' => 'required'
             ]);
         } else {

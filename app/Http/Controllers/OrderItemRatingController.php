@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\Admin;
 use App\Models\Product;
 use App\Models\OrderItem;
-use Illuminate\Http\Request;
 
+use Illuminate\Http\Request;
 use App\Models\ProductComment;
 use App\Models\ProductVariant;
 use App\Models\UserNotification;
@@ -48,7 +49,7 @@ class OrderItemRatingController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, MailController $mailController)
     {
         // dd($request);
         $deadline_to_comment = Carbon::createFromFormat('Y-m-d', $request->comment_date)->addDays(30)->format('Y-m-d');
@@ -115,11 +116,21 @@ class OrderItemRatingController extends Controller
         if ($productComment && $updateOrderItem) {
             $order = $orderItem->order;
             $orderProduct = $order->orderitem[0]->orderProduct;
+
+            if (!is_null(auth()->user()->email)) {
+                $details = ['id' => '2', 'email' => auth()->user()->email, 'title' => 'KLIK SPL: Berhasil Memberikan Penilaian dan Ulasan', 'message' => 'Terimakasih telah memberikan penilaian dan ulasan untuk Produk '.$product->name.' '.$variantDescription.' dalam Pesanan ' . $order->invoice_no . '. Penilaian dan ulasan yang anda beri membantu KLIKSPL untuk berkembang lebih baik lagi. Untuk melihat penilaian yang diberikan, silakan klik tautan berikut:', 'verifCode' => '', 'url' => 'https://klikspl.com/comment', 'closing' => '', 'footer' => ''];
+                $detail = new Request($details);
+                // $this->mailController = $mailController;
+                // $this->mailController->sendMail($detail); 
+                $sendMailController = $mailController;
+                $sendMailController->sendMail($detail);
+            }
+
             $notifications = [
                 'user_id' => auth()->user()->id,
                 'slug' => auth()->user()->username . '-' . Crypt::encryptString($order->id) . '-berhasil-memberi-penilaian-ulasan',
                 'type' => 'Pesanan',
-                'description' => '<p class="m-0">Terimakasih telah memberikan penilaian dan ulasan untuk Produk '.$product->name.' '.$variantDescription.' dalam Pesanan ' . $order->invoice_no . '. Penilaian dan ulasan yang kamu beri membantu KLIKSPL untuk berkembang lebih baik lagi.</p>',
+                'description' => '<p class="m-0">Terimakasih telah memberikan penilaian dan ulasan untuk Produk '.$product->name.' '.$variantDescription.' dalam Pesanan ' . $order->invoice_no . '. Penilaian dan ulasan yang anda beri membantu KLIKSPL untuk berkembang lebih baik lagi.</p>',
                 'excerpt' => 'Berhasil Memberi Penilaian dan Ulasan',
                 'image' => 'storage/' . $orderProduct->orderproductimage->first()->name,
                 'is_read' => 0
@@ -127,10 +138,23 @@ class OrderItemRatingController extends Controller
             // membuat notifikasi pembuatan pesanan untuk user
             $notification = UserNotification::create($notifications);
 
-            $notifications = [
+            $sendAdminNotification = Admin::where('admin_type', '=', 2)->where('company_id', '=', $orderProduct->company_id)->get();
+
+            foreach ($sendAdminNotification as $admin) {
+                if (!is_null($admin->email)) {
+                    $details = ['id' => '2', 'email' => $admin->email, 'title' => 'KLIK SPL: Penilaian dan Ulasan Produk', 'message' => auth()->user()->username.' memberikan penilaian dan ulasan untuk Produk '.$product->name.' '.$variantDescription.' dalam Pesanan ' . $order->invoice_no . '. Yuk beri tanggapan dari penilaian dan ulasan yang diberikan pembeli dengan klik tautan berikut:', 'verifCode' => '', 'url' => 'https://klikspl.com/administrator/adminorder', 'closing' => '', 'footer' => ''];
+                    $detail = new Request($details);
+                    // $this->mailController = $mailController;
+                    // $this->mailController->sendMail($detail); 
+                    $sendMailController = $mailController;
+                    $sendMailController->sendMail($detail);
+                }
+            }
+
+            $adminNotificationDetail = [
                 // 'admin_id' => auth()->user()->id,
                 'order_id' => $order->id,
-                'admin_type' => 3,
+                'admin_type' => 2,
                 'company_id' => $orderProduct->company_id,
                 'slug' => Crypt::encryptString($order->id) . '-penilaian-ulasan',
                 'type' => 'Pesanan',
@@ -140,7 +164,7 @@ class OrderItemRatingController extends Controller
                 'is_read' => 0
             ];
             // membuat notifikasi pembuatan pesanan untuk admin
-            $adminNotification = AdminNotification::create($notifications);
+            $adminNotification = AdminNotification::create($adminNotificationDetail);
 
             return redirect()->route('rating.index')->with(['success' => 'Berhasil memberi penilaian produk pesanan']);
         } else {
